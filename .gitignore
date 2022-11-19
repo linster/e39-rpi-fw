@@ -1,5 +1,7 @@
 # Ignore everything
-/*
+#/*
+/cmake-build-debug
+/.idea
 
 # Files
 !/*.cpp
