@@ -1,15 +1,19 @@
 cmake_minimum_required(VERSION 3.16)
 
 include(pico-sdk/pico_sdk_init.cmake)
+include(pico-extras/external/pico_extras_import.cmake)
 
 project(PicoTemplate)
 
 pico_sdk_init()
 
-add_executable(PicoTemplate main.cpp)
+add_executable(PicoTemplate main.cpp VGADemo.cpp VGADemo.h)
 
 # Link with the pico stdlib
-target_link_libraries(PicoTemplate pico_stdlib hardware_adc)
+target_link_libraries(PicoTemplate pico_stdlib hardware_adc
+        pico_multicore
+        pico_stdlib
+        pico_scanvideo_dpi)
 
 # Create map/bin/hex/uf2 files
 pico_add_extra_outputs(PicoTemplate)

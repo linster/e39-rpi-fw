@@ -1,6 +1,12 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
+#include "pico/scanvideo.h"
+#include "pico/scanvideo/composable_scanline.h"
+#include "pico/multicore.h"
+#include "pico/sync.h"
+#include "pico/stdlib.h"
+#include "VGADemo.h"
 
 // The built in LED
 #define LED_PIN 25
@@ -12,6 +18,8 @@ const float conversion_factor = 3.3f / (1 << 12);
     A simple application to blink the LED light, and print out the temperature.
 */
 int main() {
+    printf("main() start");
+
     stdio_init_all();
 
     gpio_init(LED_PIN);
@@ -22,6 +30,8 @@ int main() {
     adc_set_temp_sensor_enabled(true);
 
     adc_select_input(TEMP_ADC);
+
+    auto* vgaDemo = new VGADemo();
 
     while (true) {
         gpio_put(LED_PIN, true);
