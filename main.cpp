@@ -7,6 +7,8 @@
 #include "pico/sync.h"
 #include "pico/stdlib.h"
 #include "VGADemo.h"
+#include "logging/BaseLogger.h"
+#include "logging/StdioPrintFLogger.h"
 
 // The built in LED
 #define LED_PIN 25
@@ -32,6 +34,9 @@ int main() {
     adc_select_input(TEMP_ADC);
 
     auto* vgaDemo = new VGADemo();
+
+    auto* logger = new pico::logger::StdioPrintFLogger();
+    logger->d("Wat", "Foo");
 
     while (true) {
         gpio_put(LED_PIN, true);

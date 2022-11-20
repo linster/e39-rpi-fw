@@ -7,7 +7,7 @@ project(PicoTemplate)
 
 pico_sdk_init()
 
-add_executable(PicoTemplate main.cpp VGADemo.cpp VGADemo.h)
+add_executable(PicoTemplate main.cpp VGADemo.cpp VGADemo.h bmbtVGATiming.h logging/BaseLogger.cpp logging/BaseLogger.h logging/StdioPrintFLogger.cpp logging/StdioPrintFLogger.h)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate pico_stdlib hardware_adc
