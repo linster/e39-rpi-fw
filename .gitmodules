@@ -4,3 +4,6 @@
 [submodule "pico-extras"]
 	path = pico-extras
 	url = ../../raspberrypi/pico-extras.git
+[submodule "libs/fruit"]
+	path = libs/fruit
+	url = ../../google/fruit.git
