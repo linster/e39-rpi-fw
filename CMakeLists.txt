@@ -5,6 +5,10 @@ include(pico-extras/external/pico_extras_import.cmake)
 
 project(PicoTemplate)
 
+
+#https://github.com/google/fruit/issues/62#issuecomment-383369945
+#https://github.com/google/fruit/issues/121
+
 pico_sdk_init()
 
 add_executable(PicoTemplate
@@ -17,7 +21,17 @@ add_executable(PicoTemplate
         logging/StdioPrintFLogger.h
         video/scanProgram/scanPrograms/bmbtVGATiming.cpp
         video/scanProgram/scanPrograms/BaseScanProgram.cpp
-        )
+        configuration/IConfigurationStore.cpp
+        configuration/IConfigurationStore.h
+        configuration/IConfigurationStore.cpp
+        configuration/IConfigurationStore.h
+        configuration/MemoryConfigurationStore.cpp
+        configuration/MemoryConfigurationStore.h
+        configuration/Configuration.cpp
+        configuration/Configuration.h
+        configuration/ConfigurationManager.cpp
+        configuration/ConfigurationManager.h
+        hardware/pi4powerswitch/GpioPi4PowerSwitchManager.cpp hardware/pi4powerswitch/GpioPi4PowerSwitchManager.h)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate pico_stdlib hardware_adc
