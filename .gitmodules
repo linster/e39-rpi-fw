@@ -7,3 +7,6 @@
 [submodule "libs/fruit"]
 	path = libs/fruit
 	url = ../../google/fruit.git
+[submodule "libs/fmt"]
+	path = libs/fmt
+	url = ../../fmtlib/fmt.git

@@ -5,7 +5,9 @@
 #include "pico.h"
 #include "hardware/pio.h"
 
+
 #include "GpioPi4PowerSwitchManager.h"
+#include "../../libs/fmt/include/fmt/format.h"
 
 namespace pico {
     namespace hardware {
@@ -19,14 +21,9 @@ namespace pico {
                 gpio_init(gpio_pin);
                 gpio_set_dir(gpio_pin, true);
                 gpio_pull_down(gpio_pin);
-
             }
             void GpioPi4PowerSwitchManager::setPower(bool isOn) {
-
-                logger->d("GpioPi4PowerSwitchManager", std::sprintf()
-                          reinterpret_cast<const char *>(sprintf("Setting %d pin to %b",
-                                                                 reinterpret_cast<const char *>(gpio_pin), isOn)));
-
+                logger->d("GpioPi4PowerSwitchManager", fmt::format("Setting {} pin to {}", gpio_pin, isOn));
                 gpio_put(gpio_pin, isOn);
             }
 

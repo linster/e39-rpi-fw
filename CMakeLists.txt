@@ -3,6 +3,9 @@ cmake_minimum_required(VERSION 3.16)
 include(pico-sdk/pico_sdk_init.cmake)
 include(pico-extras/external/pico_extras_import.cmake)
 
+
+add_subdirectory(libs/fmt)
+
 project(PicoTemplate)
 
 
@@ -12,6 +15,7 @@ project(PicoTemplate)
 pico_sdk_init()
 
 add_executable(PicoTemplate
+        libs/fmt
         main.cpp
         VGADemo.cpp
         VGADemo.h
@@ -31,7 +35,16 @@ add_executable(PicoTemplate
         configuration/Configuration.h
         configuration/ConfigurationManager.cpp
         configuration/ConfigurationManager.h
-        hardware/pi4powerswitch/GpioPi4PowerSwitchManager.cpp hardware/pi4powerswitch/GpioPi4PowerSwitchManager.h)
+        hardware/pi4powerswitch/GpioPi4PowerSwitchManager.cpp
+        hardware/pi4powerswitch/GpioPi4PowerSwitchManager.h
+        hardware/pi4powerswitch/MockPi4PowerSwitchManager.cpp
+        hardware/pi4powerswitch/MockPi4PowerSwitchManager.h
+        hardware/pi4powerswitch/IPi4PowerSwitchManager.cpp
+        hardware/pi4powerswitch/IPi4PowerSwitchManager.h
+        hardware/videoSwitch/VideoSource.h
+        hardware/videoSwitch/VideoSource.h
+        hardware/videoSwitch/VideoSwitch.cpp
+        hardware/videoSwitch/max4314/Max4314VideoSwitch.cpp hardware/videoSwitch/max4314/Max4314VideoSwitch.h hardware/videoSwitch/mock/MockVideoSwitch.cpp hardware/videoSwitch/mock/MockVideoSwitch.h)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate pico_stdlib hardware_adc

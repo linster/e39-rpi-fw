@@ -7,23 +7,22 @@
 
 #include <memory>
 #include "../../logging/BaseLogger.h"
+#include "IPi4PowerSwitchManager.h"
 
 namespace pico {
     namespace hardware {
         namespace pi4powerswitch {
 
-            class GpioPi4PowerSwitchManager {
+            class GpioPi4PowerSwitchManager : public IPi4PowerSwitchManager {
 
             private:
                 std::shared_ptr<logger::BaseLogger> logger;
-
                 int gpio_pin = 18;
+            public:
                 GpioPi4PowerSwitchManager(
                         std::shared_ptr<logger::BaseLogger> baseLogger
                 );
-
-            public:
-                void setPower(bool isOn);
+                void setPower(bool isOn) override;
             };
 
         } // pico
