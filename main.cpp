@@ -15,15 +15,18 @@
 #define LED_PIN 25
 #define TEMP_ADC 4
 
+
 const float conversion_factor = 3.3f / (1 << 12);
 
 /*
     A simple application to blink the LED light, and print out the temperature.
 */
 int main() {
-    printf("main() start");
 
+    printf("main() start");
     stdio_init_all();
+
+
 
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
@@ -40,13 +43,14 @@ int main() {
 
     auto* factory = new pico::di::PimoroniFactory();
 
-    pico::ApplicationContainer applicationContainer = factory->getApplicationContainer();
+    pico::ApplicationContainer* applicationContainer = factory->getApplicationContainer();
 
-    applicationContainer.onMain();
+    sleep_ms(1000);
+    applicationContainer->onMain();
 
     while (true) {
 
-        applicationContainer.onLoop();
+        applicationContainer->onLoop();
 
         gpio_put(LED_PIN, true);
         sleep_ms(1000);

@@ -15,7 +15,7 @@ namespace pico {
             }
 
             void MockPi4PowerSwitchManager::setPower(bool isOn) {
-                logger->d("MockPi4PowerSwitchManager", fmt::format("Setting mock pi4 power pin to {}", isOn));
+                logger->d("MockPi4PowerSwitchManager", fmt::format("Setting mock pi4 power pin to {}", (int)isOn));
             }
         } // pico
     } // hardware

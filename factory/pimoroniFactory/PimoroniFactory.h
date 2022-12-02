@@ -20,23 +20,23 @@ namespace pico {
         class PimoroniFactory {
 
         private:
-            static std::shared_ptr<logger::StdioPrintFLogger> logger;
-            static std::shared_ptr<hardware::pi4powerswitch::MockPi4PowerSwitchManager> powerSwitchManager;
-            static std::shared_ptr<hardware::videoSwitch::mock::MockVideoSwitch> videoSwitch;
-            static std::shared_ptr<config::ConfigurationManager> configurationManager;
-            static std::shared_ptr<video::scanProgram::ScanProgramManager> scanProgramManager;
-            static std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;
-            static std::shared_ptr<ibus::observers::MockObserver> mockIncomingIBusObserver;
-            static std::shared_ptr<ibus::observerRegistry::ObserverRegistry> observerRegistry;
+            std::shared_ptr<logger::BaseLogger> logger;
+            std::shared_ptr<hardware::pi4powerswitch::MockPi4PowerSwitchManager> powerSwitchManager;
+            std::shared_ptr<hardware::videoSwitch::mock::MockVideoSwitch> videoSwitch;
+            std::shared_ptr<config::ConfigurationManager> configurationManager;
+            std::shared_ptr<video::scanProgram::ScanProgramManager> scanProgramManager;
+            std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;
+            std::shared_ptr<ibus::observers::MockObserver> mockIncomingIBusObserver;
+            std::shared_ptr<ibus::observerRegistry::ObserverRegistry> observerRegistry;
 
-            static std::shared_ptr<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>> baseObservers;
+            std::shared_ptr<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>> baseObservers;
 
             void initializeAllSmartPointers();
 
         public:
             PimoroniFactory();
 
-            static ApplicationContainer getApplicationContainer();
+            ApplicationContainer* getApplicationContainer();
 
             //Clean up all the memory
             void deallocateApplicationContainer();

@@ -16,7 +16,6 @@ pico_sdk_init()
 
 add_executable(PicoTemplate
         libs/fmt
-        main.cpp
         VGADemo.cpp
         VGADemo.h
         logging/BaseLogger.cpp
@@ -70,10 +69,18 @@ add_executable(PicoTemplate
         ibus/outputWriterApi/BaseOutputWriter.cpp
         ibus/outputWriterApi/BaseOutputWriter.h
         ibus/observerRegistry/observers/mockObserver/MockObserver.cpp
-        ibus/observerRegistry/observers/mockObserver/MockObserver.h ibus/observerRegistry/observers/knobListener/KnobListenerObserver.cpp ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.cpp ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.h)
+        ibus/observerRegistry/observers/mockObserver/MockObserver.h
+        ibus/observerRegistry/observers/knobListener/KnobListenerObserver.cpp
+        ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h
+        ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.cpp
+        ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.h
+        main.cpp)
 
 # Link with the pico stdlib
-target_link_libraries(PicoTemplate pico_stdlib hardware_adc
+target_link_libraries(PicoTemplate
+        fmt::fmt-header-only
+        pico_stdlib
+        hardware_adc
         pico_multicore
         pico_stdlib
         pico_scanvideo_dpi)

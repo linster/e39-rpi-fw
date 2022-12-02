@@ -28,7 +28,7 @@ namespace pico {
             //absolute_time_t now = get_absolute_time();
             //TODO use the RTC to get a human-readable log-line datetime here.
 
-            printf("[%s]    [%s]:[%s]", levelString.c_str(), tag.c_str(), message.c_str());
+            printf("[%s]    [%s]:[%s] \n", levelString.c_str(), tag.c_str(), message.c_str());
         }
     } // pico
 } // logger

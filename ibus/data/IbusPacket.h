@@ -14,7 +14,7 @@ namespace pico {
     namespace ibus {
         namespace data {
 
-            class IbusPacket {
+            class IbusPacket : std::enable_shared_from_this<IbusPacket>{
 
             private:
                 //The complete raw packet that the other fields are made of.

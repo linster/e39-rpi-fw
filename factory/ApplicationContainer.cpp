@@ -9,9 +9,11 @@
 namespace pico {
     void ApplicationContainer::onMain() {
 
+        logger->d("onMain", "onMain");
+
         //Register all the observers to the observer registry.
         for (auto & element : *baseObservers) {
-            logger->d("onMain", fmt::format("Registering observer: {}", element.get()->getTag()));
+            logger->d("onMain", fmt::format("Registering observer: {}", element->getTag()));
             observerRegistry->registerObserver(element);
         }
         logger->d("onMain", "Registered all observers to ObserverRegistry");

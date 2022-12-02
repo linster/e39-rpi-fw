@@ -7,16 +7,16 @@
 namespace pico {
     namespace di {
         void PimoroniFactory::initializeAllSmartPointers() {
-            logger = std::make_shared<logger::StdioPrintFLogger>();
-            powerSwitchManager = std::make_shared<hardware::pi4powerswitch::MockPi4PowerSwitchManager>(logger);
-            videoSwitch = std::make_shared<hardware::videoSwitch::mock::MockVideoSwitch>(logger);
-            configurationManager = std::make_shared<config::ConfigurationManager>();
-            scanProgramManager = std::make_shared<video::scanProgram::ScanProgramManager>();
-            scanProgramSwapper = std::make_shared<video::scanProgram::ScanProgramSwapper>();
-            mockIncomingIBusObserver = std::make_shared<ibus::observers::MockObserver>(logger);
-            observerRegistry = std::make_shared<ibus::observerRegistry::ObserverRegistry>(logger);
+            this->logger = std::make_shared<logger::StdioPrintFLogger>();
+            this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::MockPi4PowerSwitchManager>(this->logger);
+            this->videoSwitch = std::make_shared<hardware::videoSwitch::mock::MockVideoSwitch>(this->logger);
+            this->configurationManager = std::make_shared<config::ConfigurationManager>();
+            this->scanProgramManager = std::make_shared<video::scanProgram::ScanProgramManager>();
+            this->scanProgramSwapper = std::make_shared<video::scanProgram::ScanProgramSwapper>();
+            this->mockIncomingIBusObserver = std::make_shared<ibus::observers::MockObserver>(this->logger);
+            this->observerRegistry = std::make_shared<ibus::observerRegistry::ObserverRegistry>(this->logger);
 
-            baseObservers = std::make_shared<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>>(
+            this->baseObservers = std::make_shared<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>>(
                     std::vector<std::shared_ptr<ibus::observers::BaseObserver>>()
                     );
 
@@ -30,8 +30,8 @@ namespace pico {
             initializeAllSmartPointers();
         }
 
-        ApplicationContainer PimoroniFactory::getApplicationContainer() {
-            return {
+        ApplicationContainer* PimoroniFactory::getApplicationContainer() {
+            return new ApplicationContainer(
                     logger,
                     powerSwitchManager,
                     videoSwitch,
@@ -40,12 +40,13 @@ namespace pico {
                     scanProgramSwapper,
                     observerRegistry,
                     baseObservers
-            };
+            );
         }
 
 
         void PimoroniFactory::deallocateApplicationContainer() {
             //TODO delete everything.
+            //TODO then delete the container.
         }
 
     } // pico

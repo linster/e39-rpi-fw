@@ -18,8 +18,8 @@ namespace pico {
                 }
                 void MockVideoSwitch::switchTo(pico::hardware::videoSwitch::VideoSource source) {
                     logger->d("MockVideoSwitch", "Request to change video switch");
-                    logger->d("MockVideoSwitch", fmt::format("Previous value was: {}", previousVideoSource));
-                    logger->d("MockVideoSwitch", fmt::format("New video switch value is {}", source));
+                    logger->d("MockVideoSwitch", fmt::format("Previous value was: %d", (int)previousVideoSource));
+                    logger->d("MockVideoSwitch", fmt::format("New video switch value is %d", (int)source));
                     previousVideoSource = source;
                 }
 

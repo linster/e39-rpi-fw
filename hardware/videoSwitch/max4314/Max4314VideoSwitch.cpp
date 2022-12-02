@@ -26,7 +26,7 @@ namespace pico {
                 }
 
                 void Max4314VideoSwitch::switchTo(pico::hardware::videoSwitch::VideoSource source) {
-                    logger->d("Max4314VideoSwitch", fmt::format("Setting video source to {}", source));
+                    logger->d("Max4314VideoSwitch", fmt::format("Setting video source to %i", (int)source));
                     switch (source) {
                         case VideoSource::RVC:
                             gpio_put(gpio_pin_msb, false);
@@ -51,7 +51,7 @@ namespace pico {
                 }
 
                 VideoSource Max4314VideoSwitch::getPreviousVideoSource() {
-                    logger->d("Max4314VideoSwitch", fmt::format("Returning previous video source: {}", previousVideoSource));
+                    logger->d("Max4314VideoSwitch", fmt::format("Returning previous video source: %i", (int)previousVideoSource));
                     return previousVideoSource;
                 }
 

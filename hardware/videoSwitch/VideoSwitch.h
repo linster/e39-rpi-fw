@@ -13,8 +13,8 @@ namespace pico {
 
             class VideoSwitch {
             public:
-                virtual void switchTo(VideoSource source);
-                virtual VideoSource getPreviousVideoSource();
+                virtual void switchTo(VideoSource source) = 0;
+                virtual VideoSource getPreviousVideoSource() = 0;
             };
 
         } // pico
