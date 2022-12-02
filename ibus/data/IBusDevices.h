@@ -1,0 +1,53 @@
+//
+// Created by stefan on 12/2/22.
+//
+
+#ifndef PICOTEMPLATE_IBUSDEVICES_H
+#define PICOTEMPLATE_IBUSDEVICES_H
+
+#define BODY_MODULE_VALUE 0x00
+#define BROADCAST_VALUE 0xFF
+
+/* Steering wheel buttons */
+#define MFL_VALUE 0x50
+
+/* BM54 Tuner */
+#define RADIO_VALUE 0x68
+
+#define MID_VALUE 0xC0
+
+/* Telephone Computer */
+#define TELEPHONE_VALUE 0xC8
+
+/* High Cluster */
+#define IKE_VALUE 0x80
+#define IKE_TEXTBAR_VALUE 0xE7
+
+#define TV_MODULE_VALUE 0xED
+
+#define NAV_VIDEOMODULE_VALUE 0x3B
+#define NAV_MENUSCREEN_VALUE 0x43
+/* GPS Feed from nav unit */
+#define NAV_LOCATION_VALUE 0xD0
+/* Board monitor buttons that aren't the radio buttons */
+#define BOARDMONITOR_BUTTONS_VALUE 0xF0
+
+#define DIS_VALUE 0x3
+
+//
+#define BODY_MODULE_STRING "BODY_MODULE"
+#define BROADCAST_STRING "BROADCAST"
+#define MFL_STRING "MFL"
+#define RADIO_STRING "RADIO"
+#define MID_STRING "MID"
+#define TELEPHONE_STRING "TELEPHONE"
+#define IKE_STRING "IKE"
+#define IKE_TEXTBAR_STRING "IKE_TEXTBAR"
+#define TV_MODULE_STRING "TV_MODULE"
+#define NAV_VIDEOMODULE_STRING "NAV_VIDEOMODULE"
+#define NAV_MENUSCREEN_STRING "NAV_MENUSCREEN"
+#define NAV_LOCATION_STRING "NAV_LOCATION"
+#define BOARDMONITOR_BUTTONS_STRING "BOARDMONITOR_BUTTONS"
+#define DIS_STRING "DIS"
+
+#endif //PICOTEMPLATE_IBUSDEVICES_H

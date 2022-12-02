@@ -9,6 +9,7 @@
 #include "VGADemo.h"
 #include "logging/BaseLogger.h"
 #include "logging/StdioPrintFLogger.h"
+#include "factory/pimoroniFactory/PimoroniFactory.h"
 
 // The built in LED
 #define LED_PIN 25
@@ -33,12 +34,20 @@ int main() {
 
     adc_select_input(TEMP_ADC);
 
-    auto* vgaDemo = new VGADemo();
 
     auto* logger = new pico::logger::StdioPrintFLogger();
     logger->d("Wat", "Foo");
 
+    auto* factory = new pico::di::PimoroniFactory();
+
+    pico::ApplicationContainer applicationContainer = factory->getApplicationContainer();
+
+    applicationContainer.onMain();
+
     while (true) {
+
+        applicationContainer.onLoop();
+
         gpio_put(LED_PIN, true);
         sleep_ms(1000);
 

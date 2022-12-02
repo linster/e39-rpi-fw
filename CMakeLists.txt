@@ -25,12 +25,12 @@ add_executable(PicoTemplate
         logging/StdioPrintFLogger.h
         video/scanProgram/scanPrograms/bmbtVGATiming.cpp
         video/scanProgram/scanPrograms/BaseScanProgram.cpp
-        configuration/IConfigurationStore.cpp
-        configuration/IConfigurationStore.h
-        configuration/IConfigurationStore.cpp
-        configuration/IConfigurationStore.h
-        configuration/MemoryConfigurationStore.cpp
-        configuration/MemoryConfigurationStore.h
+        configuration/store/IConfigurationStore.cpp
+        configuration/store/IConfigurationStore.h
+        configuration/store/IConfigurationStore.cpp
+        configuration/store/IConfigurationStore.h
+        configuration/store/memory/MemoryConfigurationStore.cpp
+        configuration/store/memory/MemoryConfigurationStore.h
         configuration/Configuration.cpp
         configuration/Configuration.h
         configuration/ConfigurationManager.cpp
@@ -44,7 +44,33 @@ add_executable(PicoTemplate
         hardware/videoSwitch/VideoSource.h
         hardware/videoSwitch/VideoSource.h
         hardware/videoSwitch/VideoSwitch.cpp
-        hardware/videoSwitch/max4314/Max4314VideoSwitch.cpp hardware/videoSwitch/max4314/Max4314VideoSwitch.h hardware/videoSwitch/mock/MockVideoSwitch.cpp hardware/videoSwitch/mock/MockVideoSwitch.h)
+        hardware/videoSwitch/max4314/Max4314VideoSwitch.cpp
+        hardware/videoSwitch/max4314/Max4314VideoSwitch.h
+        hardware/videoSwitch/mock/MockVideoSwitch.cpp
+        hardware/videoSwitch/mock/MockVideoSwitch.h
+        factory/ApplicationContainer.cpp
+        factory/ApplicationContainer.h
+        factory/pimoroniFactory/PimoroniFactory.cpp
+        factory/pimoroniFactory/PimoroniFactory.h
+        factory/e39RpiFactory/e39rpiFactory.cpp
+        factory/e39RpiFactory/e39rpiFactory.h
+        logging/CompositeLogger.cpp
+        logging/CompositeLogger.h
+        logging/ibusOutLogger/IBusOutLogger.cpp
+        logging/ibusOutLogger/IBusOutLogger.h
+        ibus/data/IBusDevices.h
+        ibus/data/IbusPacket.cpp
+        ibus/data/IbusPacket.h
+        ibus/data/IbusDeviceEnum.cpp
+        ibus/data/IbusDeviceEnum.h
+        ibus/observerRegistry/observers/BaseObserver.cpp
+        ibus/observerRegistry/observers/BaseObserver.h
+        ibus/observerRegistry/ObserverRegistry.cpp
+        ibus/observerRegistry/ObserverRegistry.h
+        ibus/outputWriterApi/BaseOutputWriter.cpp
+        ibus/outputWriterApi/BaseOutputWriter.h
+        ibus/observerRegistry/observers/mockObserver/MockObserver.cpp
+        ibus/observerRegistry/observers/mockObserver/MockObserver.h ibus/observerRegistry/observers/knobListener/KnobListenerObserver.cpp ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.cpp ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.h)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate pico_stdlib hardware_adc

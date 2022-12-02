@@ -15,15 +15,15 @@ namespace pico {
 
             class MockPi4PowerSwitchManager : public IPi4PowerSwitchManager {
 
-                MockPi4PowerSwitchManager(
-                        std::shared_ptr<logger::BaseLogger> baseLogger
-                );
-
             private:
                 std::shared_ptr<logger::BaseLogger> logger;
 
             public:
                 void setPower(bool isOn) override;
+
+                MockPi4PowerSwitchManager(
+                        std::shared_ptr<logger::BaseLogger> baseLogger
+                );
             };
 
         } // pico
