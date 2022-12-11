@@ -1,12 +1,11 @@
 //
-// Created by stefan on 12/2/22.
+// Created by stefan on 12/10/22.
 //
 
-#ifndef PICOTEMPLATE_IGNITIONSTATEOBSERVER_H
-#define PICOTEMPLATE_IGNITIONSTATEOBSERVER_H
+#ifndef PICOTEMPLATE_TELEPHONELONGPRESSOBSERVER_H
+#define PICOTEMPLATE_TELEPHONELONGPRESSOBSERVER_H
 
 #include "../BaseObserver.h"
-#include "../../../../hardware/pi4powerswitch/IPi4PowerSwitchManager.h"
 #include "../../../../hardware/videoSwitch/VideoSwitch.h"
 #include "../../../../video/scanProgram/ScanProgramSwapper.h"
 
@@ -14,24 +13,22 @@ namespace pico {
     namespace ibus {
         namespace observers {
 
-            class IgnitionStateObserver : public BaseObserver{
+            class TelephoneLongPressObserver : public BaseObserver{
 
             public:
-                IgnitionStateObserver(
+                TelephoneLongPressObserver(
                         std::shared_ptr<logger::BaseLogger> baseLogger,
-                        std::shared_ptr<hardware::pi4powerswitch::IPi4PowerSwitchManager> pi4PowerSwitchManager,
                         std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch,
                         std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper
                 );
             private:
                 std::shared_ptr<logger::BaseLogger> logger;
-                std::shared_ptr<hardware::pi4powerswitch::IPi4PowerSwitchManager> pi4PowerSwitchManager;
                 std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch;
                 std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;
-                //https://github.com/piersholt/wilhelm-docs/blob/master/ike/11.md
-                void onIgnitionKeyPosition(int position);
+
+                void onTelephoneLongPressed();
             protected:
-                std::string getTag() override { return "IgnitionStateObserver"; };
+                std::string getTag() override { return "TelephoneLongPressObserver"; };
                 void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) override;
             };
 
@@ -39,4 +36,4 @@ namespace pico {
     } // ibus
 } // observers
 
-#endif //PICOTEMPLATE_IGNITIONSTATEOBSERVER_H
+#endif //PICOTEMPLATE_TELEPHONELONGPRESSOBSERVER_H

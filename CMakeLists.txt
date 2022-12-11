@@ -74,7 +74,7 @@ add_executable(PicoTemplate
         ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h
         ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.cpp
         ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.h
-        main.cpp)
+        main.cpp ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.cpp ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h ibus/outputWriterApi/ibusLoggerOutput/IbusLoggerOutput.cpp ibus/outputWriterApi/ibusLoggerOutput/IbusLoggerOutput.h)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate

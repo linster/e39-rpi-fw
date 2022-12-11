@@ -18,8 +18,9 @@ namespace pico {
             virtual void w(std::string tag, std::string message);
             virtual void e(std::string tag, std::string message);
             virtual void wtf(std::string tag, std::string message);
-        protected:
+
             enum class Level { DEBUG, INFO, WARN, ERROR, WTF};
+        protected:
             virtual void print(Level level, std::string tag, std::string message) = 0;
         };
 

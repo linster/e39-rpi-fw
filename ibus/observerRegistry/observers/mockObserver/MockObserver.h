@@ -23,7 +23,7 @@ namespace pico {
                 std::shared_ptr<logger::BaseLogger> logger;
 
             protected:
-                std::string getTag() { return "MockObserver"; };
+                std::string getTag() override { return "MockObserver"; };
                 void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) override;
             };
 

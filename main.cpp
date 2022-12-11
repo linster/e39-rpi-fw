@@ -49,18 +49,13 @@ int main() {
     applicationContainer->onMain();
 
     while (true) {
-
-        applicationContainer->onLoop();
-
         gpio_put(LED_PIN, true);
-        sleep_ms(1000);
-
+        applicationContainer->onLoop();
         gpio_put(LED_PIN, false);
-        sleep_ms(1000);
 
-        const float voltage = adc_read() * conversion_factor;
-        const float temperature = 27 - (voltage - 0.706) / 0.001721;
-
-        printf("Hello, world! The temperature is: %fc\n", temperature);
+//        const float voltage = adc_read() * conversion_factor;
+//        const float temperature = 27 - (voltage - 0.706) / 0.001721;
+//
+//        printf("Hello, world! The temperature is: %fc\n", temperature);
     }
 }
