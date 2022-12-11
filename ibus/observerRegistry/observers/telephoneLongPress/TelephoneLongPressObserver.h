@@ -8,6 +8,7 @@
 #include "../BaseObserver.h"
 #include "../../../../hardware/videoSwitch/VideoSwitch.h"
 #include "../../../../video/scanProgram/ScanProgramSwapper.h"
+#include "../../../outputWriterApi/screenPowerManager/ScreenPowerManager.h"
 
 namespace pico {
     namespace ibus {
@@ -19,13 +20,14 @@ namespace pico {
                 TelephoneLongPressObserver(
                         std::shared_ptr<logger::BaseLogger> baseLogger,
                         std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch,
-                        std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper
+                        std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper,
+                        std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager
                 );
             private:
                 std::shared_ptr<logger::BaseLogger> logger;
                 std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch;
                 std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;
-
+                std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager;
                 void onTelephoneLongPressed();
             protected:
                 std::string getTag() override { return "TelephoneLongPressObserver"; };

@@ -74,7 +74,7 @@ add_executable(PicoTemplate
         ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h
         ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.cpp
         ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.h
-        main.cpp ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.cpp ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h ibus/outputWriterApi/ibusLoggerOutput/IbusLoggerOutput.cpp ibus/outputWriterApi/ibusLoggerOutput/IbusLoggerOutput.h)
+        main.cpp ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.cpp ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h ibus/outputWriterApi/ibusLoggerOutput/IbusLoggerOutput.cpp ibus/outputWriterApi/ibusLoggerOutput/IbusLoggerOutput.h ibus/outputWriterApi/screenPowerManager/ScreenPowerManager.cpp ibus/outputWriterApi/screenPowerManager/ScreenPowerManager.h ibus/observerRegistry/observers/picoConfigurationReadRequest/picoConfigurationReadRequestObserver.cpp ibus/observerRegistry/observers/picoConfigurationReadRequest/picoConfigurationReadRequestObserver.h configuration/default/DefaultConfigurationProvider.cpp configuration/default/DefaultConfigurationProvider.h configuration/default/PiDefaultConfigurationProvider.cpp configuration/default/PiDefaultConfigurationProvider.h configuration/default/PimoroniDefaultConfigurationProvider.cpp configuration/default/PimoroniDefaultConfigurationProvider.h)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate

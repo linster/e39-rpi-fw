@@ -34,6 +34,8 @@
 
 #define DIS_VALUE 0x3
 
+#define NAVJ_VALUE 0xBB
+
 //
 #define BODY_MODULE_STRING "BODY_MODULE"
 #define BROADCAST_STRING "BROADCAST"

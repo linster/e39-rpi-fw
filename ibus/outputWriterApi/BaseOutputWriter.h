@@ -15,6 +15,9 @@ namespace pico {
                 class BaseOutputWriter {
 
                 protected:
+
+                    virtual std::string getTag() = 0;
+
                     //Puts the packet on a queue somewhere for writing.
                     //or, just blocks till it's done writing?
                     void schedulePacketForWrite(pico::ibus::data::IbusPacket ibusPacket);

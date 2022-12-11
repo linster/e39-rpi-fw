@@ -55,6 +55,21 @@ namespace pico {
             bool getIsVgaTimingForBMBT();
             void setIsVgaTimingForBMBT(bool value);
 
+
+            //If true, on startup emit a packet to BMBT to set encoding and aspect ratio
+            bool getShouldSendBMBTInitializationMessageOnBootup();
+            void setShouldSendBMBTInitializationMessageOnBootup(bool value);
+
+            //If true, on startup emit a packet to BMBT to set it's encoding to NTSC.
+            bool getBMBTEncodingIsNTSC();
+            void setBMBTEncodingIsNTSC(bool value);
+
+            bool getBMBTAspectRatioIs16_9();
+            void setBMBTAspectRatioIs16_9(bool value);
+            //If true, on startup emit a packet to set BMBT to 4:3 aspect ratio.
+            bool getBMBTAspectRatioIs4_3();
+            void setBMBTAspectRatioIs4_3(bool value);
+
             //Was a change made to this object requiring a sync to all config stores?
             bool isSyncRequired();
             //To be used only by the configuration manager to indicate the dirty config

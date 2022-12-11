@@ -28,6 +28,16 @@ namespace pico {
                 NAV_LOCATION = NAV_LOCATION_VALUE,
                 BOARDMONITOR_BUTTONS = BOARDMONITOR_BUTTONS_VALUE,
                 DIS = DIS_VALUE,
+
+                NAVJ = NAVJ_VALUE,
+                //We're going to use NAVJ for our Pico<->Pi subnet, because no real person still has an e39
+                //with NAVJ (Japan-only Navigation)
+                PICO = NAVJ_VALUE,
+
+                //We use MINI (D-Bus identifier) for PI4 -> PICO comms. On an e39
+                //there should be no device that responds to this dest address.
+                //https://github.com/piersholt/wilhelm-docs#ki-bus
+                PI4 = 0x31
             };
 
         } // pico

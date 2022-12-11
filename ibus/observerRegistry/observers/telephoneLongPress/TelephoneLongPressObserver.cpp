@@ -11,10 +11,12 @@ namespace pico {
             TelephoneLongPressObserver::TelephoneLongPressObserver(
                     std::shared_ptr<logger::BaseLogger> baseLogger,
                     std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch,
-                    std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper) {
+                    std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper,
+                    std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager) {
                 this->logger = baseLogger;
                 this->videoSwitch = videoSwitch;
                 this->scanProgramSwapper = scanProgramSwapper;
+                this->screenPowerManager = screenPowerManager;
             }
 
             void TelephoneLongPressObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
@@ -33,9 +35,9 @@ namespace pico {
             void TelephoneLongPressObserver::onTelephoneLongPressed() {
                 logger->d(getTag(), "onTelephoneLongPressed()");
 
-                //TODO send a message to turn the screen on.
                 scanProgramSwapper->swapTo(video::scanProgram::ScanProgramSwapper::ScanProgram::MENU);
                 videoSwitch->switchTo(hardware::videoSwitch::PICO);
+                screenPowerManager->sendScreenPowerMessage(true);
             }
         } // pico
     } // ibus

@@ -13,12 +13,14 @@ namespace pico {
                     std::shared_ptr<logger::BaseLogger> baseLogger,
                     std::shared_ptr<hardware::pi4powerswitch::IPi4PowerSwitchManager> pi4PowerSwitchManager,
                     std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch,
-                    std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper
+                    std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper,
+                    std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager
                     ) {
                 this->logger = baseLogger;
                 this->pi4PowerSwitchManager = pi4PowerSwitchManager;
                 this->videoSwitch = videoSwitch;
                 this->scanProgramSwapper = scanProgramSwapper;
+                this->screenPowerManager = screenPowerManager;
                 logger->d(getTag(), "Constructed");
             }
 
@@ -63,9 +65,12 @@ namespace pico {
                     case 0:
                     //Turn the pi off
                     // (but this is a hard-shutdown, so the pi also needs to start shutting down on position 1)
+                    //TODO maybe put a delay here?
                     pi4PowerSwitchManager->setPower(false);
-                    //Set the video source to us
-                    videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PICO);
+
+                    videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
+                    screenPowerManager->sendScreenPowerMessage(false);
+                    //https://github.com/piersholt/wilhelm-docs/blob/master/bmbt/4f.md
                     //TODO change the scanProgram to the clock
                     //TODO also write the message to turn on the BMBT screen
                     //TODO emit the announce messages (if we are simulating a GT)
@@ -73,6 +78,9 @@ namespace pico {
                     case 1:
                         //Turn the pi on
                         pi4PowerSwitchManager->setPower(true);
+                        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PICO);
+                        scanProgramSwapper->swapTo(video::scanProgram::ScanProgramSwapper::ScanProgram::CLOCK);
+                        screenPowerManager->sendScreenPowerMessage(true);
                         //TODO The PI will need to monitor for a 2->1 transition state,
                         //TODO and if it happens, start halting right away.
                     break;
