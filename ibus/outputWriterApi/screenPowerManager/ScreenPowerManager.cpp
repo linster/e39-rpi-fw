@@ -89,7 +89,7 @@ namespace pico {
 
                     this->isPowerOn = true;
 
-                    auto data = std::vector<uint8_t>(3);
+                    auto data = std::vector<uint8_t>(2);
                     data.push_back(0x4F);
 
                     if (isOn) {

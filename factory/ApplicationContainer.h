@@ -27,6 +27,10 @@ namespace pico {
         std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;
         std::shared_ptr<ibus::observerRegistry::ObserverRegistry> observerRegistry;
         std::shared_ptr<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>> baseObservers;
+
+
+        //Setup the second core.
+        void setupCpu1();
     public:
 
         ApplicationContainer(
@@ -53,6 +57,11 @@ namespace pico {
         void onMain();
         //Run once on the main CPU loop()
         void onLoop();
+
+        //Run once on the co-processor
+        void onCpu1Main();
+        //Run once on co-processor loop
+        void onCpu1Loop();
     };
 
 } // pico
