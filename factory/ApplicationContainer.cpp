@@ -17,6 +17,8 @@ namespace pico {
             observerRegistry->registerObserver(element);
         }
         logger->d("onMain", "Registered all observers to ObserverRegistry");
+
+        pi4PowerSwitchManager->setPower(false);
     }
 
     void ApplicationContainer::onLoop() {
@@ -25,5 +27,10 @@ namespace pico {
         videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
         sleep_ms(2000);
         videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
+
+        sleep_ms(2000);
+        pi4PowerSwitchManager->setPower(true);
+        sleep_ms(2000);
+        pi4PowerSwitchManager->setPower(false);
     }
 } // pico

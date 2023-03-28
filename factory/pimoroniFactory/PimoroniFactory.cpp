@@ -4,11 +4,13 @@
 
 #include "PimoroniFactory.h"
 
+
 namespace pico {
     namespace di {
         void PimoroniFactory::initializeAllSmartPointers() {
             this->logger = std::make_shared<logger::StdioPrintFLogger>();
-            this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::MockPi4PowerSwitchManager>(this->logger);
+//            this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::MockPi4PowerSwitchManager>(this->logger);
+            this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::GpioPi4PowerSwitchManager>(this->logger);
             this->videoSwitch = std::make_shared<hardware::videoSwitch::mock::MockVideoSwitch>(this->logger);
             this->configurationManager = std::make_shared<config::ConfigurationManager>();
             this->scanProgramManager = std::make_shared<video::scanProgram::ScanProgramManager>();

@@ -19,8 +19,10 @@ namespace pico {
                 logger->d("GpioPi4PowerSwitchManager", "Constructor");
 
                 gpio_init(gpio_pin);
-                gpio_set_dir(gpio_pin, true);
+                gpio_set_dir(gpio_pin, GPIO_OUT);
                 gpio_pull_down(gpio_pin);
+                gpio_put(gpio_pin, false);
+
             }
             void GpioPi4PowerSwitchManager::setPower(bool isOn) {
                 logger->d("GpioPi4PowerSwitchManager", fmt::format("Setting {} pin to {}", gpio_pin, isOn));
