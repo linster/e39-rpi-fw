@@ -2,7 +2,14 @@
 #/*
 /cmake-build-debug
 /.idea
-
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Makefile
+cmake_install.cmake
+.cmake/
+generated/
+elfuf2
 # Files
 !/*.cpp
 !/.gitignore
