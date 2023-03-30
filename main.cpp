@@ -41,6 +41,7 @@ int main() {
     auto* logger = new pico::logger::StdioPrintFLogger();
     logger->d("Wat", "Foo");
 
+
     auto* factory = new pico::di::PimoroniFactory();
 
     pico::ApplicationContainer* applicationContainer = factory->getApplicationContainer();
@@ -49,6 +50,7 @@ int main() {
     applicationContainer->onMain();
 
     while (true) {
+        logger->d("Wat", "CLION FOO");
         gpio_put(LED_PIN, true);
         applicationContainer->onLoop();
         gpio_put(LED_PIN, false);
