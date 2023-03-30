@@ -16,3 +16,9 @@ elfuf2
 !/.gitmodules
 !/CMakeLists.txt
 !/readme.md
+/PicoTemplate.bin
+/PicoTemplate.dis
+/PicoTemplate.elf
+/PicoTemplate.elf.map
+/PicoTemplate.hex
+/PicoTemplate.uf2
