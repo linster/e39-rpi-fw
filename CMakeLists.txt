@@ -4,9 +4,52 @@ include(pico-sdk/pico_sdk_init.cmake)
 include(pico-extras/external/pico_extras_import.cmake)
 
 
-add_subdirectory(libs/fmt)
-
 project(PicoTemplate)
+
+
+
+add_subdirectory(libs/fmt)
+add_subdirectory(libs/nanopb)
+add_subdirectory(libs/nanopb_cpp)
+
+
+#stefan@pop-os:~/pico/protobuf$
+#./protoc --plugin=protoc-gen-nanopb=/home/stefan/e39-rpi-fw/libs/nanopb/generator/protoc-gen-nanopb
+#   --nanopb_out=/home/stefan/e39-rpi-fw/proto /home/stefan/e39-rpi-fw/configuration/ConfigProto.proto
+#   --proto_path=/home/stefan/e39-rpi-fw
+
+#This one works.
+# TODO.
+#./protoc --plugin=protoc-gen-nanopb=/home/stefan/e39-rpi-fw/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=/home/stefan/e39-rpi-fw/proto /home/stefan/e39-rpi-fw/configuration/ConfigProto.proto --proto_path=/home/stefan/e39-rpi-fw/configuration/
+
+
+#https://jaredrhodes.com/2018/08/24/generate-protocol-buffers-on-build-with-cmake/
+#file(GLOB_RECURSE PROTOBUF_DEFINITION_FILES "*.proto")
+#set(PROTOBUF_INPUT_DIRECTORY "${PROJECT_SOURCE_DIR}")
+#set(PROTOBUF_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/Proto/")
+#foreach(file ${PROTOBUF_DEFINITION_FILES})
+#
+#    set(outputPath ${file})
+#    ##close. This has to be one level up
+#    cmake_path(GET outputPath PARENT_PATH outputPath)
+#    #I wonder if we do configuration/foo/bar if we have to strip out like crazy.
+#    #Maybe it's just better to use the project path?
+#    cmake_path(GET outputPath PARENT_PATH outputPath)
+#    #    cmake_path(NORMALIZE outputPath)
+#    set(PROTOBUF_ARGUMENTS "protoc --proto_path=\"${PROTOBUF_INPUT_DIRECTORY}\" --cpp_out=\"${outputPath}\" \"${file}\"")
+#    #    set(PROTOBUF_ARGUMENTS "protoc --proto_path=\"${PROTOBUF_INPUT_DIRECTORY}\" --cpp_out=\"${PROTOBUF_OUTPUT_DIRECTORY}\" \"${file}\"")
+#
+#
+#    execute_process(COMMAND ${PROTOBUF_OUTPUT_DIRECTORY}
+#            WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+#            RESULT_VARIABLE PROTOBUF_RESULT
+#            OUTPUT_VARIABLE PROTOBUF_OUTPUT_VARIABLE)
+#endforeach()
+#
+#file(GLOB_RECURSE PROTOBUF_MODELS_INCLUDES "Proto/*.pb.cc" "Proto/*.hpp")
+#end proto
+
+
 
 
 #https://github.com/google/fruit/issues/62#issuecomment-383369945
@@ -16,6 +59,15 @@ pico_sdk_init()
 
 add_executable(PicoTemplate
         libs/fmt
+        libs/nanopb/pb.h
+        libs/nanopb/pb_common.h
+        libs/nanopb/pb_common.c
+        libs/nanopb/pb_decode.h
+        libs/nanopb/pb_decode.c
+        libs/nanopb/pb_encode.h
+        libs/nanopb/pb_encode.c
+        libs/nanopb_cpp/nanopb_cpp.h
+        libs/nanopb_cpp/nanopb_cpp.cpp
         VGADemo.cpp
         VGADemo.h
         logging/BaseLogger.cpp
@@ -74,11 +126,29 @@ add_executable(PicoTemplate
         ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h
         ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.cpp
         ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.h
-        main.cpp ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.cpp ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h ibus/outputWriterApi/ibusLoggerOutput/IbusLoggerOutput.cpp ibus/outputWriterApi/ibusLoggerOutput/IbusLoggerOutput.h ibus/outputWriterApi/screenPowerManager/ScreenPowerManager.cpp ibus/outputWriterApi/screenPowerManager/ScreenPowerManager.h ibus/observerRegistry/observers/picoConfigurationReadRequest/picoConfigurationReadRequestObserver.cpp ibus/observerRegistry/observers/picoConfigurationReadRequest/picoConfigurationReadRequestObserver.h configuration/default/DefaultConfigurationProvider.cpp configuration/default/DefaultConfigurationProvider.h configuration/default/PiDefaultConfigurationProvider.cpp configuration/default/PiDefaultConfigurationProvider.h configuration/default/PimoroniDefaultConfigurationProvider.cpp configuration/default/PimoroniDefaultConfigurationProvider.h)
+        main.cpp
+        ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.cpp
+        ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h
+        ibus/outputWriterApi/ibusLoggerOutput/IbusLoggerOutput.cpp
+        ibus/outputWriterApi/ibusLoggerOutput/IbusLoggerOutput.h
+        ibus/outputWriterApi/screenPowerManager/ScreenPowerManager.cpp
+        ibus/outputWriterApi/screenPowerManager/ScreenPowerManager.h
+        ibus/observerRegistry/observers/picoConfigurationReadRequest/picoConfigurationReadRequestObserver.cpp
+        ibus/observerRegistry/observers/picoConfigurationReadRequest/picoConfigurationReadRequestObserver.h
+        configuration/default/DefaultConfigurationProvider.cpp
+        configuration/default/DefaultConfigurationProvider.h
+        configuration/default/PiDefaultConfigurationProvider.cpp
+        configuration/default/PiDefaultConfigurationProvider.h
+        configuration/default/PimoroniDefaultConfigurationProvider.cpp
+        configuration/default/PimoroniDefaultConfigurationProvider.h
+        proto/ConfigProto.pb.h
+        proto/ConfigProto.pb.c)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate
         fmt::fmt-header-only
+        nanopb
+        nanopb_cpp
         pico_stdlib
         hardware_adc
         pico_multicore

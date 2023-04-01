@@ -10,3 +10,11 @@
 [submodule "libs/fmt"]
 	path = libs/fmt
 	url = ../../fmtlib/fmt.git
+[submodule "libs/nanopb"]
+	path = libs/nanopb
+	url = ../../nanopb/nanopb.git
+	branch = master
+[submodule "libs/nanopb_cpp"]
+	path = libs/nanopb_cpp
+	url = ../../nanopb/nanopb_cpp.git
+	branch = master
