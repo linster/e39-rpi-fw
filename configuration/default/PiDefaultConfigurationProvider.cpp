@@ -3,10 +3,14 @@
 //
 
 #include "PiDefaultConfigurationProvider.h"
-
 namespace pico {
     namespace config {
         namespace defaults {
+
+            Configuration PiDefaultConfigurationProvider::getDefaultConfiguration() {
+
+
+            }
         } // pico
     } // config
 } // defaults

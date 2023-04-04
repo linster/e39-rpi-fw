@@ -14,17 +14,19 @@ add_subdirectory(libs/nanopb_cpp)
 
 
 #stefan@pop-os:~/pico/protobuf$
-#./protoc --plugin=protoc-gen-nanopb=/home/stefan/e39-rpi-fw/libs/nanopb/generator/protoc-gen-nanopb
-#   --nanopb_out=/home/stefan/e39-rpi-fw/proto /home/stefan/e39-rpi-fw/configuration/ConfigProto.proto
-#   --proto_path=/home/stefan/e39-rpi-fw
+#./protoc --plugin=protoc-gen-nanopb=/home/stefan/e39-rpi-fw/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=/home/stefan/e39-rpi-fw/proto_generated /home/stefan/e39-rpi-fw/configuration/ConfigProto.proto_generated --proto_path=/home/stefan/e39-rpi-fw
 
 #This one works.
 # TODO.
-#./protoc --plugin=protoc-gen-nanopb=/home/stefan/e39-rpi-fw/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=/home/stefan/e39-rpi-fw/proto /home/stefan/e39-rpi-fw/configuration/ConfigProto.proto --proto_path=/home/stefan/e39-rpi-fw/configuration/
+#./protoc --plugin=protoc-gen-nanopb=/home/stefan/e39-rpi-fw/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=/home/stefan/e39-rpi-fw/proto_generated /home/stefan/e39-rpi-fw/configuration/ConfigProto.proto_generated --proto_path=/home/stefan/e39-rpi-fw/configuration/
+
+#TODO this one worked. It had a goofy error, but w/e
+#./protoc --plugin=protoc-gen-nanopb=/home/stefan/e39-rpi-fw/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=/home/stefan/e39-rpi-fw/proto_generated /home/stefan/e39-rpi-fw/proto/PiToPico.proto --proto_path=/home/stefan/e39-rpi-fw/proto/
+#/home/stefan/e39-rpi-fw/libs/nanopb/generator/proto/nanopb.proto_generated: No such file or directory
 
 
 #https://jaredrhodes.com/2018/08/24/generate-protocol-buffers-on-build-with-cmake/
-#file(GLOB_RECURSE PROTOBUF_DEFINITION_FILES "*.proto")
+#file(GLOB_RECURSE PROTOBUF_DEFINITION_FILES "*.proto_generated")
 #set(PROTOBUF_INPUT_DIRECTORY "${PROJECT_SOURCE_DIR}")
 #set(PROTOBUF_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/Proto/")
 #foreach(file ${PROTOBUF_DEFINITION_FILES})
@@ -47,7 +49,7 @@ add_subdirectory(libs/nanopb_cpp)
 #endforeach()
 #
 #file(GLOB_RECURSE PROTOBUF_MODELS_INCLUDES "Proto/*.pb.cc" "Proto/*.hpp")
-#end proto
+#end proto_generated
 
 
 
@@ -141,8 +143,12 @@ add_executable(PicoTemplate
         configuration/default/PiDefaultConfigurationProvider.h
         configuration/default/PimoroniDefaultConfigurationProvider.cpp
         configuration/default/PimoroniDefaultConfigurationProvider.h
-        proto/ConfigProto.pb.h
-        proto/ConfigProto.pb.c)
+        proto_generated/ConfigProto.pb.h
+        proto_generated/ConfigProto.pb.c
+        proto_generated/PicoToPi.pb.h
+        proto_generated/PicoToPi.pb.c
+        proto_generated/PiToPico.pb.h
+        proto_generated/PiToPico.pb.c proto_cpp/ConfigMessage.cpp proto_cpp/ConfigMessage.h proto_cpp/PicoToPi.cpp proto_cpp/PicoToPi.h proto_cpp/PiToPico.cpp proto_cpp/PiToPico.h)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate

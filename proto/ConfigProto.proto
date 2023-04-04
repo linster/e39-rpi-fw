@@ -23,10 +23,10 @@ message ConfigProto {
   enum ScanProgram {
     NONE = 0;
     CLOCK = 1;
-    LINSTEROS_BOOTSPLASH = 1;
-    GOOSE_BOOTSPLASH = 2;
-    BMW_BOOTSPLASH = 3;
-    MENU = 4;
+    LINSTEROS_BOOTSPLASH = 2;
+    GOOSE_BOOTSPLASH = 3;
+    BMW_BOOTSPLASH = 4;
+    MENU = 5;
   }
   ScanProgram scanProgramOnBoot = 7;
 

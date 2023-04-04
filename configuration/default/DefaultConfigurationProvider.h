@@ -5,12 +5,15 @@
 #ifndef PICOTEMPLATE_DEFAULTCONFIGURATIONPROVIDER_H
 #define PICOTEMPLATE_DEFAULTCONFIGURATIONPROVIDER_H
 
+#include "../Configuration.h"
+
 namespace pico {
     namespace config {
         namespace defaults {
 
             class DefaultConfigurationProvider {
-
+            public:
+                virtual Configuration getDefaultConfiguration() = 0;
             };
 
         } // pico
