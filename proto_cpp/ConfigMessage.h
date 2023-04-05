@@ -17,6 +17,7 @@ namespace pico {
 
         public:
             bool isIbusLogOutputEnabled;
+            //Confusing naming, but max means "max number of log lines" --> minimum severity
             pico::logger::BaseLogger::Level enabledMaxLogLevelForIbusLog;
             pico::logger::BaseLogger::Level enabledMaxLogLevelForPrintfLog;
 

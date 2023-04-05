@@ -5,12 +5,15 @@
 #ifndef PICOTEMPLATE_PIMORONIDEFAULTCONFIGURATIONPROVIDER_H
 #define PICOTEMPLATE_PIMORONIDEFAULTCONFIGURATIONPROVIDER_H
 
+#include "DefaultConfigurationProvider.h"
+#include "../../proto_generated/ConfigProto.pb.h"
 namespace pico {
     namespace config {
         namespace defaults {
 
-            class PimoroniDefaultConfigurationProvider {
-
+            class PimoroniDefaultConfigurationProvider : public DefaultConfigurationProvider {
+            public:
+                Configuration getDefaultConfiguration();
             };
 
         } // pico

@@ -6,6 +6,7 @@
 #define PICOTEMPLATE_CONFIGURATION_H
 
 #include "../logging/BaseLogger.h"
+#include "../../proto_cpp/ConfigMessage.h"
 
 namespace pico {
     namespace config {
@@ -14,17 +15,27 @@ namespace pico {
 
             //a data class with getters and setters for info.
 
+        private:
+            //We'll just mutate this.
+            messages::ConfigMessage backingMessage;
 
         public:
+
+            Configuration(messages::ConfigMessage from);
+
             //If enabled, don't write log messages to USB UART, instead encode them as IBUS messages
             //for the USB UART, and print them to another UART as well.
             bool isIBusLogOutputEnabled();
 
-            bool isLogLevelEnabled(pico::logger::BaseLogger::Level level);
+            bool isLogLevelEnabledIbus(pico::logger::BaseLogger::Level level);
+            bool isLogLevelEnabledPrintf(pico::logger::BaseLogger::Level level);
 
-            void enableAllLogLevels();
-            void disableAllLogLevels();
-            void enableLogLevel(pico::logger::BaseLogger::Level level, bool enabled);
+            void enableAllLogLevelsIbus();
+            void enableAllLogLevelsPrintf();
+            void disableAllLogLevelsIbus();
+            void disableAllLogLevelsPrintf();
+            void enableLevelsForIbusLogging(pico::logger::BaseLogger::Level level);
+            void enableLevelsForPrintFLogging(pico::logger::BaseLogger::Level level);
 
 
             //If enabled, send a packet to turn on BMBT screen
@@ -32,46 +43,29 @@ namespace pico {
             void setTurnOnScreenWhenIbusActive(bool enabled);
 
             //If enabled, always turn on the Pi4 power supply when we start up.
-            void getAlwaysTurnOnRpiOnStartup();
+            bool getAlwaysTurnOnRpiOnStartup();
             void setAlwaysTurnOnRpiOnStartup(bool enabled);
-
-            //If enabled, when we turn on the screen, turn on the clock scan program.
-            //This simulates the TV Module / MK4 single line clock at the bottom of the screen.
-            void getTurnOnClockScanProgramOnIbusActive();
-            void setTurnOnClockScanProgramOnIbusActive(bool enabled);
-
-            //If enabled, when we turn on the screen, turn on the bootsplash scan program.
-            //This shows a pleasant boostplash while the rpi is booting up.
-            void getTurnOnBootsplashScanProgramOnIbusActive();
-            void setTurnOnBootsplashScanProgramOnIbusActive(bool enabled);
-
-            //If enabled, when we turn on the screen, switch the video input to the rpi
-            //right away so we can see it boot.
-            void getTurnOnRpiVideoSourceOnIBusActive();
-            void setTurnOnRpiVideoSourceOnIBusActive(bool enabled);
-
-            //If true, use the VGA Timing for BMBT, else pick a default for the Pimoroni
-            //test board.
-            bool getIsVgaTimingForBMBT();
-            void setIsVgaTimingForBMBT(bool value);
 
 
             //If true, on startup emit a packet to BMBT to set encoding and aspect ratio
             bool getShouldSendBMBTInitializationMessageOnBootup();
             void setShouldSendBMBTInitializationMessageOnBootup(bool value);
 
-            //If true, on startup emit a packet to BMBT to set it's encoding to NTSC.
-            bool getBMBTEncodingIsNTSC();
-            void setBMBTEncodingIsNTSC(bool value);
+            messages::ConfigMessage::ScanProgram getScanProgramOnBootup();
+            void setScanProgramOnBootup(messages::ConfigMessage::ScanProgram program);
 
-            bool getBMBTAspectRatioIs16_9();
-            void setBMBTAspectRatioIs16_9(bool value);
-            //If true, on startup emit a packet to set BMBT to 4:3 aspect ratio.
-            bool getBMBTAspectRatioIs4_3();
-            void setBMBTAspectRatioIs4_3(bool value);
+            messages::ConfigMessage::VideoEncoding getVideoEncoding();
+            void setVideoEncoding(messages::ConfigMessage::VideoEncoding encoding);
+
+            messages::ConfigMessage::AspectRatio getAspectRatio();
+            void setAspectRatio(messages::ConfigMessage::AspectRatio aspectRatio);
 
             //Was a change made to this object requiring a sync to all config stores?
-            bool isSyncRequired();
+            //A flag to indicate the config object is dirty, and that
+            //the config manager should repost the backing message to all of its
+            //stores.
+            bool isSyncRequired = true;
+
             //To be used only by the configuration manager to indicate the dirty config
             //was synced to all more-permanent stores.
             void clearSyncRequired();
