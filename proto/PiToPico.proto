@@ -5,6 +5,7 @@ package ca.stefanm.e39.proto;
 import "ConfigProto.proto";
 
 message PiToPico {
+  //TODO Someday this could be a union proto type, but not this release.
   enum MessageType {
     HeartbeatRequest = 0;
     HeartbeatResponse = 1;
