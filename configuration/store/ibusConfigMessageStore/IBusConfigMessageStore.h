@@ -6,8 +6,7 @@
 #define PICOTEMPLATE_IBUSCONFIGMESSAGESTORE_H
 
 #include "../IConfigurationStore.h"
-
-#include "../../logging/BaseLogger.h"
+#include "../../../logging/BaseLogger.h"
 #include "../../../ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h"
 namespace pico {
     namespace config {
@@ -23,6 +22,7 @@ namespace pico {
                     std::shared_ptr<ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter
                     );
 
+            Configuration getConfiguration() override;
             bool canReadConfiguration() override;
 
             /** Emit an IBus message with the current config. */

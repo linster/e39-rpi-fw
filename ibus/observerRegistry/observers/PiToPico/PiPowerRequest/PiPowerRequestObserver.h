@@ -10,7 +10,7 @@
 #include "../../../logging/BaseLogger.h"
 #include "../../../../data/IBusDevices.h"
 #include "../../../../proto_cpp/PiToPico.h"
-#include "../../hardware/pi4powerswitch/IPi4PowerSwitchManager.h"
+#include "../../../hardware/pi4powerswitch/IPi4PowerSwitchManager.h"
 
 namespace pico {
     namespace ibus {

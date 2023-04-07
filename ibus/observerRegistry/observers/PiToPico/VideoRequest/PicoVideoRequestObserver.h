@@ -9,7 +9,7 @@
 #include "../../../logging/BaseLogger.h"
 #include "../../../../data/IBusDevices.h"
 #include "../../../../proto_cpp/PiToPico.h"
-#include "../../hardware/videoSwitch/VideoSwitch.h"
+#include "../../../hardware/videoSwitch/VideoSwitch.h"
 
 namespace pico {
     namespace ibus {

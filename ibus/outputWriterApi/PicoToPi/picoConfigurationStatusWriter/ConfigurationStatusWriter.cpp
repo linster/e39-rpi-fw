@@ -16,7 +16,7 @@ namespace pico {
                 }
 
                 void ConfigurationStatusWriter::scheduleEmit(messages::ConfigMessage configMessage) {
-                    schedulePicoToPiMessageForWrite(messages::PicoToPiMessage {
+                    this->schedulePicoToPiMessageForWrite(messages::PicoToPiMessage {
                         .messageType = messages::PicoToPiMessage::MessageType::ConfigStatusResponse,
                         .existingConfig = configMessage
                     });

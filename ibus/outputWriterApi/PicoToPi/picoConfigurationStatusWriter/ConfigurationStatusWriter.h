@@ -19,7 +19,7 @@ namespace pico {
                     std::shared_ptr<logger::BaseLogger> logger;
                 public:
                     //TODO add a logger in here.
-                    ConfigurationStatusWriter(
+                    explicit ConfigurationStatusWriter(
                             std::shared_ptr<logger::BaseLogger> logger
                         );
                     void scheduleEmit(messages::ConfigMessage configMessage);

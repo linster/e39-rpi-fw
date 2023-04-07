@@ -7,7 +7,6 @@ include(pico-extras/external/pico_extras_import.cmake)
 project(PicoTemplate)
 
 
-
 add_subdirectory(libs/fmt)
 add_subdirectory(libs/nanopb)
 add_subdirectory(libs/nanopb_cpp)
@@ -148,13 +147,40 @@ add_executable(PicoTemplate
         proto_generated/PicoToPi.pb.h
         proto_generated/PicoToPi.pb.c
         proto_generated/PiToPico.pb.h
-        proto_generated/PiToPico.pb.c proto_cpp/ConfigMessage.cpp proto_cpp/ConfigMessage.h proto_cpp/PicoToPi.cpp proto_cpp/PicoToPi.h proto_cpp/PiToPico.cpp proto_cpp/PiToPico.h configuration/store/flash/FlashConfigurationStore.cpp configuration/store/flash/FlashConfigurationStore.h configuration/store/ibusConfigMessageStore/IBusConfigMessageStore.cpp configuration/store/ibusConfigMessageStore/IBusConfigMessageStore.h configuration/store/ibusConfigMessageStore/IBusConfigMessageStore.cpp configuration/store/ibusConfigMessageStore/IBusConfigMessageStore.h configuration/store/flash/FlashConfigurationStore.h configuration/store/flash/FlashConfigurationStore.cpp configuration/store/flash/FlashConfigurationStore.cpp ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.cpp ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.cpp ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.h ibus/observerRegistry/observers/PiToPico/heartbeatRequest/HeatbeatRequestObserver.cpp ibus/observerRegistry/observers/PiToPico/heartbeatRequest/HeatbeatRequestObserver.h ibus/observerRegistry/observers/PiToPico/PiPowerRequest/PiPowerRequestObserver.cpp ibus/observerRegistry/observers/PiToPico/PiPowerRequest/PiPowerRequestObserver.h ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.cpp ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.cpp ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h)
+        proto_generated/PiToPico.pb.c
+        proto_cpp/ConfigMessage.cpp
+        proto_cpp/ConfigMessage.h
+        proto_cpp/PicoToPi.cpp
+        proto_cpp/PicoToPi.h
+        proto_cpp/PiToPico.cpp
+        proto_cpp/PiToPico.h
+        configuration/store/flash/FlashConfigurationStore.cpp
+        configuration/store/flash/FlashConfigurationStore.h
+        configuration/store/ibusConfigMessageStore/IBusConfigMessageStore.cpp
+        configuration/store/ibusConfigMessageStore/IBusConfigMessageStore.h
+        configuration/store/ibusConfigMessageStore/IBusConfigMessageStore.cpp
+        configuration/store/ibusConfigMessageStore/IBusConfigMessageStore.h
+        configuration/store/flash/FlashConfigurationStore.h
+        configuration/store/flash/FlashConfigurationStore.cpp
+        configuration/store/flash/FlashConfigurationStore.cpp
+        ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.cpp
+        ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h
+        ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.cpp
+        ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.h
+        ibus/observerRegistry/observers/PiToPico/heartbeatRequest/HeatbeatRequestObserver.cpp
+        ibus/observerRegistry/observers/PiToPico/heartbeatRequest/HeatbeatRequestObserver.h
+        ibus/observerRegistry/observers/PiToPico/PiPowerRequest/PiPowerRequestObserver.cpp
+        ibus/observerRegistry/observers/PiToPico/PiPowerRequest/PiPowerRequestObserver.h
+        ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.cpp
+        ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h
+        ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.cpp
+        ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate
         fmt::fmt-header-only
-        nanopb
-        nanopb_cpp
+#        nanopb
+#        nanopb_cpp
         pico_stdlib
         hardware_adc
         pico_multicore

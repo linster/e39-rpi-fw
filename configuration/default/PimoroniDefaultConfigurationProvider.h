@@ -13,8 +13,8 @@ namespace pico {
 
             class PimoroniDefaultConfigurationProvider : public DefaultConfigurationProvider {
             public:
-                PimoroniDefaultConfigurationProvider();
-                Configuration getDefaultConfiguration();
+                PimoroniDefaultConfigurationProvider() = default;
+                Configuration getDefaultConfiguration() override;
             };
 
         } // pico

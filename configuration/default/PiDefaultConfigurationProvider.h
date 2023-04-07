@@ -13,8 +13,8 @@ namespace pico {
 
             class PiDefaultConfigurationProvider : public DefaultConfigurationProvider{
             public:
-                PiDefaultConfigurationProvider();
-                Configuration getDefaultConfiguration();
+                PiDefaultConfigurationProvider() = default;
+                Configuration getDefaultConfiguration() override;
             };
 
         } // pico

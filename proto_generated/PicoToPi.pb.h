@@ -3,7 +3,7 @@
 
 #ifndef PB_CA_STEFANM_E39_PROTO_PICOTOPI_PB_H_INCLUDED
 #define PB_CA_STEFANM_E39_PROTO_PICOTOPI_PB_H_INCLUDED
-#include <pb.h>
+#include "../../../libs/nanopb/pb.h"
 #include "ConfigProto.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40

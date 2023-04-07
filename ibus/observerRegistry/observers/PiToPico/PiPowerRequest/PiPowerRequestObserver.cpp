@@ -17,7 +17,7 @@ namespace pico {
 
             void PiPowerRequestObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
                 if (iBusPacket.getSourceDevice() == PI_VALUE && iBusPacket.getDestinationDevice() == PICO_VALUE) {
-                    messages::PiToPicoMessage decoded = decodePiToPicoMessage(iBusPacket);
+                    messages::PiToPicoMessage decoded = decodePiToPicoMessage(logger, iBusPacket);
                     onNewPiToPicoPacket(decoded);
                 }
             }

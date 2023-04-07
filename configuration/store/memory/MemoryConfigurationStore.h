@@ -11,7 +11,7 @@ namespace pico {
 
         class MemoryConfigurationStore : public IConfigurationStore {
         private:
-            Configuration inMemoryConfiguration;
+            Configuration* inMemoryConfiguration = nullptr;
             bool hasConfiguration = false;
         public:
             MemoryConfigurationStore();

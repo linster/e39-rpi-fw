@@ -3,7 +3,7 @@
 
 #ifndef PB_CA_STEFANM_E39_PROTO_CONFIGPROTO_PB_H_INCLUDED
 #define PB_CA_STEFANM_E39_PROTO_CONFIGPROTO_PB_H_INCLUDED
-#include <pb.h>
+#include "../libs/nanopb/pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.

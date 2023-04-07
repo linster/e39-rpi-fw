@@ -10,7 +10,7 @@
 #include "../../../../data/IBusDevices.h"
 #include "../../../../proto_cpp/PiToPico.h"
 #include "../../../../outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h"
-#include "../../configuration/ConfigurationManager.h"
+#include "../../../configuration/ConfigurationManager.h"
 
 namespace pico {
     namespace ibus {

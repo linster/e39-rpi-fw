@@ -16,11 +16,11 @@ namespace pico {
                     this->logger = baseLogger;
                     this->defaultConfiguration = defaultConfiguration;
 
-                    aspectRatioIs16_9 = defaultConfiguration->getBMBTAspectRatioIs16_9();
-                    aspectRatioIs4_3 = defaultConfiguration->getBMBTAspectRatioIs4_3();
+                    aspectRatioIs16_9 = defaultConfiguration->getAspectRatio() == messages::ConfigMessage::AspectRatio::SixteenNine;
+                    aspectRatioIs4_3 = defaultConfiguration->getAspectRatio() == messages::ConfigMessage::AspectRatio::FourThree;
 
-                    encodingIsNtsc = defaultConfiguration->getBMBTEncodingIsNTSC();
-                    encodingIsPal = !defaultConfiguration->getBMBTEncodingIsNTSC();
+                    encodingIsNtsc = defaultConfiguration->getVideoEncoding() == messages::ConfigMessage::VideoEncoding::NTSC;
+                    encodingIsPal = !defaultConfiguration->getVideoEncoding() == messages::ConfigMessage::VideoEncoding::PAL;
 
                     logger->d("ScreenPowerManager", "Setting isPowerOn to false.");
                     isPowerOn = false;
@@ -51,21 +51,21 @@ namespace pico {
                     auto ENCODING_NTSC = 0x01; //0b0000_0001
                     auto ENCODING_PAL  = 0x03; //0b0000_0010
 
-                    if (defaultConfiguration->getBMBTAspectRatioIs16_9() ||
-                        defaultConfiguration->getBMBTAspectRatioIs4_3()
+                    if (defaultConfiguration->getAspectRatio() == messages::ConfigMessage::AspectRatio::SixteenNine ||
+                            defaultConfiguration->getAspectRatio() == messages::ConfigMessage::AspectRatio::FourThree
                     ) {
                         uint8_t secondByte = 0x0;
-                        if (defaultConfiguration->getBMBTEncodingIsNTSC()) {
+                        if (defaultConfiguration->getVideoEncoding() == messages::ConfigMessage::VideoEncoding::NTSC) {
                             secondByte |= ENCODING_NTSC;
                         } else {
                             secondByte |= ENCODING_PAL;
                         }
 
-                        if (defaultConfiguration->getBMBTAspectRatioIs4_3()) {
+                        if (defaultConfiguration->getAspectRatio() == messages::ConfigMessage::AspectRatio::FourThree) {
                             secondByte |= ASPECT_4_3;
                         }
 
-                        if (defaultConfiguration->getBMBTAspectRatioIs16_9()) {
+                        if (defaultConfiguration->getAspectRatio() == messages::ConfigMessage::AspectRatio::SixteenNine) {
                             secondByte |= ASPECT_16_9;
                         }
                         data.push_back(secondByte);

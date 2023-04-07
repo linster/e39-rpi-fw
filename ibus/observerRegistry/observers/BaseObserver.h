@@ -25,7 +25,9 @@ namespace pico {
 
             protected:
                 virtual void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) = 0;
-                messages::PiToPicoMessage decodePiToPicoMessage(pico::ibus::data::IbusPacket ibusPacket);
+                messages::PiToPicoMessage decodePiToPicoMessage(
+                        std::shared_ptr<pico::logger::BaseLogger> logger,
+                        pico::ibus::data::IbusPacket ibusPacket);
             };
 
         } // pico

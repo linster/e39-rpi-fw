@@ -6,7 +6,7 @@
 #define PICOTEMPLATE_CONFIGURATIONMANAGER_H
 
 #include <memory>
-#include "../../logging/BaseLogger.h"
+#include "../logging/BaseLogger.h"
 #include "store/flash/FlashConfigurationStore.h"
 #include "store/ibusConfigMessageStore/IBusConfigMessageStore.h"
 #include "store/memory/MemoryConfigurationStore.h"

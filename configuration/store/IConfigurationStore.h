@@ -12,7 +12,6 @@ namespace pico {
 
         class IConfigurationStore {
         public:
-            static int priority;
             virtual bool canReadConfiguration();
             virtual void saveConfiguration(Configuration configuration);
             virtual Configuration getConfiguration();

@@ -7,8 +7,10 @@
 namespace pico {
     namespace config {
 
-        IBusConfigMessageStore::IBusConfigMessageStore(std::shared_ptr<logger::BaseLogger> logger,
-                                                       std::shared_ptr<ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter) {
+        IBusConfigMessageStore::IBusConfigMessageStore(
+                std::shared_ptr<logger::BaseLogger> logger,
+                std::shared_ptr<ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter
+                ) {
             this->logger = logger;
             this->configurationStatusWriter = configurationStatusWriter;
         }
@@ -24,6 +26,10 @@ namespace pico {
             //Emit an Ibus message with the configuration.
             logger->d("IBusConfigMessageStore", "Scheduling Ibus emit of configuration.");
             configurationStatusWriter->scheduleEmit(configuration.toMessage());
+        }
+
+        Configuration IBusConfigMessageStore::getConfiguration() {
+            logger->wtf("IBusConfigMessageStore", "getConfiguration() should never be called.");
         }
 
     } // pico

@@ -6,7 +6,7 @@
 #define PICOTEMPLATE_CONFIGURATION_H
 
 #include "../logging/BaseLogger.h"
-#include "../../proto_cpp/ConfigMessage.h"
+#include "../proto_cpp/ConfigMessage.h"
 
 namespace pico {
     namespace config {
