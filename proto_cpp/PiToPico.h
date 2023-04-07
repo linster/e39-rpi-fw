@@ -75,7 +75,7 @@ namespace pico {
                 return ProtoType {
                     .messageType = PiToPicoMessageMessageTypeConverter::encoderInit(local.messageType),
                     .newConfig = ConfigMessageConverter::encoderInit(local.newConfig)
-                }
+                };
             };
             static ProtoType decoderInit(LocalType& local) {
                 return ProtoType {

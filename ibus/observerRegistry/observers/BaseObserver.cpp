@@ -19,7 +19,7 @@ namespace pico {
             }
 
             messages::PiToPicoMessage BaseObserver::decodePiToPicoMessage(pico::ibus::data::IbusPacket ibusPacket) {
-                auto foo = iBusPacket.getData();
+                auto foo = ibusPacket.getData();
 
                 //std::shared_ptr<std::vector<uint8_t>> IbusPacket::getData() {
                 //TODO convert this to a string somehow?

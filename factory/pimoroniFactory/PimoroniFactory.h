@@ -14,6 +14,8 @@
 #include "../../ibus/observerRegistry/observers/BaseObserver.h"
 #include "../../ibus/observerRegistry/observers/mockObserver/MockObserver.h"
 #include "../../ibus/observerRegistry/ObserverRegistry.h"
+#include "../../configuration/default/DefaultConfigurationProvider.h"
+#include "../../configuration/default/PimoroniDefaultConfigurationProvider.h"
 
 namespace pico {
     namespace di {

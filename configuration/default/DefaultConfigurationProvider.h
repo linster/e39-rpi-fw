@@ -13,6 +13,7 @@ namespace pico {
 
             class DefaultConfigurationProvider {
             public:
+                DefaultConfigurationProvider();
                 virtual Configuration getDefaultConfiguration() = 0;
             };
 

@@ -38,7 +38,7 @@ namespace pico {
             flashConfigurationStore->saveConfiguration(newDefault);
             iBusConfigMessageStore->saveConfiguration(newDefault);
 
-            return std::unique_ptr<Configuration>(&memoryConfigurationStore->getConfiguration());
+            return std::make_unique<Configuration>(newDefault);
         }
 
         void ConfigurationManager::saveConfiguration(std::unique_ptr<Configuration> configuration) {
