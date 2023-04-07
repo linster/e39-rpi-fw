@@ -6,5 +6,38 @@
 
 namespace pico {
     namespace logger {
+        CompositeLogger::CompositeLogger(std::vector<std::shared_ptr<BaseLogger>> loggerList) {
+            this->loggerList = loggerList;
+        }
+
+        void CompositeLogger::d(std::string tag, std::string message) {
+            for (const auto &item : loggerList) {
+                item->d(tag, message);
+            }
+        }
+
+        void CompositeLogger::i(std::string tag, std::string message) {
+            for (const auto &item : loggerList) {
+                item->i(tag, message);
+            }
+        }
+
+        void CompositeLogger::w(std::string tag, std::string message) {
+            for (const auto &item : loggerList) {
+                item->w(tag, message);
+            }
+        }
+
+        void CompositeLogger::e(std::string tag, std::string message) {
+            for (const auto &item : loggerList) {
+                item->e(tag, message);
+            }
+        }
+
+        void CompositeLogger::wtf(std::string tag, std::string message) {
+            for (const auto &item : loggerList) {
+                item->wtf(tag, message);
+            }
+        }
     } // pico
 } // logger

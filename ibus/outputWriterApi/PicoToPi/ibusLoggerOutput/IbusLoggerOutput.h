@@ -14,13 +14,16 @@ namespace pico {
 
                 class IbusLoggerOutput : public BaseOutputWriter {
 
+                    //Notably, don't log anything here to prevent an infinite loop.
                 private:
                     int truncateLogMessagesToCharacters = 80;
                     //If false, drop the remainder after truncation.
-                    bool splitLogMessagesAtTruncationPoint = true;
+                    bool splitLogMessagesAtTruncationPoint = false;
                 public:
                     IbusLoggerOutput();
                     void print(std::string message);
+                protected:
+                    std::string getTag() override { return "IbusLoggerOutput"; };
                 };
 
             } // pico

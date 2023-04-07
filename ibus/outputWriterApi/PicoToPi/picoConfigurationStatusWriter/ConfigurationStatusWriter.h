@@ -23,6 +23,8 @@ namespace pico {
                             std::shared_ptr<logger::BaseLogger> logger
                         );
                     void scheduleEmit(messages::ConfigMessage configMessage);
+                protected:
+                    std::string getTag() override { return "ConfigurationStatusWriter"; };
                 };
 
             } // pico

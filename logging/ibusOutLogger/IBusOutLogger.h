@@ -5,12 +5,18 @@
 #ifndef PICOTEMPLATE_IBUSOUTLOGGER_H
 #define PICOTEMPLATE_IBUSOUTLOGGER_H
 
+#include <memory>
+#include "../BaseLogger.h"
+#include "../../ibus/outputWriterApi/PicoToPi/ibusLoggerOutput/IbusLoggerOutput.h"
 namespace pico {
     namespace logger {
         namespace ibus {
 
-            class IBusOutLogger {
-
+            class IBusOutLogger : public BaseLogger {
+            private:
+                std::shared_ptr<pico::ibus::output::writer::IbusLoggerOutput> loggerOutput;
+            protected:
+                void print(Level level, std::string tag, std::string message) override;
             };
 
         } // pico

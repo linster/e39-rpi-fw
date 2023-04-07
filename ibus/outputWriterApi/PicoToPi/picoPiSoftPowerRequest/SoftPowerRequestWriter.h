@@ -5,14 +5,25 @@
 #ifndef PICOTEMPLATE_SOFTPOWERREQUESTWRITER_H
 #define PICOTEMPLATE_SOFTPOWERREQUESTWRITER_H
 
+#include "../../BaseOutputWriter.h"
+
 namespace pico {
     namespace ibus {
         namespace output {
             namespace writer {
 
-                class SoftPowerRequestWriter {
+                class SoftPowerRequestWriter : BaseOutputWriter {
+                private:
+                    std::shared_ptr<logger::BaseLogger> logger;
+                public:
+                    SoftPowerRequestWriter(
+                            std::shared_ptr<logger::BaseLogger> logger
+                    );
 
-                    //ask pi to restart, restart x.
+                    void requestRpiRestart();
+                    void requestRpiRestartX();
+                protected:
+                    std::string getTag() override { return "SoftPowerRequestWriter"; };
                 };
 
             } // pico

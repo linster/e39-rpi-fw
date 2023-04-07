@@ -6,6 +6,7 @@
 #define PICOTEMPLATE_BASEOUTPUTWRITER_H
 
 #include "../data/IbusPacket.h"
+#include "../../proto_cpp/PicoToPi.h"
 
 namespace pico {
     namespace ibus {
@@ -21,6 +22,8 @@ namespace pico {
                     //Puts the packet on a queue somewhere for writing.
                     //or, just blocks till it's done writing?
                     void schedulePacketForWrite(pico::ibus::data::IbusPacket ibusPacket);
+
+                    void schedulePicoToPiMessageForWrite(messages::PicoToPiMessage message);
                 };
 
             } // pico

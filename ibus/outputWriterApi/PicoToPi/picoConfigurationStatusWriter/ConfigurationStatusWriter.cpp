@@ -10,13 +10,16 @@ namespace pico {
             namespace writer {
 
                 ConfigurationStatusWriter::ConfigurationStatusWriter(
-                        std::shared_ptr<logger:BaseLogger> logger
+                        std::shared_ptr<logger::BaseLogger> logger
                 ) {
                     this->logger = logger;
                 }
 
                 void ConfigurationStatusWriter::scheduleEmit(messages::ConfigMessage configMessage) {
-                    //TODO wrap the backingMessage by converting to binary (proto), jam into IBus packet.
+                    schedulePicoToPiMessageForWrite(messages::PicoToPiMessage {
+                        .messageType = messages::PicoToPiMessage::MessageType::ConfigStatusResponse,
+                        .existingConfig = configMessage
+                    });
                 }
             } // pico
         } // ibus

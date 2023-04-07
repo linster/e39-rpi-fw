@@ -21,6 +21,8 @@ namespace pico {
                             );
 
                     void sendHeartbeatResponse();
+                protected:
+                    std::string getTag() override { return "HeartbeatResponseWriter"; };
                 };
 
             } // pico
