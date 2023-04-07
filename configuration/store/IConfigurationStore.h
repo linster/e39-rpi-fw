@@ -5,11 +5,17 @@
 #ifndef PICOTEMPLATE_ICONFIGURATIONSTORE_H
 #define PICOTEMPLATE_ICONFIGURATIONSTORE_H
 
+#include "../Configuration.h"
+
 namespace pico {
     namespace config {
 
         class IConfigurationStore {
-
+        public:
+            static int priority;
+            virtual bool canReadConfiguration();
+            virtual void saveConfiguration(Configuration configuration);
+            virtual Configuration getConfiguration();
         };
 
     } // pico

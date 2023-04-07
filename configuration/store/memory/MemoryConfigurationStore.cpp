@@ -6,5 +6,18 @@
 
 namespace pico {
     namespace config {
+
+        bool MemoryConfigurationStore::canReadConfiguration() {
+            return hasConfiguration;
+        }
+
+        Configuration MemoryConfigurationStore::getConfiguration() {
+            return inMemoryConfiguration;
+        }
+
+        void MemoryConfigurationStore::saveConfiguration(Configuration configuration) {
+            inMemoryConfiguration = configuration;
+            hasConfiguration = true;
+        }
     } // pico
 } // config

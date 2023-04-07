@@ -5,11 +5,18 @@
 #ifndef PICOTEMPLATE_MEMORYCONFIGURATIONSTORE_H
 #define PICOTEMPLATE_MEMORYCONFIGURATIONSTORE_H
 
+#include "../IConfigurationStore.h"
 namespace pico {
     namespace config {
 
-        class MemoryConfigurationStore {
-
+        class MemoryConfigurationStore : public IConfigurationStore {
+        private:
+            Configuration inMemoryConfiguration;
+            bool hasConfiguration = false;
+        public:
+            bool canReadConfiguration() override;
+            Configuration getConfiguration() override;
+            void saveConfiguration(Configuration configuration) override;
         };
 
     } // pico

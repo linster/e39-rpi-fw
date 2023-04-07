@@ -5,7 +5,7 @@
 #ifndef PICOTEMPLATE_IBUSLOGGEROUTPUT_H
 #define PICOTEMPLATE_IBUSLOGGEROUTPUT_H
 
-#include "../BaseOutputWriter.h"
+#include "../../BaseOutputWriter.h"
 
 namespace pico {
     namespace ibus {
@@ -14,6 +14,10 @@ namespace pico {
 
                 class IbusLoggerOutput : public BaseOutputWriter {
 
+                private:
+                    int truncateLogMessagesToCharacters = 80;
+                    //If false, drop the remainder after truncation.
+                    bool splitLogMessagesAtTruncationPoint = true;
                 public:
                     IbusLoggerOutput();
                     void print(std::string message);

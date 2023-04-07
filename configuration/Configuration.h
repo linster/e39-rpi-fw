@@ -23,6 +23,8 @@ namespace pico {
 
             Configuration(messages::ConfigMessage from);
 
+            messages::ConfigMessage toMessage();
+
             //If enabled, don't write log messages to USB UART, instead encode them as IBUS messages
             //for the USB UART, and print them to another UART as well.
             bool isIBusLogOutputEnabled();

@@ -36,6 +36,10 @@
 
 #define NAVJ_VALUE 0xBB
 
+/* Borrow the two MINI D-BUS addresses. */
+#define PICO_VALUE 0x31
+#define PI_VALUE 0x81
+
 //
 #define BODY_MODULE_STRING "BODY_MODULE"
 #define BROADCAST_STRING "BROADCAST"

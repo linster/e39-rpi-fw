@@ -7,9 +7,15 @@
 namespace pico {
     namespace config {
 
+
+
         Configuration::Configuration(messages::ConfigMessage from) {
             this->backingMessage = from;
             this->isSyncRequired = true;
+        }
+
+        messages::ConfigMessage Configuration::toMessage() {
+            return this->backingMessage;
         }
 
         bool Configuration::isIBusLogOutputEnabled() {

@@ -18,6 +18,7 @@ message PiToPico {
     PicoVideoRequestRpi = 6; //Ask the pico to show the RPi.
     PicoVideoRequestRVC = 7;
 
+    //For test purposes to toggle the power switch for the RPI power supply.
     PicoPowerRequestOn = 8;
     PicoPowerRequestOff = 9;
   }

@@ -7,6 +7,7 @@
 
 #include "../../data/IbusPacket.h"
 #include "../../../logging/BaseLogger.h"
+#include "../../../proto_cpp/PiToPico.h"
 
 namespace pico {
     namespace ibus {
@@ -24,6 +25,7 @@ namespace pico {
 
             protected:
                 virtual void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) = 0;
+                messages::PiToPicoMessage decodePiToPicoMessage(pico::ibus::data::IbusPacket ibusPacket);
             };
 
         } // pico
