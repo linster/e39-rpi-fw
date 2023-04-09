@@ -174,7 +174,7 @@ add_executable(PicoTemplate
         ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.cpp
         ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h
         ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.cpp
-        ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h)
+        ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h ibus/dma/DmaManager.cpp ibus/dma/DmaManager.h)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate

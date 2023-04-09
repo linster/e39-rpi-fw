@@ -24,6 +24,12 @@ namespace pico {
                     observerList.erase(findResult);
                 }
             }
+
+            void ObserverRegistry::dispatchMessageToAllObservers(data::IbusPacket packet) {
+                for (const auto &item: observerList) {
+                    item->dispatchPacket(logger, packet);
+                }
+            }
         } // pico
     } // ibus
 } // observerRegistry

@@ -7,6 +7,7 @@
 
 #include <vector>
 #include "observers/BaseObserver.h"
+#include "../../ibus/data/IbusPacket.h"
 
 namespace pico {
     namespace ibus {
@@ -24,6 +25,7 @@ namespace pico {
                 void registerObserver(std::shared_ptr<pico::ibus::observers::BaseObserver> observer);
                 void unregisterObserver(std::shared_ptr<pico::ibus::observers::BaseObserver> observer);
 
+                void dispatchMessageToAllObservers(data::IbusPacket packet);
             };
         } // pico
     } // ibus

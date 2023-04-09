@@ -13,6 +13,7 @@
 #include "../video/scanProgram/ScanProgramManager.h"
 #include "../video/scanProgram/ScanProgramSwapper.h"
 #include "../ibus/observerRegistry/ObserverRegistry.h"
+#include "../ibus/dma/DmaManager.h"
 
 namespace pico {
 
@@ -28,6 +29,7 @@ namespace pico {
         std::shared_ptr<ibus::observerRegistry::ObserverRegistry> observerRegistry;
         std::shared_ptr<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>> baseObservers;
 
+        std::shared_ptr<ibus::dma::DmaManager> dmaManager;
 
         //Setup the second core.
         void setupCpu1();
@@ -41,7 +43,8 @@ namespace pico {
                 std::shared_ptr<video::scanProgram::ScanProgramManager> scanProgramManager,
                 std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper,
                 std::shared_ptr<ibus::observerRegistry::ObserverRegistry> observerRegistry,
-                std::shared_ptr<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>> baseObservers
+                std::shared_ptr<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>> baseObservers,
+                std::shared_ptr<ibus::dma::DmaManager> dmaManager
                 ) {
             this->logger = logger;
             this->pi4PowerSwitchManager = pi4PowerSwitchManager;
@@ -51,6 +54,7 @@ namespace pico {
             this->scanProgramSwapper = scanProgramSwapper;
             this->observerRegistry = observerRegistry;
             this->baseObservers = baseObservers;
+            this->dmaManager = dmaManager;
         };
 
         //Run once on main CPU main()

@@ -30,6 +30,9 @@ namespace pico {
 
             public:
                 explicit IbusPacket(std::vector<uint8_t> raw);
+
+                explicit IbusPacket(void* packetStart);
+
                 IbusPacket(
                         IbusDeviceEnum src,
                         IbusDeviceEnum dest,

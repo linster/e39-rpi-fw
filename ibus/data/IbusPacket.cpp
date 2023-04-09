@@ -9,6 +9,14 @@ namespace pico {
     namespace ibus {
         namespace data {
 
+            IbusPacket::IbusPacket(char *packetStart) {
+                //Super dangerous constructor that takes a pointer to a byte
+                //then increments it to get the length, dangerously reads that
+                //many bytes and makes a vector of ints.
+
+                //TODO
+            }
+
             IbusPacket::IbusPacket(std::vector<uint8_t> raw) {
                 sourceDevice = static_cast<IbusDeviceEnum>(raw[0]);
                 packetLength = raw[1]; //TODO this should never be bigger than raw.length()

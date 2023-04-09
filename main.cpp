@@ -18,15 +18,25 @@
 
 const float conversion_factor = 3.3f / (1 << 12);
 
-/*
-    A simple application to blink the LED light, and print out the temperature.
-*/
+
+void core1_entry() {
+    //The very first thing we get on startup wait and block for a pointer to the application container.
+    pico::ApplicationContainer* applicationContainer = (pico::ApplicationContainer*) multicore_fifo_pop_blocking();
+
+    //One-time setup on the second core.
+    applicationContainer->onCpu1Main();
+
+    sleep_ms(4000); //Don't start looping until the main cpu0 loop starts.
+
+    while(true) {
+        applicationContainer->onCpu1Loop();
+    }
+}
+
 int main() {
 
     printf("main() start");
     stdio_init_all();
-
-
 
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
@@ -37,8 +47,8 @@ int main() {
 
     adc_select_input(TEMP_ADC);
 
-
     auto* logger = new pico::logger::StdioPrintFLogger();
+
     logger->d("Wat", "Foo");
 
 
@@ -46,11 +56,19 @@ int main() {
 
     pico::ApplicationContainer* applicationContainer = factory->getApplicationContainer();
 
-    sleep_ms(1000);
-    applicationContainer->onMain();
+    multicore_launch_core1(core1_entry); //Launch the coprocessor and have it block.
+
+    applicationContainer->onMain(); //Run main one-time setup code.
+    //Wait for the CPU0 setup to complete.
+    sleep_ms(3000);
+
+    //Push the pointer to the application container to the second core. This unblocks the co-processor.
+    multicore_fifo_push_blocking((uint32_t)applicationContainer);
+
+    //Wait for the CPU1 setup to complete.
+    sleep_ms(3000);
 
     while (true) {
-        logger->d("Wat", "CLION FOO");
         gpio_put(LED_PIN, true);
         applicationContainer->onLoop();
         gpio_put(LED_PIN, false);

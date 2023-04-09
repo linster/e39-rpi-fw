@@ -19,6 +19,8 @@ namespace pico {
         logger->d("onMain", "Registered all observers to ObserverRegistry");
 
         pi4PowerSwitchManager->setPower(false);
+
+        dmaManager->cpu0setup();
     }
 
     void ApplicationContainer::onLoop() {
@@ -32,5 +34,15 @@ namespace pico {
         pi4PowerSwitchManager->setPower(true);
         sleep_ms(2000);
         pi4PowerSwitchManager->setPower(false);
+
+        dmaManager->onCpu0Loop();
+    }
+
+    void ApplicationContainer::onCpu1Main() {
+        dmaManager->cpu1Setup();
+    }
+
+    void ApplicationContainer::onCpu1Loop() {
+        dmaManager->onCpu1Loop();
     }
 } // pico
