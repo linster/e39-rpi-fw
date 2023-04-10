@@ -19,7 +19,7 @@ namespace pico {
 
                     virtual std::string getTag() = 0;
 
-                    virtual std::shared_ptr<dma::DmaManager> getDmaManager();
+                    virtual std::shared_ptr<dma::DmaManager> getDmaManager() = 0;
 
                     //Puts the packet on a queue somewhere for writing.
                     //or, just blocks till it's done writing?

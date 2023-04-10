@@ -41,6 +41,14 @@ namespace pico {
 
             }
 
+            void DmaManager::cpu0setup() {
+
+            }
+
+            void DmaManager::cpu1Setup() {
+                
+            }
+
             void DmaManager::onCpu0Loop() {
                 //We check the incoming queue without blocking on empty. If there's something in there,
                 //We dispatch it to the observer registry.
