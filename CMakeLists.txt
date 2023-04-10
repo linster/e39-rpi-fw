@@ -58,6 +58,8 @@ add_subdirectory(libs/nanopb_cpp)
 
 pico_sdk_init()
 
+
+
 add_executable(PicoTemplate
         libs/fmt
         libs/nanopb/pb.h
@@ -174,7 +176,16 @@ add_executable(PicoTemplate
         ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.cpp
         ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h
         ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.cpp
-        ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h ibus/dma/DmaManager.cpp ibus/dma/DmaManager.h)
+        ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h
+        ibus/dma/DmaManager.cpp
+        ibus/dma/DmaManager.h
+        ibus/dma/PioPins.h)
+
+#https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf -- page 36
+pico_generate_pio_header(PicoTemplate ${CMAKE_CURRENT_LIST_DIR}/ibus/dma/pio/FromCarProgram.pio)
+pico_generate_pio_header(PicoTemplate ${CMAKE_CURRENT_LIST_DIR}/ibus/dma/pio/ToCarProgram.pio)
+
+pico_add_extra_outputs(PicoTemplate)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate
@@ -183,6 +194,7 @@ target_link_libraries(PicoTemplate
 #        nanopb_cpp
         pico_stdlib
         hardware_adc
+        hardware_pio
         pico_multicore
         pico_stdlib
         pico_scanvideo_dpi)

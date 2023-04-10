@@ -12,6 +12,9 @@
 #include <pico.h>
 #include "../../ibus/data/IbusPacket.h"
 
+#include "pico/stdlib.h"
+#include "hardware/pio.h"
+
 namespace pico {
     namespace ibus {
         namespace dma {

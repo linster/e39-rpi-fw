@@ -31,6 +31,9 @@ namespace pico {
             }
 
             void DmaManager::setupFromCarPioProgram() {
+                //https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf
+                //page 35
+
 
             }
 
