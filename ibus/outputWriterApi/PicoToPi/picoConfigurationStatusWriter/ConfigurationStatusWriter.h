@@ -17,14 +17,17 @@ namespace pico {
 
                 private:
                     std::shared_ptr<logger::BaseLogger> logger;
+                    std::shared_ptr<dma::DmaManager> dmaManager;
                 public:
                     //TODO add a logger in here.
-                    explicit ConfigurationStatusWriter(
-                            std::shared_ptr<logger::BaseLogger> logger
+                    ConfigurationStatusWriter(
+                            std::shared_ptr<logger::BaseLogger> logger,
+                            std::shared_ptr<dma::DmaManager> dmaManager
                         );
                     void scheduleEmit(messages::ConfigMessage configMessage);
                 protected:
                     std::string getTag() override { return "ConfigurationStatusWriter"; };
+                    std::shared_ptr<dma::DmaManager> getDmaManager() override;
                 };
 
             } // pico

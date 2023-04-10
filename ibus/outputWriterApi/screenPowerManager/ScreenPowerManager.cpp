@@ -11,10 +11,12 @@ namespace pico {
 
                 ScreenPowerManager::ScreenPowerManager(
                         std::shared_ptr<pico::config::Configuration> defaultConfiguration,
-                        std::shared_ptr<logger::BaseLogger> baseLogger) {
+                        std::shared_ptr<logger::BaseLogger> baseLogger,
+                        std::shared_ptr<dma::DmaManager> dmaManager) {
 
                     this->logger = baseLogger;
                     this->defaultConfiguration = defaultConfiguration;
+                    this->dmaManager = dmaManager
 
                     aspectRatioIs16_9 = defaultConfiguration->getAspectRatio() == messages::ConfigMessage::AspectRatio::SixteenNine;
                     aspectRatioIs4_3 = defaultConfiguration->getAspectRatio() == messages::ConfigMessage::AspectRatio::FourThree;
@@ -28,6 +30,10 @@ namespace pico {
                 }
 
                 std::string ScreenPowerManager::getTag() { return "ScreenPowerManager" ; };
+
+                std::shared_ptr<dma::DmaManager> ScreenPowerManager::getDmaManager() {
+                    return dmaManager;
+                }
 
                 void ScreenPowerManager::setScreenPowerStateFromObservedIbusMessage(bool isOn) {
                     logger->d(getTag(), fmt::format("setScreenPowerStateFromObservedIbusMessage. Current state is: {:b}", this->isPowerOn));

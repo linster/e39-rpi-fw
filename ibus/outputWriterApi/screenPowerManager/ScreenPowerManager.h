@@ -19,6 +19,7 @@ namespace pico {
                 private:
                     std::shared_ptr<logger::BaseLogger> logger;
                     std::shared_ptr<pico::config::Configuration> defaultConfiguration;
+                    std::shared_ptr<dma::DmaManager> dmaManager;
                     //https://github.com/piersholt/wilhelm-docs/blob/master/bmbt/4f.md
                     bool aspectRatioIs4_3;
                     bool aspectRatioIs16_9;
@@ -32,7 +33,8 @@ namespace pico {
                 public:
                     ScreenPowerManager(
                             std::shared_ptr<pico::config::Configuration> defaultConfiguration,
-                            std::shared_ptr<logger::BaseLogger> baseLogger
+                            std::shared_ptr<logger::BaseLogger> baseLogger,
+                            std::shared_ptr<dma::DmaManager> dmaManager
                             );
 
                     std::string getTag() override;
@@ -41,6 +43,9 @@ namespace pico {
                     void sendScreenPowerMessage(bool isOn);
 
                     void sendScreenInitializationMessage();
+
+                protected:
+                    std::shared_ptr<dma::DmaManager> getDmaManager() override;
                 };
 
             } // pico

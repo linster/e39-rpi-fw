@@ -14,7 +14,7 @@ namespace pico {
                 }
 
                 void BaseOutputWriter::schedulePacketForWrite(pico::ibus::data::IbusPacket ibusPacket) {
-                    //LOL wat
+                    getDmaManager()->cpu0scheduleOutgoingMessage(ibusPacket);
                 }
             } // pico
         } // ibus

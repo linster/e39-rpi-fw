@@ -8,8 +8,15 @@ namespace pico {
     namespace ibus {
         namespace output {
             namespace writer {
-                HeartbeatResponseWriter::HeartbeatResponseWriter(std::shared_ptr<logger::BaseLogger> looger) {
-                    this->logger = looger;
+                HeartbeatResponseWriter::HeartbeatResponseWriter(
+                        std::shared_ptr<logger::BaseLogger> logger,
+                        std::shared_ptr<dma::DmaManager> dmaManager) {
+                    this->logger = logger;
+                    this->dmaManager = dmaManager;
+                }
+
+                std::shared_ptr<dma::DmaManager> HeartbeatResponseWriter::getDmaManager() {
+                    return dmaManager;
                 }
 
                 void HeartbeatResponseWriter::sendHeartbeatResponse() {

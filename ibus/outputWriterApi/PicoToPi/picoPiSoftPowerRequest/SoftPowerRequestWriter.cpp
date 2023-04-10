@@ -9,8 +9,15 @@ namespace pico {
         namespace output {
             namespace writer {
 
-                SoftPowerRequestWriter::SoftPowerRequestWriter(std::shared_ptr<logger::BaseLogger> logger) {
+                SoftPowerRequestWriter::SoftPowerRequestWriter(
+                        std::shared_ptr<logger::BaseLogger> logger,
+                        std::shared_ptr<dma::DmaManager> dmaManager) {
                     this->logger = logger;
+                    this->dmaManager = dmaManager;
+                }
+
+                std::shared_ptr<dma::DmaManager> SoftPowerRequestWriter::getDmaManager() {
+                    return this->dmaManager;
                 }
 
                 void SoftPowerRequestWriter::requestRpiRestart() {
@@ -26,6 +33,8 @@ namespace pico {
                         .messageType = messages::PicoToPiMessage::MessageType::PiSoftPowerRestartX
                     });
                 }
+
+
 
             } // pico
         } // ibus

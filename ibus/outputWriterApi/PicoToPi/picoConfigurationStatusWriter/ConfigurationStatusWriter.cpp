@@ -10,9 +10,15 @@ namespace pico {
             namespace writer {
 
                 ConfigurationStatusWriter::ConfigurationStatusWriter(
-                        std::shared_ptr<logger::BaseLogger> logger
+                        std::shared_ptr<logger::BaseLogger> logger,
+                        std::shared_ptr<dma::DmaManager> dmaManager
                 ) {
                     this->logger = logger;
+                    this->dmaManager = dmaManager;
+                }
+
+                std::shared_ptr<dma::DmaManager> ConfigurationStatusWriter::getDmaManager() {
+                    return dmaManager;
                 }
 
                 void ConfigurationStatusWriter::scheduleEmit(messages::ConfigMessage configMessage) {

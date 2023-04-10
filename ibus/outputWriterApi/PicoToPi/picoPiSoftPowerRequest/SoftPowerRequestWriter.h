@@ -15,15 +15,18 @@ namespace pico {
                 class SoftPowerRequestWriter : BaseOutputWriter {
                 private:
                     std::shared_ptr<logger::BaseLogger> logger;
+                    std::shared_ptr<dma::DmaManager> dmaManager;
                 public:
                     SoftPowerRequestWriter(
-                            std::shared_ptr<logger::BaseLogger> logger
+                            std::shared_ptr<logger::BaseLogger> logger,
+                            std::shared_ptr<dma::DmaManager> dmaManager
                     );
 
                     void requestRpiRestart();
                     void requestRpiRestartX();
                 protected:
                     std::string getTag() override { return "SoftPowerRequestWriter"; };
+                    std::shared_ptr<dma::DmaManager> getDmaManager() override
                 };
 
             } // pico

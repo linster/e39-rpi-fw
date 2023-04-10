@@ -7,7 +7,15 @@ namespace pico {
     namespace ibus {
         namespace output {
             namespace writer {
-                IbusLoggerOutput::IbusLoggerOutput() {}
+                IbusLoggerOutput::IbusLoggerOutput(
+                        std::shared_ptr<dma::DmaManager> dmaManager
+                ) {
+                    this->dmaManager = dmaManager;
+                }
+
+                std::shared_ptr<dma::DmaManager> IbusLoggerOutput::getDmaManager() {
+                    return dmaManager;
+                }
 
                 void IbusLoggerOutput::print(std::string message) {
                     if (splitLogMessagesAtTruncationPoint) {

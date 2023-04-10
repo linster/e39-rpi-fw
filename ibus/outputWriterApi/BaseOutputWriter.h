@@ -7,7 +7,7 @@
 
 #include "../data/IbusPacket.h"
 #include "../../proto_cpp/PicoToPi.h"
-
+#include "../../ibus/dma/DmaManager.h"
 namespace pico {
     namespace ibus {
         namespace output {
@@ -18,6 +18,8 @@ namespace pico {
                 protected:
 
                     virtual std::string getTag() = 0;
+
+                    virtual std::shared_ptr<dma::DmaManager> getDmaManager();
 
                     //Puts the packet on a queue somewhere for writing.
                     //or, just blocks till it's done writing?
