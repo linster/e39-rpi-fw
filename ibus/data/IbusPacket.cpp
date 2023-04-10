@@ -9,7 +9,7 @@ namespace pico {
     namespace ibus {
         namespace data {
 
-            IbusPacket::IbusPacket(char *packetStart) {
+            IbusPacket::IbusPacket(void *packetStart) {
                 //Super dangerous constructor that takes a pointer to a byte
                 //then increments it to get the length, dangerously reads that
                 //many bytes and makes a vector of ints.

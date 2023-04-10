@@ -10,13 +10,17 @@ namespace pico {
         void PimoroniFactory::initializeAllSmartPointers() {
             this->logger = std::make_shared<logger::StdioPrintFLogger>();
 //            this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::MockPi4PowerSwitchManager>(this->logger);
+
+            this->dmaManager = std::make_shared<ibus::dma::DmaManager>(logger, observerRegistry);
+
+
             this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::GpioPi4PowerSwitchManager>(this->logger);
             this->videoSwitch = std::make_shared<hardware::videoSwitch::mock::MockVideoSwitch>(this->logger);
 
             std::shared_ptr<config::FlashConfigurationStore> flashConfigurationStore = std::make_shared<config::FlashConfigurationStore>();
             std::shared_ptr<ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter =
                     std::make_shared<ibus::output::writer::ConfigurationStatusWriter>(
-                            logger);
+                            logger, dmaManager);
             std::shared_ptr<config::IBusConfigMessageStore> iBusConfigMessageStore =
                     std::make_shared<config::IBusConfigMessageStore>(
                             logger,
@@ -47,6 +51,8 @@ namespace pico {
             baseObservers->push_back(
                     std::static_pointer_cast<ibus::observers::BaseObserver>(mockIncomingIBusObserver)
             );
+
+
         }
 
         PimoroniFactory::PimoroniFactory() {
@@ -62,7 +68,8 @@ namespace pico {
                     scanProgramManager,
                     scanProgramSwapper,
                     observerRegistry,
-                    baseObservers
+                    baseObservers,
+                    dmaManager
             );
         }
 

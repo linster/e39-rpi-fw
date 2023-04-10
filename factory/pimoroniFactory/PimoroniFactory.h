@@ -34,6 +34,8 @@ namespace pico {
 
             std::shared_ptr<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>> baseObservers;
 
+            std::shared_ptr<ibus::dma::DmaManager> dmaManager;
+
             void initializeAllSmartPointers();
 
         public:

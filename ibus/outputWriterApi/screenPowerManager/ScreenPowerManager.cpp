@@ -16,7 +16,7 @@ namespace pico {
 
                     this->logger = baseLogger;
                     this->defaultConfiguration = defaultConfiguration;
-                    this->dmaManager = dmaManager
+                    this->dmaManager = dmaManager;
 
                     aspectRatioIs16_9 = defaultConfiguration->getAspectRatio() == messages::ConfigMessage::AspectRatio::SixteenNine;
                     aspectRatioIs4_3 = defaultConfiguration->getAspectRatio() == messages::ConfigMessage::AspectRatio::FourThree;

@@ -26,7 +26,7 @@ namespace pico {
                     void requestRpiRestartX();
                 protected:
                     std::string getTag() override { return "SoftPowerRequestWriter"; };
-                    std::shared_ptr<dma::DmaManager> getDmaManager() override
+                    std::shared_ptr<dma::DmaManager> getDmaManager() override;
                 };
 
             } // pico

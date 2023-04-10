@@ -28,10 +28,6 @@ namespace pico {
 
                 std::shared_ptr<logger::BaseLogger> logger;
                 std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry;
-                DmaManager(
-                        std::shared_ptr<logger::BaseLogger> logger,
-                        std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry
-                );
 
                 //https://www.raspberrypi.com/documentation/pico-sdk/high_level.html#queue
 
@@ -65,6 +61,12 @@ namespace pico {
                 //dispatch it to the Observer registry.
                 void onCpu0IncomingPacket(std::unique_ptr<data::IbusPacket> packet);
             public:
+
+                DmaManager(
+                        std::shared_ptr<logger::BaseLogger> logger,
+                        std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry
+                );
+
                 //Called only by ApplicationContainer
                 void cpu0setup();
                 void onCpu0Loop();
