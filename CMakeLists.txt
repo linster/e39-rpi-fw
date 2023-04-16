@@ -58,9 +58,14 @@ add_subdirectory(libs/nanopb_cpp)
 
 pico_sdk_init()
 
+#TODO maybe I need to splitup add_executable?? add_executable, then generate pio header, then target_sources?
+
+add_executable(PicoTemplate ibus/dma/Packetizer.cpp ibus/dma/Packetizer.h)
 
 
-add_executable(PicoTemplate
+
+target_sources(
+        PicoTemplate PUBLIC
         libs/fmt
         libs/nanopb/pb.h
         libs/nanopb/pb_common.h
@@ -181,11 +186,10 @@ add_executable(PicoTemplate
         ibus/dma/DmaManager.h
         ibus/dma/PioPins.h)
 
-#https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf -- page 36
-pico_generate_pio_header(PicoTemplate ${CMAKE_CURRENT_LIST_DIR}/ibus/dma/pio/FromCarProgram.pio)
-pico_generate_pio_header(PicoTemplate ${CMAKE_CURRENT_LIST_DIR}/ibus/dma/pio/ToCarProgram.pio)
 
-pico_add_extra_outputs(PicoTemplate)
+#https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf -- page 36
+pico_generate_pio_header(PicoTemplate ${CMAKE_SOURCE_DIR}/ibus/dma/pio/FromCarProgram.pio)
+pico_generate_pio_header(PicoTemplate ${CMAKE_CURRENT_LIST_DIR}/ibus/dma/pio/ToCarProgram.pio)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate

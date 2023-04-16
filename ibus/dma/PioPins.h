@@ -6,18 +6,26 @@
 #define PICOTEMPLATE_PIOPINS_H
 
 //These are the pins to the Lin Transceiver
-#define LIN_TRANS_RX        27
-#define LIN_TRANS_TX        29
+//This is "Uart0"
+//TODO rewire whateve GPIO is already on these pins to elsewhere.
+#define UART0_LIN_TRANS_RX        22
+#define UART0_LIN_TRANS_TX        21
 #define LIN_ChipSelect      31
 #define LIN_Fault           32
 
-// UART 1 is the rx/tx link from PICO <-> PicoProbe with Debug logs.
+// UART 1 is the rx/tx link from PICO <-> PicoProbe with raw IBUS output.
 // It's not used in the PIO programs.
-#define UART1_RX
-#define UART2_TX
+//We lose two bits out of the green channel.
+//TODO BE CAREFUL WHEN SETTING UP VGA.
+//https://datasheets.raspberrypi.com/pico/Pico-R3-A4-Pinout.pdf
+// This is "UART 1"
+#define UART1_PICOPROBE_RX  12
+#define UART1_PICOPROBE_TX  11
 
 // UART 2 is the rx/tx link from the PICO <-> PI with Raw IBUS data.
-#define UART2_RX
-#define UART2_TX
+//We won't be defining UART 2, because on the production board, we'll take those RX/TX lines
+//and have Rpi4 GPIO read them. That leaves the Pico USB port as a convenient debug log viewer for the user.
+//#define UART_PICO_PI_RX
+//#define UART2_PICO_PI_TX
 
 #endif //PICOTEMPLATE_PIOPINS_H

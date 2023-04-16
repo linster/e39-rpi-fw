@@ -5,6 +5,7 @@
 #ifndef PICOTEMPLATE_DMAMANAGER_H
 #define PICOTEMPLATE_DMAMANAGER_H
 
+#include <cstring>
 #include <memory>
 #include "../../logging/BaseLogger.h"
 #include "../../ibus/observerRegistry/ObserverRegistry.h"
@@ -14,6 +15,15 @@
 
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
+#include "hardware/dma.h"
+
+#include "FromCarProgram.pio.h"
+#include "ToCarProgram.pio.h"
+
+#include "PioPins.h"
+#include "Packetizer.h"
+
+#include "fmt/format.h"
 
 namespace pico {
     namespace ibus {
@@ -21,9 +31,9 @@ namespace pico {
 
             class DmaManager {
 
+                //This class is mis-named because we're not actually doing DMA. But someday, I hope to.
                 //https://github.com/rossihwang/pico_dma_uart/blob/main/dma_uart.cpp
 
-                //https://hackspace.raspberrypi.com/articles/what-is-programmable-i-o-on-raspberry-pi-pico
             private:
 
                 std::shared_ptr<logger::BaseLogger> logger;
@@ -33,7 +43,7 @@ namespace pico {
 
                 //A queue we use for CPU0 to offload
                 //message prep and blocking to CPU1.
-                queue_t outgoingQ; //Outgoing from pico.
+                static queue_t outgoingQ; //Packets from Pico
 
                 //Cpu1 will get interrupted often by
                 //Incoming messages from IBUS. We allow
@@ -41,25 +51,47 @@ namespace pico {
                 //there's processing time, we peel off
                 //the incomingQ onto CPU0, for all the
                 //event handlers to run.
-                queue_t incomingQ; //Incoming into pico.
+                static queue_t incomingQ;   //Packets into Pico
 
 
-                void setupFromCarPioProgram();
-                void setupToCarPioProgram();
+                static queue_t fromProbeQ; //Raw bytes
+                static Packetizer fromProbeQPacketizer;
+                static queue_t fromCarQ;   //Raw Bytes
+                static Packetizer fromCarQPacketizer;
 
-                void setupIncomingDmaInterruptServiceRoutine();
+                static queue_t toProbeQ;    //Packets
+                static queue_t toCarQ;      //Packets
 
-                void cpu1ScheduleOutgoingMessage();
 
-                void shuffleOutgoingMessageToCpu1(data::IbusPacket packet); //Called from CPU0
-                void shuffleIncomingMessageToCpu0(data::IbusPacket packet); //Called from CPU1.
+                inline static void on_uart0_rx();
+                inline static void on_uart1_rx();
 
-                //Runs on Cpu1. Called when the interrupt service routine on cpu1 gets an Ibus packet.
-                void onCpu1IncomingPacket(std::unique_ptr<data::IbusPacket> packet);
+                void flushFromCarQ();
+                void flushFromProbeQ();
+                void flushOutgoingQ();
+
+                void fanoutPacketsFromQ_to2Qs_nonBlocking(
+                        queue_t* moveFrom,
+                        queue_t* to0,
+                        queue_t* to1,
+                        std::string fromName,
+                        std::string to0Name,
+                        std::string to1Name
+                );
+
+                void flushToProbeQ();
+                void flushToCarQ();
+                void writeOutgoingQ_toUart(
+                        queue_t* movePacketFrom,
+                        uart_inst_t* uart,
+                        std::string fromName,
+                        std::string uartName
+                        );
 
                 //Runs on Cpu0. Called when cpu0 gets a packet out of the inter-processor queue and needs to
                 //dispatch it to the Observer registry.
                 void onCpu0IncomingPacket(std::unique_ptr<data::IbusPacket> packet);
+
             public:
 
                 DmaManager(

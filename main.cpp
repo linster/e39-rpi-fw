@@ -33,6 +33,8 @@ void core1_entry() {
     }
 }
 
+
+
 int main() {
 
     printf("main() start");

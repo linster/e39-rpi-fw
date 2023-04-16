@@ -15,38 +15,145 @@ namespace pico {
                 this->logger = logger;
                 this->observerRegistry = observerRegistry;
 
-                queue_init_with_spinlock(
-                        &this->incomingQ,
+                queue_init(
+                        &incomingQ,
                         255, //Assume each packet is 255 bytes long. (Max_length for the rawBytes)
-                        4,
-                        1
+                        4
                 );
 
-                queue_init_with_spinlock(
-                        &this->outgoingQ,
+                queue_init(
+                        &outgoingQ,
                         255,
-                        4,
-                        2
+                        4
                 );
+
+                queue_init(
+                        &fromCarQ,
+                        sizeof(uint8_t),
+                        8 * 255
+                );
+
+                queue_init(
+                        &fromProbeQ,
+                        sizeof(uint8_t),
+                        8 * 255
+                        );
+
+                queue_init(
+                        &toCarQ,
+                        sizeof(uint8_t),
+                        8 * 255
+                        );
+                queue_init(
+                        &toProbeQ,
+                        sizeof(uint8_t),
+                        8 * 255
+                        );
+
+                fromCarQPacketizer = Packetizer();
+                fromProbeQPacketizer = Packetizer();
             }
 
-            void DmaManager::setupFromCarPioProgram() {
-                //https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf
-                //page 35
 
+            //LIN Transeiver
+            void DmaManager::on_uart0_rx() {
+                //https://github.com/raspberrypi/pico-examples/blob/master/uart/uart_advanced/uart_advanced.c
 
+                //If is readable, do some reads
+                while (uart_is_readable(uart1)) {
+                    fromCarQPacketizer.addByte(uart_getc(uart1));
+                    if (fromCarQPacketizer.isPacketComplete()) {
+                        break;
+                    }
+                }
+
+                if (fromCarQPacketizer.isPacketComplete()) {
+                    //We now have a complete packet.
+                    void *paddedPacketBuffer = std::calloc(255, 1);
+                    std::memcpy(
+                            paddedPacketBuffer,
+                            (void *) fromCarQPacketizer.getPacketBytes().data(),
+                            fromCarQPacketizer.getPacketBytes().size()
+                    );
+                    queue_add_blocking(&fromCarQ, paddedPacketBuffer);
+                    free(paddedPacketBuffer);
+
+                    fromCarQPacketizer.recycle();
+                }
             }
 
-            void DmaManager::setupToCarPioProgram() {
+            //PicoProbe/Application Processor
+            void DmaManager::on_uart1_rx() {
 
+                //If is readable, do some reads
+                while (uart_is_readable(uart1)) {
+                    fromProbeQPacketizer.addByte(uart_getc(uart1));
+                    if (fromProbeQPacketizer.isPacketComplete()) {
+                        break;
+                    }
+                }
+
+                if (fromProbeQPacketizer.isPacketComplete()) {
+                    //We now have a complete packet.
+                    void *paddedPacketBuffer = std::calloc(255, 1);
+                    std::memcpy(
+                            paddedPacketBuffer,
+                            (void *) fromProbeQPacketizer.getPacketBytes().data(),
+                            fromProbeQPacketizer.getPacketBytes().size()
+                    );
+                    queue_add_blocking(&fromProbeQ, paddedPacketBuffer);
+                    free(paddedPacketBuffer);
+
+                    fromProbeQPacketizer.recycle();
+                }
             }
 
             void DmaManager::cpu0setup() {
 
+                uart_init(uart0, 9600);
+                uart_init(uart1, 9600);
+
+                uart_set_hw_flow(uart0, false, false);
+                uart_set_hw_flow(uart1, false, false);
+
+                uart_set_format(uart0, 8, 1, UART_PARITY_EVEN); //8E1
+                uart_set_format(uart1, 8, 1, UART_PARITY_EVEN); //8E1
+
+                gpio_set_function(UART0_LIN_TRANS_RX, GPIO_FUNC_UART);
+                gpio_set_function(UART0_LIN_TRANS_TX, GPIO_FUNC_UART);
+
+                gpio_set_function(UART1_PICOPROBE_RX, GPIO_FUNC_UART);
+                gpio_set_function(UART1_PICOPROBE_TX, GPIO_FUNC_UART);
+
+                gpio_set_dir(LIN_ChipSelect, true);
+                gpio_pull_down(LIN_ChipSelect); //Should already be pulled down in the chip.
+
+                //TODO do we want an IRQ when the fault line on the lin transceiver goes high?
+                //TODO what should we do then? Maybe add a method to nuke everything and re-setup DMAManager?
             }
 
             void DmaManager::cpu1Setup() {
-                
+                //LIN Transceiver RX. Need to shuffle those bytes to PICOPROBE TX, and also collec them
+                //in a buffer locally.
+                irq_add_shared_handler(
+                        UART0_IRQ,
+                        on_uart0_rx,
+                        PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY
+                        );
+                irq_set_enabled(UART0_IRQ, true);
+                uart_set_irq_enables(uart0, true, false);
+
+                irq_add_shared_handler(
+                        UART1_IRQ,
+                        on_uart1_rx,
+                        PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY
+                        );
+                irq_set_enabled(UART1_IRQ, true);
+                uart_set_irq_enables(uart1, true, false);
+
+
+                //Now that we're done the setup, turn on the lin transeiver
+                gpio_put(LIN_ChipSelect, true);
             }
 
             void DmaManager::onCpu0Loop() {
@@ -60,39 +167,140 @@ namespace pico {
                     //Heap-allocate a new packet from the buffer.
                     std::unique_ptr<data::IbusPacket> newPacket = std::make_unique<data::IbusPacket>(new data::IbusPacket(incomingPacketBuffer));
                     onCpu0IncomingPacket(std::move(newPacket));
-                    free(incomingPacketBuffer);
                 }
+                free(incomingPacketBuffer);
             }
 
             void DmaManager::onCpu1Loop() {
-                //We check the outgoing queue without blocking on empty. If there's something,
-                //Try pushing it into pico_sm_put_blocking into the ToCarProgram.pio.
+                flushOutgoingQ();
+                flushFromCarQ();
+                flushFromProbeQ();
+
+                flushToProbeQ();
+                flushToCarQ();
             }
 
+            void DmaManager::flushFromProbeQ() {
+                fanoutPacketsFromQ_to2Qs_nonBlocking(
+                        &fromProbeQ,
+                        &toCarQ,
+                        &incomingQ,
+                        "fromProbeQ",
+                        "toCarQ",
+                        "incomingQ"
+                );
+            }
+
+            void DmaManager::flushFromCarQ() {
+                fanoutPacketsFromQ_to2Qs_nonBlocking(
+                        &fromCarQ,
+                        &toProbeQ,
+                        &incomingQ,
+                        "fromCarQ",
+                        "toProbeQ",
+                        "incomingQ"
+                );
+            }
+
+            void DmaManager::flushOutgoingQ() {
+                fanoutPacketsFromQ_to2Qs_nonBlocking(
+                        &outgoingQ,
+                        &toProbeQ,
+                        &toCarQ,
+                        "outGoingQ",
+                        "toProbeQ",
+                        "toCarQ"
+                        );
+            };
+
+            //TODO someday explore templates, or passing in a vector of stuff.
+            void DmaManager::fanoutPacketsFromQ_to2Qs_nonBlocking(
+                    queue_t* moveFrom,
+                    queue_t* to0,
+                    queue_t* to1,
+                    std::string fromName,
+                    std::string to0Name,
+                    std::string to1Name
+                    ) {
+
+                assert(moveFrom->element_size == 255);
+                assert(to0->element_size == 255);
+                assert(to1->element_size == 255);
+
+
+                void* fromPacket = std::calloc(255, 1);
+
+                bool packetRemoved = queue_try_remove(moveFrom, &fromPacket);
+                if (packetRemoved) {
+                    logger->d("DmaManager", fmt::format("Removed packet from %s. About to move to %s and %s", fromName, to0Name, to1Name));
+                } else {
+                    logger->d("DmaManager", fmt::format("No packet to remove from queue %s", fromName));
+                }
+
+                //Copy the packet to0
+                queue_add_blocking(to0, fromPacket);
+                logger->d("DmaManager", fmt::format("Copied packet from %s into %s. Remain to copy into %s", fromName, to0Name, to1Name));
+                //Copy the packet to1
+                queue_add_blocking(to1, fromPacket);
+                logger->d("DmaManager", fmt::format("Copied packet from %s into %s and %s. Done transfer.", fromName, to0Name, to1Name));
+                free(fromPacket);
+            }
+
+            void DmaManager::flushToCarQ() {
+                writeOutgoingQ_toUart(
+                        &toCarQ,
+                        uart0,
+                        "toCarQ",
+                        "uart0 (LIN Transceiver)"
+                        );
+            }
+
+            void DmaManager::flushToProbeQ() {
+                writeOutgoingQ_toUart(
+                        &toProbeQ,
+                        uart1,
+                        "toProbeQ",
+                        "uart1 (PicoProbe / Rpi)"
+                );
+            }
+
+            void DmaManager::writeOutgoingQ_toUart(
+                    queue_t *movePacketFrom,
+                    uart_inst_t *uart,
+                    std::string fromName,
+                    std::string uartName
+            ) {
+
+                //take the 255-byte buffer and parse it into a packet
+                //then, if it's valid,
+                //then do a uart send_blocking for len == packet.rawBytes().length
+                //that way we don't clog the bus sending 0's.
+
+                //TODO
+            }
+
+            //TODO figure out how to ignore the static warning. We want the caller of this method to have a reference
+            //to DMAManager because that means the constructor will have run.
             void DmaManager::cpu0scheduleOutgoingMessage(data::IbusPacket packet) {
                 //Do a blocking write into the outgoing queue.
                 //The outgoing queue will feed the ToCar and FromCar programs.
                 //There won't be a duplicated event, because the interrupt service routine
-                //TODO we need to pad the pointers returned by data() so that we're always
-                //TODO inserting 255-byte blocks, because queue_add_blocking will always
-                //TODO use the underlying Q's [size] parameter.
-                //TODO otherwise, we'll overrun the pointer
-                queue_add_blocking(&outgoingQ, (void*) packet.getRawPacket().data());
-            }
 
-            void DmaManager::onCpu1IncomingPacket(std::unique_ptr<data::IbusPacket> packet) {
-                //An incoming packet came in from an interrupt service routine (called by DMA)
-                //We need to put this into the incomingQ.
-                //TODO we need to pad the pointers returned by data() so that we're always
-                //TODO inserting 255-byte blocks, because queue_add_blocking will always
-                //TODO use the underlying Q's [size] parameter.
-                //TODO otherwise, we'll overrun the pointer
-                queue_add_blocking(&incomingQ, (void*)packet->getRawPacket().data());
+                //we need to pad the pointers returned by data() so that we're always
+                //inserting 255-byte blocks, because queue_add_blocking will always
+                //use the underlying Q's [size] parameter.
+                //otherwise, we'll overrun the pointer
+                void* paddedPacketBuffer = std::calloc(255, 1);
+                std::memcpy(paddedPacketBuffer, (void*) packet.getRawPacket().data(), packet.getRawPacket().size());
+                queue_add_blocking(&outgoingQ, paddedPacketBuffer); //Q copies the buffer, so we can free it now.
+                free(paddedPacketBuffer);
             }
 
             void DmaManager::onCpu0IncomingPacket(std::unique_ptr<data::IbusPacket> packet) {
+                //A packet came into the pico for processing.
                 observerRegistry->dispatchMessageToAllObservers(*packet);
             }
+
         } // pico
     } // ibus
 } // dma
