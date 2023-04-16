@@ -7,7 +7,9 @@
 
 #include <vector>
 #include <cstdint>
-
+#include <memory>
+#include "../../logging/BaseLogger.h"
+#include "fmt/format.h"
 namespace pico {
     namespace ibus {
         namespace dma {
@@ -16,17 +18,28 @@ namespace pico {
 
             private:
                 std::vector<uint8_t> packetBytes;
-                bool calculateInProgressCrcValid();
+
+                uint8_t position;
+
+
+                //Packet bytes
+                uint8_t sourceId; //First byte of packet
+                uint8_t expectedLength; //Second byte of packet
+                uint8_t destinationId; //Third byte of packet.
+                //Data is some unknown byte.
+                uint8_t expectedChecksum; //Happens at position == (length + 1)
+
+                uint8_t currentChecksum;
+
+                bool packetOk;
             public:
 
                 Packetizer();
-                ~Packetizer();
 
                 void addBytes(std::vector<uint8_t> bytes);
                 void addByte(uint8_t byte);
 
                 bool isPacketComplete();
-
                 std::vector<uint8_t> getPacketBytes();
 
                 //Don't actually clear everything out. From start to end of the buffer,
@@ -40,6 +53,10 @@ namespace pico {
                 //flow again. (Call from a consumer of a B->P queue, and count up how many invalid ibus packets we
                 //got out of this).
                 void reset();
+
+                void writeState(
+                        std::string tag,
+                        std::shared_ptr<logger::BaseLogger> logger);
             };
 
         } // pico

@@ -18,13 +18,13 @@ namespace pico {
                 queue_init(
                         &incomingQ,
                         255, //Assume each packet is 255 bytes long. (Max_length for the rawBytes)
-                        4
+                        8
                 );
 
                 queue_init(
                         &outgoingQ,
                         255,
-                        4
+                        8
                 );
 
                 queue_init(
@@ -57,54 +57,68 @@ namespace pico {
 
             //LIN Transeiver
             void DmaManager::on_uart0_rx() {
-                //https://github.com/raspberrypi/pico-examples/blob/master/uart/uart_advanced/uart_advanced.c
-
-                //If is readable, do some reads
-                while (uart_is_readable(uart1)) {
-                    fromCarQPacketizer.addByte(uart_getc(uart1));
-                    if (fromCarQPacketizer.isPacketComplete()) {
-                        break;
-                    }
-                }
-
-                if (fromCarQPacketizer.isPacketComplete()) {
-                    //We now have a complete packet.
-                    void *paddedPacketBuffer = std::calloc(255, 1);
-                    std::memcpy(
-                            paddedPacketBuffer,
-                            (void *) fromCarQPacketizer.getPacketBytes().data(),
-                            fromCarQPacketizer.getPacketBytes().size()
-                    );
-                    queue_add_blocking(&fromCarQ, paddedPacketBuffer);
-                    free(paddedPacketBuffer);
-
-                    fromCarQPacketizer.recycle();
-                }
+                handleRxInterruptServiceRoutine(
+                        uart0,
+                        "uart0",
+                        &fromCarQ,
+                        "fromCarQ",
+                        &fromCarQPacketizer
+                );
             }
 
             //PicoProbe/Application Processor
             void DmaManager::on_uart1_rx() {
+                handleRxInterruptServiceRoutine(
+                        uart1,
+                        "uart1",
+                        &fromProbeQ,
+                        "fromProbeQ",
+                        &fromProbeQPacketizer
+                );
+            }
 
-                //If is readable, do some reads
-                while (uart_is_readable(uart1)) {
-                    fromProbeQPacketizer.addByte(uart_getc(uart1));
-                    if (fromProbeQPacketizer.isPacketComplete()) {
-                        break;
+            void DmaManager::handleRxInterruptServiceRoutine(
+                    uart_inst_t *uart,
+                    std::string uartName,
+                    queue_t *toQ,
+                    std::string toQName,
+                    Packetizer* packetizer
+            ) {
+                //https://github.com/raspberrypi/pico-examples/blob/master/uart/uart_advanced/uart_advanced.c
+                while (uart_is_readable(uart)) {
+                    packetizer->addByte(uart_getc(uart));
+                    if (packetizer->isPacketComplete()) {
+                        //Shuffle the packet out.
+                        logger->d("DmaManager", fmt::format("Got complete packet from uart %s", uartName));
+
+                        void *paddedPacketBuffer = std::calloc(255, 1);
+                        std::memcpy(
+                                paddedPacketBuffer,
+                                (void *) packetizer->getPacketBytes().data(),
+                                packetizer->getPacketBytes().size()
+                        );
+                        logger->d("DmaManager", fmt::format("(uart: %s) Sending Padded buffer to Q: %s", uartName, toQName));
+                        queue_add_blocking(toQ, paddedPacketBuffer);
+                        free(paddedPacketBuffer);
+
+                        packetizer->recycle(); //Shuffle what's left in the packetizer to the front.
+
+                        if (packetizer->isPacketComplete()) {
+                            //Check just in case we have a complete packet so we're not waiting on one more byte to come in
+                            //Before sending out a packet.
+                            logger->d("DmaManager", fmt::format("After recycle for packetizer for uart %s, we have a complete packet.", uartName));
+                            void *paddedPacketBufferAfterRecycle = std::calloc(255, 1);
+                            std::memcpy(
+                                    paddedPacketBufferAfterRecycle,
+                                    (void *) packetizer->getPacketBytes().data(),
+                                    packetizer->getPacketBytes().size()
+                            );
+                            logger->d("DmaManager", fmt::format("(uart: %s) Sending Padded buffer to Q: %s", uartName, toQName));
+                            queue_add_blocking(toQ, paddedPacketBufferAfterRecycle);
+
+                            packetizer->recycle();
+                        }
                     }
-                }
-
-                if (fromProbeQPacketizer.isPacketComplete()) {
-                    //We now have a complete packet.
-                    void *paddedPacketBuffer = std::calloc(255, 1);
-                    std::memcpy(
-                            paddedPacketBuffer,
-                            (void *) fromProbeQPacketizer.getPacketBytes().data(),
-                            fromProbeQPacketizer.getPacketBytes().size()
-                    );
-                    queue_add_blocking(&fromProbeQ, paddedPacketBuffer);
-                    free(paddedPacketBuffer);
-
-                    fromProbeQPacketizer.recycle();
                 }
             }
 
@@ -227,7 +241,6 @@ namespace pico {
                 assert(to0->element_size == 255);
                 assert(to1->element_size == 255);
 
-
                 void* fromPacket = std::calloc(255, 1);
 
                 bool packetRemoved = queue_try_remove(moveFrom, &fromPacket);
@@ -270,13 +283,26 @@ namespace pico {
                     std::string fromName,
                     std::string uartName
             ) {
-
                 //take the 255-byte buffer and parse it into a packet
                 //then, if it's valid,
                 //then do a uart send_blocking for len == packet.rawBytes().length
                 //that way we don't clog the bus sending 0's.
 
-                //TODO
+                void* packetBuffer = std::calloc(255, 1);
+
+                if (queue_try_remove(movePacketFrom, packetBuffer)) {
+                    logger->d("DmaManager", fmt::format("We have a packet from %s to write to uart %s", fromName, uartName));
+                    auto* packet = new data::IbusPacket(packetBuffer);
+                    if (packet->isPacketValid()) {
+                        uart_write_blocking(uart, packet->getRawPacket().data(), packet->getRawPacket().size());
+                        logger->d("DmaManager",
+                                  fmt::format("Wrote packet from %s to write to uart %s", fromName, uartName));
+                    } else {
+                        logger->wtf("DmaManager", "Trying to write out an invalid packet??");
+                        logger->wtf("DmaManager", fmt::format("Invalid Packet is %s", packet->toString()));
+                    }
+                }
+                free(packetBuffer);
             }
 
             //TODO figure out how to ignore the static warning. We want the caller of this method to have a reference

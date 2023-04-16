@@ -36,7 +36,7 @@ namespace pico {
 
             private:
 
-                std::shared_ptr<logger::BaseLogger> logger;
+                static std::shared_ptr<logger::BaseLogger> logger;
                 std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry;
 
                 //https://www.raspberrypi.com/documentation/pico-sdk/high_level.html#queue
@@ -63,8 +63,17 @@ namespace pico {
                 static queue_t toCarQ;      //Packets
 
 
+
                 inline static void on_uart0_rx();
                 inline static void on_uart1_rx();
+
+                inline static void handleRxInterruptServiceRoutine(
+                        uart_inst_t* uart,
+                        std::string uartName,
+                        queue_t* toQ,
+                        std::string toQName,
+                        Packetizer* packetizer
+                );
 
                 void flushFromCarQ();
                 void flushFromProbeQ();
