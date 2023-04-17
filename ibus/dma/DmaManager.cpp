@@ -28,6 +28,12 @@ namespace pico {
                 );
 
                 queue_init(
+                        &outgoingProbeOnlyQ,
+                        255,
+                        8
+                );
+
+                queue_init(
                         &fromCarQ,
                         sizeof(uint8_t),
                         8 * 255
@@ -189,6 +195,7 @@ namespace pico {
 
             void DmaManager::onCpu1Loop() {
                 flushOutgoingQ();
+                flushOutgoingProbeOnlyQ();
                 flushFromCarQ();
                 flushFromProbeQ();
 
@@ -261,6 +268,40 @@ namespace pico {
                 free(fromPacket);
             }
 
+            void DmaManager::flushOutgoingProbeOnlyQ() {
+                fanoutPacketsFromQ_toQ_nonBlocking(
+                        &outgoingProbeOnlyQ,
+                        &toProbeQ,
+                        "OutgoingProbeOnlyQ",
+                        "ToProbeQ"
+                );
+            }
+
+            void DmaManager::fanoutPacketsFromQ_toQ_nonBlocking(
+                    queue_t *moveFrom,
+                    queue_t *to0,
+                    std::string fromName,
+                    std::string to0Name
+            ) {
+                assert(moveFrom->element_size == 255);
+                assert(to0->element_size == 255);
+
+                void* fromPacket = std::calloc(255, 1);
+
+                bool packetRemoved = queue_try_remove(moveFrom, &fromPacket);
+                if (packetRemoved) {
+                    logger->d("DmaManager", fmt::format("Removed packet from %s. About to move to %s and %s", fromName, to0Name, to1Name));
+                } else {
+                    logger->d("DmaManager", fmt::format("No packet to remove from queue %s", fromName));
+                }
+
+                //Copy the packet to0
+                queue_add_blocking(to0, fromPacket);
+                logger->d("DmaManager", fmt::format("Copied packet from %s into %s. Remain to copy into %s", fromName, to0Name, to1Name));
+
+                free(fromPacket);
+            }
+
             void DmaManager::flushToCarQ() {
                 writeOutgoingQ_toUart(
                         &toCarQ,
@@ -324,10 +365,19 @@ namespace pico {
                 free(paddedPacketBuffer);
             }
 
+
+            void DmaManager::cpu0scheduleOutgoingProbeOnlyMessage(data::IbusPacket packet) {
+                void* paddedPacketBuffer = std::calloc(255, 1);
+                std::memcpy(paddedPacketBuffer, (void*) packet.getRawPacket().data(), packet.getRawPacket().size());
+                queue_add_blocking(&outgoingProbeOnlyQ, paddedPacketBuffer); //Q copies the buffer, so we can free it now.
+                free(paddedPacketBuffer);
+            }
+
             void DmaManager::onCpu0IncomingPacket(std::unique_ptr<data::IbusPacket> packet) {
                 //A packet came into the pico for processing.
                 observerRegistry->dispatchMessageToAllObservers(*packet);
             }
+
 
         } // pico
     } // ibus

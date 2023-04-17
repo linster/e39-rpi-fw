@@ -45,6 +45,8 @@ namespace pico {
                 //message prep and blocking to CPU1.
                 static queue_t outgoingQ; //Packets from Pico
 
+                static queue_t outgoingProbeOnlyQ; //Packets from Pico, but only to Probe/Pi.
+
                 //Cpu1 will get interrupted often by
                 //Incoming messages from IBUS. We allow
                 //the CPU1 event loop to stall, and when
@@ -78,6 +80,7 @@ namespace pico {
                 void flushFromCarQ();
                 void flushFromProbeQ();
                 void flushOutgoingQ();
+                void flushOutgoingProbeOnlyQ();
 
                 void fanoutPacketsFromQ_to2Qs_nonBlocking(
                         queue_t* moveFrom,
@@ -86,6 +89,13 @@ namespace pico {
                         std::string fromName,
                         std::string to0Name,
                         std::string to1Name
+                );
+
+                void fanoutPacketsFromQ_toQ_nonBlocking(
+                        queue_t* moveFrom,
+                        queue_t* to0,
+                        std::string fromName,
+                        std::string to0Name
                 );
 
                 void flushToProbeQ();
@@ -116,6 +126,8 @@ namespace pico {
                 //Called only by ApplicationContainer
 
                 void cpu0scheduleOutgoingMessage(data::IbusPacket packet); //Called from the base output writer.
+
+                void cpu0scheduleOutgoingProbeOnlyMessage(data::IbusPacket packet);
             };
 
         } // pico
