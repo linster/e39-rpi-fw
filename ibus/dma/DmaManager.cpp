@@ -86,7 +86,9 @@ namespace pico {
             ) {
                 //https://github.com/raspberrypi/pico-examples/blob/master/uart/uart_advanced/uart_advanced.c
                 while (uart_is_readable(uart)) {
+                    packetizer->writeState(fmt::format("DmaManager Rx ISR Uart: %s", uartName), logger);
                     packetizer->addByte(uart_getc(uart));
+                    packetizer->writeState(fmt::format("DmaManager Rx ISR Uart: %s", uartName), logger);
                     if (packetizer->isPacketComplete()) {
                         //Shuffle the packet out.
                         logger->d("DmaManager", fmt::format("Got complete packet from uart %s", uartName));

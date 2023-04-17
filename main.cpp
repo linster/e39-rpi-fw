@@ -21,7 +21,7 @@ const float conversion_factor = 3.3f / (1 << 12);
 
 void core1_entry() {
     //The very first thing we get on startup wait and block for a pointer to the application container.
-    pico::ApplicationContainer* applicationContainer = (pico::ApplicationContainer*) multicore_fifo_pop_blocking();
+    auto* applicationContainer = (pico::ApplicationContainer*) multicore_fifo_pop_blocking();
 
     //One-time setup on the second core.
     applicationContainer->onCpu1Main();

@@ -70,20 +70,12 @@ namespace pico {
 
             void Packetizer::recycle() {
 
-                //Lets just grab a copy of the [position..end] bytes,
+                //Lets just grab a copy of the (position..end] bytes,
                 //then clear our state, and then add all the bytes again.
-
                 std::vector<uint8_t> subsequentBytes = std::vector<uint8_t>();
-
-
-                for (auto iter = packetBytes.begin(); iter != packetBytes.end(); ++iter) {
-                    iter.
-                    if (iter <= position) {
-                        break;
-                    }
+                for (int i = position + 1; position < packetBytes.size(); i++) {
+                    subsequentBytes.push_back(packetBytes[i]);
                 }
-
-
 
                 reset();
                 addBytes(subsequentBytes);
@@ -103,7 +95,7 @@ namespace pico {
                     std::string tag,
                     std::shared_ptr<logger::BaseLogger> logger) {
                 logger->d(tag,
-                          fmt::format("Packetizer{"
+                          fmt::format("Packetizer{ "
                                       "packetBytes (len) %d: ,"
                                       "position: %d, "
                                       "sourceId: %d, "
