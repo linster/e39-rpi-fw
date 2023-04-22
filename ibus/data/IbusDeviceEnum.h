@@ -32,7 +32,8 @@ namespace pico {
                 NAVJ = NAVJ_VALUE,
                 //We're going to use NAVJ for our Pico<->Pi subnet, because no real person still has an e39
                 //with NAVJ (Japan-only Navigation)
-                PICO = NAVJ_VALUE,
+                PICO = PICO_VALUE,
+                RPI = PI_VALUE,
 
                 //We use MINI (D-Bus identifier) for PI4 -> PICO comms. On an e39
                 //there should be no device that responds to this dest address.

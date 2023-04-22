@@ -13,10 +13,11 @@ namespace pico {
                     std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry
                     ) {
                 this->logger = logger;
+                staticLogger = logger;
                 this->observerRegistry = observerRegistry;
 
                 queue_init(
-                        &incomingQ,
+                        &(pico::ibus::dma::DmaManager::incomingQ),
                         255, //Assume each packet is 255 bytes long. (Max_length for the rawBytes)
                         8
                 );
@@ -35,25 +36,25 @@ namespace pico {
 
                 queue_init(
                         &fromCarQ,
-                        sizeof(uint8_t),
-                        8 * 255
+                        255,
+                        8
                 );
 
                 queue_init(
                         &fromProbeQ,
-                        sizeof(uint8_t),
-                        8 * 255
+                        255,
+                        8
                         );
 
                 queue_init(
                         &toCarQ,
-                        sizeof(uint8_t),
-                        8 * 255
+                        255,
+                        8
                         );
                 queue_init(
                         &toProbeQ,
-                        sizeof(uint8_t),
-                        8 * 255
+                        255,
+                        8
                         );
 
                 fromCarQPacketizer = Packetizer();
@@ -92,12 +93,13 @@ namespace pico {
             ) {
                 //https://github.com/raspberrypi/pico-examples/blob/master/uart/uart_advanced/uart_advanced.c
                 while (uart_is_readable(uart)) {
-                    packetizer->writeState(fmt::format("DmaManager Rx ISR Uart: %s", uartName), logger);
-                    packetizer->addByte(uart_getc(uart));
-                    packetizer->writeState(fmt::format("DmaManager Rx ISR Uart: %s", uartName), logger);
+                    packetizer->writeState(fmt::format("DmaManager Rx ISR Uart: {}", uartName), staticLogger);
+                    char newByte = uart_getc(uart);
+                    packetizer->addByte(newByte);
+                    packetizer->writeState(fmt::format("DmaManager Rx ISR Uart: {}", uartName), staticLogger);
                     if (packetizer->isPacketComplete()) {
                         //Shuffle the packet out.
-                        logger->d("DmaManager", fmt::format("Got complete packet from uart %s", uartName));
+                        staticLogger->d("DmaManager", fmt::format("Got complete packet from uart {}", uartName));
 
                         void *paddedPacketBuffer = std::calloc(255, 1);
                         std::memcpy(
@@ -105,7 +107,7 @@ namespace pico {
                                 (void *) packetizer->getPacketBytes().data(),
                                 packetizer->getPacketBytes().size()
                         );
-                        logger->d("DmaManager", fmt::format("(uart: %s) Sending Padded buffer to Q: %s", uartName, toQName));
+                        staticLogger->d("DmaManager", fmt::format("(uart: {}) Sending Padded buffer to Q: {}", uartName, toQName));
                         queue_add_blocking(toQ, paddedPacketBuffer);
                         free(paddedPacketBuffer);
 
@@ -114,16 +116,16 @@ namespace pico {
                         if (packetizer->isPacketComplete()) {
                             //Check just in case we have a complete packet so we're not waiting on one more byte to come in
                             //Before sending out a packet.
-                            logger->d("DmaManager", fmt::format("After recycle for packetizer for uart %s, we have a complete packet.", uartName));
+                            staticLogger->d("DmaManager", fmt::format("After recycle for packetizer for uart {}, we have a complete packet.", uartName));
                             void *paddedPacketBufferAfterRecycle = std::calloc(255, 1);
                             std::memcpy(
                                     paddedPacketBufferAfterRecycle,
                                     (void *) packetizer->getPacketBytes().data(),
                                     packetizer->getPacketBytes().size()
                             );
-                            logger->d("DmaManager", fmt::format("(uart: %s) Sending Padded buffer to Q: %s", uartName, toQName));
+                            staticLogger->d("DmaManager", fmt::format("(uart: {}) Sending Padded buffer to Q: {}", uartName, toQName));
                             queue_add_blocking(toQ, paddedPacketBufferAfterRecycle);
-
+                            free(paddedPacketBufferAfterRecycle);
                             packetizer->recycle();
                         }
                     }
@@ -131,6 +133,8 @@ namespace pico {
             }
 
             void DmaManager::cpu0setup() {
+
+                logger->d("DmaManager", "cpu0Setup");
 
                 uart_init(uart0, 9600);
                 uart_init(uart1, 9600);
@@ -152,11 +156,14 @@ namespace pico {
 
                 //TODO do we want an IRQ when the fault line on the lin transceiver goes high?
                 //TODO what should we do then? Maybe add a method to nuke everything and re-setup DMAManager?
+
+                logger->d("DmaManager", "cpu0Setup done.");
             }
 
             void DmaManager::cpu1Setup() {
                 //LIN Transceiver RX. Need to shuffle those bytes to PICOPROBE TX, and also collec them
                 //in a buffer locally.
+                logger->d("DmaManager", "cpu1Setup");
                 irq_add_shared_handler(
                         UART0_IRQ,
                         on_uart0_rx,
@@ -176,11 +183,15 @@ namespace pico {
 
                 //Now that we're done the setup, turn on the lin transeiver
                 gpio_put(LIN_ChipSelect, true);
+
+                logger->d("DmaManager", "cpu1 Setup done.");
             }
 
             void DmaManager::onCpu0Loop() {
                 //We check the incoming queue without blocking on empty. If there's something in there,
                 //We dispatch it to the observer registry.
+
+                logger->d("DmaManager", "onCpu0Loop");
 
                 void* incomingPacketBuffer = std::calloc(255, 1);
                 bool havePacket = queue_try_remove(&incomingQ, incomingPacketBuffer);
@@ -194,6 +205,7 @@ namespace pico {
             }
 
             void DmaManager::onCpu1Loop() {
+                logger->d("DmaManager", "onCpu1Loop");
                 flushOutgoingQ();
                 flushOutgoingProbeOnlyQ();
                 flushFromCarQ();
@@ -201,6 +213,7 @@ namespace pico {
 
                 flushToProbeQ();
                 flushToCarQ();
+                logger->d("DmaManager", "onCpu1Loop Done");
             }
 
             void DmaManager::flushFromProbeQ() {
@@ -254,17 +267,18 @@ namespace pico {
 
                 bool packetRemoved = queue_try_remove(moveFrom, &fromPacket);
                 if (packetRemoved) {
-                    logger->d("DmaManager", fmt::format("Removed packet from %s. About to move to %s and %s", fromName, to0Name, to1Name));
+                    logger->d("DmaManager", fmt::format("Removed packet from {}. About to move to {} and {}", fromName, to0Name, to1Name));
+
+                    //Copy the packet to0
+                    queue_add_blocking(to0, fromPacket);
+                    logger->d("DmaManager", fmt::format("Copied packet from {} into {}. Remain to copy into {}", fromName, to0Name, to1Name));
+                    //Copy the packet to1
+                    queue_add_blocking(to1, fromPacket);
+                    logger->d("DmaManager", fmt::format("Copied packet from {} into {} and {}. Done transfer.", fromName, to0Name, to1Name));
                 } else {
-                    logger->d("DmaManager", fmt::format("No packet to remove from queue %s", fromName));
+//                    logger->d("DmaManager", fmt::format("No packet to remove from queue {}", fromName));
                 }
 
-                //Copy the packet to0
-                queue_add_blocking(to0, fromPacket);
-                logger->d("DmaManager", fmt::format("Copied packet from %s into %s. Remain to copy into %s", fromName, to0Name, to1Name));
-                //Copy the packet to1
-                queue_add_blocking(to1, fromPacket);
-                logger->d("DmaManager", fmt::format("Copied packet from %s into %s and %s. Done transfer.", fromName, to0Name, to1Name));
                 free(fromPacket);
             }
 
@@ -290,16 +304,16 @@ namespace pico {
 
                 bool packetRemoved = queue_try_remove(moveFrom, &fromPacket);
                 if (packetRemoved) {
-                    logger->d("DmaManager", fmt::format("Removed packet from %s. About to move to %s and %s", fromName, to0Name, to1Name));
+                    logger->d("DmaManager", fmt::format("Removed packet from {}. About to move to {}", fromName, to0Name));
+                    //Copy the packet to0
+                    queue_add_blocking(to0, fromPacket);
+                    logger->d("DmaManager", fmt::format("Copied packet from {} into {}.", fromName, to0Name));
+
                 } else {
-                    logger->d("DmaManager", fmt::format("No packet to remove from queue %s", fromName));
+//                    logger->d("DmaManager", fmt::format("No packet to remove from queue {}", fromName));
                 }
 
-                //Copy the packet to0
-                queue_add_blocking(to0, fromPacket);
-                logger->d("DmaManager", fmt::format("Copied packet from %s into %s. Remain to copy into %s", fromName, to0Name, to1Name));
-
-                free(fromPacket);
+                std::free(fromPacket);
             }
 
             void DmaManager::flushToCarQ() {
@@ -334,15 +348,15 @@ namespace pico {
                 void* packetBuffer = std::calloc(255, 1);
 
                 if (queue_try_remove(movePacketFrom, packetBuffer)) {
-                    logger->d("DmaManager", fmt::format("We have a packet from %s to write to uart %s", fromName, uartName));
+                    logger->d("DmaManager", fmt::format("We have a packet from {} to write to uart {}", fromName, uartName));
                     auto* packet = new data::IbusPacket(packetBuffer);
                     if (packet->isPacketValid()) {
                         uart_write_blocking(uart, packet->getRawPacket().data(), packet->getRawPacket().size());
                         logger->d("DmaManager",
-                                  fmt::format("Wrote packet from %s to write to uart %s", fromName, uartName));
+                                  fmt::format("Wrote packet from {} to write to uart {}", fromName, uartName));
                     } else {
                         logger->wtf("DmaManager", "Trying to write out an invalid packet??");
-                        logger->wtf("DmaManager", fmt::format("Invalid Packet is %s", packet->toString()));
+                        logger->wtf("DmaManager", fmt::format("Invalid Packet is {}", packet->toString()));
                     }
                 }
                 free(packetBuffer);

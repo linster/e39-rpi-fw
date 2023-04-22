@@ -38,8 +38,7 @@ namespace pico {
                     destinationId = byte;
                 }
 
-                packetBytes.push_back(byte);
-
+                packetBytes[position] = byte;
 
                 if (position == expectedLength + 1) {
                     //We're at the end of where the packet says we should be.
@@ -95,15 +94,15 @@ namespace pico {
                     std::string tag,
                     std::shared_ptr<logger::BaseLogger> logger) {
                 logger->d(tag,
-                          fmt::format("Packetizer{ "
-                                      "packetBytes (len) %d: ,"
-                                      "position: %d, "
-                                      "sourceId: %d, "
-                                      "destinationId: %d, "
-                                      "expectedLength: %d, "
-                                      "expectedChecksum: %d, "
-                                      "currentChecksum: %d ,"
-                                      "packetOk: %d }",
+                          fmt::format("Packetizer[ "
+                                      "packetBytes (len): {} ,"
+                                      "position: {}, "
+                                      "sourceId: {}, "
+                                      "destinationId: {}, "
+                                      "expectedLength: {}, "
+                                      "expectedChecksum: {}, "
+                                      "currentChecksum: {} ,"
+                                      "packetOk: {} ]",
                                       packetBytes.size(),
                                       position,
                                       sourceId,

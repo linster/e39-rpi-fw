@@ -52,6 +52,11 @@ namespace pico {
                     std::static_pointer_cast<ibus::observers::BaseObserver>(mockIncomingIBusObserver)
             );
 
+            this->heartbeatResponseWriter = std::make_shared<ibus::output::writer::HeartbeatResponseWriter>(
+                    logger,
+                    dmaManager
+                    );
+
 
         }
 
@@ -69,7 +74,8 @@ namespace pico {
                     scanProgramSwapper,
                     observerRegistry,
                     baseObservers,
-                    dmaManager
+                    dmaManager,
+                    heartbeatResponseWriter
             );
         }
 

@@ -35,7 +35,7 @@ namespace pico {
             logger->d("ConfigurationManager", "Getting new default configuration and saving it.");
             Configuration newDefault = defaultConfigurationProvider->getDefaultConfiguration();
             memoryConfigurationStore->saveConfiguration(newDefault);
-            flashConfigurationStore->saveConfiguration(newDefault);
+//            flashConfigurationStore->saveConfiguration(newDefault);
             iBusConfigMessageStore->saveConfiguration(newDefault);
 
             return std::make_unique<Configuration>(newDefault);
@@ -54,7 +54,7 @@ namespace pico {
             Configuration configuration1 = *configuration;
 
             memoryConfigurationStore->saveConfiguration(configuration1);
-            flashConfigurationStore->saveConfiguration(configuration1);
+//            flashConfigurationStore->saveConfiguration(configuration1);
             iBusConfigMessageStore->saveConfiguration(configuration1);
         }
     } // pico

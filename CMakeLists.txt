@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.16)
 include(pico-sdk/pico_sdk_init.cmake)
 include(pico-extras/external/pico_extras_import.cmake)
 
+set(CMAKE_CXX_STANDARD 17)
 
 project(PicoTemplate)
 
@@ -60,7 +61,7 @@ pico_sdk_init()
 
 #TODO maybe I need to splitup add_executable?? add_executable, then generate pio header, then target_sources?
 
-add_executable(PicoTemplate ibus/dma/Packetizer.cpp ibus/dma/Packetizer.h)
+add_executable(PicoTemplate)
 
 
 
@@ -184,12 +185,14 @@ target_sources(
         ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h
         ibus/dma/DmaManager.cpp
         ibus/dma/DmaManager.h
-        ibus/dma/PioPins.h)
+        ibus/dma/PioPins.h
+        ibus/dma/Packetizer.cpp
+        ibus/dma/Packetizer.h)
 
 
 #https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf -- page 36
-pico_generate_pio_header(PicoTemplate ${CMAKE_SOURCE_DIR}/ibus/dma/pio/FromCarProgram.pio)
-pico_generate_pio_header(PicoTemplate ${CMAKE_CURRENT_LIST_DIR}/ibus/dma/pio/ToCarProgram.pio)
+#pico_generate_pio_header(PicoTemplate ${CMAKE_SOURCE_DIR}/ibus/dma/pio/FromCarProgram.pio)
+#pico_generate_pio_header(PicoTemplate ${CMAKE_CURRENT_LIST_DIR}/ibus/dma/pio/ToCarProgram.pio)
 
 # Link with the pico stdlib
 target_link_libraries(PicoTemplate

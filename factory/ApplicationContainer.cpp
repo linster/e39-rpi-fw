@@ -18,24 +18,27 @@ namespace pico {
         }
         logger->d("onMain", "Registered all observers to ObserverRegistry");
 
-        pi4PowerSwitchManager->setPower(false);
+//        pi4PowerSwitchManager->setPower(false);
 
         dmaManager->cpu0setup();
     }
 
     void ApplicationContainer::onLoop() {
         logger->d("onLoop", "onLoop");
-
-        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
-        sleep_ms(2000);
-        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
-
-        sleep_ms(2000);
-        pi4PowerSwitchManager->setPower(true);
-        sleep_ms(2000);
-        pi4PowerSwitchManager->setPower(false);
+//
+//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
+//        sleep_ms(2000);
+//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
+//
+//        sleep_ms(2000);
+//        pi4PowerSwitchManager->setPower(true);
+//        sleep_ms(2000);
+//        pi4PowerSwitchManager->setPower(false);
 
         dmaManager->onCpu0Loop();
+
+        sleep_ms(2000);
+        heartbeatResponseWriter->sendHeartbeatResponse();
     }
 
     void ApplicationContainer::onCpu1Main() {

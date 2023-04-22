@@ -3,7 +3,6 @@
 //
 
 #include "BaseOutputWriter.h"
-#include "../ibus/data/IBusDevices.h"
 namespace pico {
     namespace ibus {
         namespace output {
@@ -23,13 +22,20 @@ namespace pico {
                         return;
                     }
 
-                    //TODO convert this into a vector of bytes.
+                    std::unique_ptr<std::basic_string<char>> p = outputStream.release();
+//                    p->c_str();
+//                    p->length();
+
+                    auto bytes = std::vector<uint8_t>();
+                    for (char c: *p) {
+                        bytes.push_back(c);
+                    }
 
                     getDmaManager()->cpu0scheduleOutgoingProbeOnlyMessage(
                             data::IbusPacket(
-                                    PICO_VALUE,
-                                    PI_VALUE,
-
+                                    data::IbusDeviceEnum::PICO,
+                                    data::IbusDeviceEnum::RPI,
+                                    std::move(bytes)
                             ));
 
                 }

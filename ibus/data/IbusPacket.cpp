@@ -9,12 +9,27 @@ namespace pico {
     namespace ibus {
         namespace data {
 
-            IbusPacket::IbusPacket(void *packetStart) {
+            IbusPacket::IbusPacket(void* packetStart) {
                 //Super dangerous constructor that takes a pointer to a byte
                 //then increments it to get the length, dangerously reads that
                 //many bytes and makes a vector of ints.
 
-                //TODO
+                //TODO nothing will work until I chain these constructors together
+                //TODO but also, why's this getting called with a pointer to empty memory?
+
+//                uint8_t* originalPtr = packetStart;
+//
+//                uint8_t len = *(packetStart + 1);
+//
+//                if (len == 0) {
+//                    //We have a malformed packet. Just return the smallest possible packet.
+//                    std::vector<uint8_t> bytes = std::vector<uint8_t>();
+//                    bytes.push_back(0x00);
+//                    bytes.push_back(00);
+//                    bytes.push_back(00);
+//                    bytes.push_back(00);
+//                    return IbusPacket((std::vector<uint8_t>)bytes);
+//                }
             }
 
             IbusPacket::IbusPacket(std::vector<uint8_t> raw) {

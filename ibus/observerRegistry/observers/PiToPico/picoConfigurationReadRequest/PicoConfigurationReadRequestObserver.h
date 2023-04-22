@@ -16,11 +16,12 @@ namespace pico {
     namespace ibus {
         namespace observers {
 
+            /**
+             * The RPI sends a magic packet asking for our config.
+             * we listen for it here, then use it to kick-off a read of the
+             * config store, and emit it.
+             */
             class PicoConfigurationReadRequestObserver : public BaseObserver{
-
-                //TODO the RPI sends a magic packet asking for our config.
-                //TODO we listen for it here, then use it to kick-off a read of the
-                //TODO config store, and emit it.
 
             private:
                 std::shared_ptr<logger::BaseLogger> logger;

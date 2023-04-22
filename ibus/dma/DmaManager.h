@@ -17,9 +17,6 @@
 #include "hardware/pio.h"
 #include "hardware/dma.h"
 
-#include "FromCarProgram.pio.h"
-#include "ToCarProgram.pio.h"
-
 #include "PioPins.h"
 #include "Packetizer.h"
 
@@ -36,16 +33,16 @@ namespace pico {
 
             private:
 
-                static std::shared_ptr<logger::BaseLogger> logger;
+                std::shared_ptr<logger::BaseLogger> logger;
+                inline static std::shared_ptr<logger::BaseLogger> staticLogger;
                 std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry;
 
                 //https://www.raspberrypi.com/documentation/pico-sdk/high_level.html#queue
 
                 //A queue we use for CPU0 to offload
                 //message prep and blocking to CPU1.
-                static queue_t outgoingQ; //Packets from Pico
-
-                static queue_t outgoingProbeOnlyQ; //Packets from Pico, but only to Probe/Pi.
+                queue_t outgoingQ; //Packets from Pico
+                queue_t outgoingProbeOnlyQ; //Packets from Pico, but only to Probe/Pi.
 
                 //Cpu1 will get interrupted often by
                 //Incoming messages from IBUS. We allow
@@ -53,16 +50,16 @@ namespace pico {
                 //there's processing time, we peel off
                 //the incomingQ onto CPU0, for all the
                 //event handlers to run.
-                static queue_t incomingQ;   //Packets into Pico
+                queue_t incomingQ;   //Packets into Pico
 
 
-                static queue_t fromProbeQ; //Raw bytes
-                static Packetizer fromProbeQPacketizer;
-                static queue_t fromCarQ;   //Raw Bytes
-                static Packetizer fromCarQPacketizer;
+                inline static queue_t fromProbeQ; //Raw bytes
+                inline static Packetizer fromProbeQPacketizer;
+                inline static queue_t fromCarQ;   //Raw Bytes
+                inline static Packetizer fromCarQPacketizer;
 
-                static queue_t toProbeQ;    //Packets
-                static queue_t toCarQ;      //Packets
+                inline static queue_t toProbeQ;    //Packets
+                inline static queue_t toCarQ;      //Packets
 
 
 
@@ -112,6 +109,7 @@ namespace pico {
                 void onCpu0IncomingPacket(std::unique_ptr<data::IbusPacket> packet);
 
             public:
+
 
                 DmaManager(
                         std::shared_ptr<logger::BaseLogger> logger,
