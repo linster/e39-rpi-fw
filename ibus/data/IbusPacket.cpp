@@ -14,22 +14,32 @@ namespace pico {
                 //then increments it to get the length, dangerously reads that
                 //many bytes and makes a vector of ints.
 
-                //TODO nothing will work until I chain these constructors together
-                //TODO but also, why's this getting called with a pointer to empty memory?
+                uint8_t* originalPtr = (uint8_t*) packetStart;
+                uint8_t len = *(originalPtr + 1);
 
-//                uint8_t* originalPtr = packetStart;
-//
-//                uint8_t len = *(packetStart + 1);
-//
-//                if (len == 0) {
-//                    //We have a malformed packet. Just return the smallest possible packet.
-//                    std::vector<uint8_t> bytes = std::vector<uint8_t>();
-//                    bytes.push_back(0x00);
-//                    bytes.push_back(00);
-//                    bytes.push_back(00);
-//                    bytes.push_back(00);
-//                    return IbusPacket((std::vector<uint8_t>)bytes);
-//                }
+                if (len == 0 || len > 255) { //TODO Can len > 255 happen irl?
+                    //We have a malformed packet. Just return the smallest possible packet.
+                    std::vector<uint8_t> bytes = std::vector<uint8_t>();
+                    bytes.push_back(0x00);
+                    bytes.push_back(00);
+                    bytes.push_back(00);
+                    bytes.push_back(00);
+
+                    auto newPacketByConstructor = IbusPacket((std::vector<uint8_t>)bytes);
+                    cloneFrom(newPacketByConstructor);
+                    return;
+                } else {
+                    //Blindly read len bytes and hope for the best.
+
+                    auto newRaw = std::vector<uint8_t>(len);
+                    for(int i = 0; i < len; i++) {
+                        newRaw[i] = *(originalPtr + len);
+                    }
+
+                    auto newPacketByConstructor = IbusPacket(newRaw);
+                    cloneFrom(newPacketByConstructor);
+                    return;
+                }
             }
 
             IbusPacket::IbusPacket(std::vector<uint8_t> raw) {
@@ -52,7 +62,7 @@ namespace pico {
 
                 //Now calculate the actual CRC.
                 actualCrc = 0;
-                for (auto iterator = raw.end(); iterator != (raw.end() - 1); ++iterator) {
+                for (auto iterator = raw.begin(); iterator != (raw.end() - 1); ++iterator) {
                     //Skip the CRC byte at the end
                     actualCrc = actualCrc ^ *iterator;
                 }
@@ -66,15 +76,32 @@ namespace pico {
 
                 this->packetLength = data.size() + 4;
 
-                //Now, build up the completeRawPacket
+                if (packetLength <= 2) {
+                    data = std::vector<uint8_t>();
+                } else {
+                    this->data = std::move(data);
+                }
 
-                //Calculate the actual CRC
-                //Set the givenCRC to actual
+                //Set complete Raw packet
+                completeRawPacket = std::vector<uint8_t>(packetLength);
+                completeRawPacket[0] = sourceDevice;
+                completeRawPacket[1] = packetLength;
+                completeRawPacket[2] = destinationDevice;
 
-                //pop the CRC on the end of the completeRawPacket.
+                int completeRawPacketIndex = 3;
+                for (uint8_t byte: data) {
+                    completeRawPacket[completeRawPacketIndex++] = byte;
+                }
 
-                //TODO
+                //Now calculate the actual CRC.
+                actualCrc = 0;
+                for (auto iterator = completeRawPacket.begin(); iterator != (completeRawPacket.end() - 1); ++iterator) {
+                    //Skip the CRC byte at the end
+                    actualCrc = actualCrc ^ *iterator;
+                }
+                givenCrc = actualCrc;
 
+                completeRawPacket[completeRawPacketIndex] = actualCrc;
             }
 
             IbusPacket::~IbusPacket() {
@@ -82,6 +109,16 @@ namespace pico {
                 data.shrink_to_fit();
                 completeRawPacket.clear();
                 completeRawPacket.shrink_to_fit();
+            }
+
+            void IbusPacket::cloneFrom(IbusPacket other) {
+                this->completeRawPacket = other.completeRawPacket;
+                this->actualCrc = other.actualCrc;
+                this->data = other.data;
+                this->packetLength = other.packetLength;
+                this->destinationDevice = other.destinationDevice;
+                this->sourceDevice = other.sourceDevice;
+                this->givenCrc = other.givenCrc;
             }
 
             IbusDeviceEnum IbusPacket::getSourceDevice() {

@@ -92,7 +92,7 @@ namespace pico {
                     Packetizer* packetizer
             ) {
                 //https://github.com/raspberrypi/pico-examples/blob/master/uart/uart_advanced/uart_advanced.c
-                while (uart_is_readable(uart)) {
+                while (uart_is_readable(uart)) { //TODO look up how to do inline assignment and comparison?
                     packetizer->writeState(fmt::format("DmaManager Rx ISR Uart: {}", uartName), staticLogger);
                     char newByte = uart_getc(uart);
                     packetizer->addByte(newByte);
@@ -101,7 +101,7 @@ namespace pico {
                         //Shuffle the packet out.
                         staticLogger->d("DmaManager", fmt::format("Got complete packet from uart {}", uartName));
 
-                        void *paddedPacketBuffer = std::calloc(255, 1);
+                        void *paddedPacketBuffer = std::calloc(255, 1); //TODO no memory allocation allowed in interrupt service routes lol.
                         std::memcpy(
                                 paddedPacketBuffer,
                                 (void *) packetizer->getPacketBytes().data(),
@@ -193,15 +193,14 @@ namespace pico {
 
                 logger->d("DmaManager", "onCpu0Loop");
 
-                void* incomingPacketBuffer = std::calloc(255, 1);
-                bool havePacket = queue_try_remove(&incomingQ, incomingPacketBuffer);
+                uint8_t* incomingPacketBuffer[255] = {0};
+                bool havePacket = queue_try_remove(&incomingQ, (void*)incomingPacketBuffer);
                 if (havePacket) {
                     logger->d("DmaManager" ,"onCpu0Loop have packet");
                     //Heap-allocate a new packet from the buffer.
                     std::unique_ptr<data::IbusPacket> newPacket = std::make_unique<data::IbusPacket>(new data::IbusPacket(incomingPacketBuffer));
                     onCpu0IncomingPacket(std::move(newPacket));
                 }
-                free(incomingPacketBuffer);
             }
 
             void DmaManager::onCpu1Loop() {

@@ -28,6 +28,8 @@ namespace pico {
                 uint8_t givenCrc;
                 uint8_t actualCrc;
 
+                void cloneFrom(IbusPacket other);
+
             public:
                 explicit IbusPacket(std::vector<uint8_t> raw);
 
