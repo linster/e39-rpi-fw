@@ -51,6 +51,11 @@ namespace pico {
                 }
 
                 position++; //Make sure to increment before we're called again.
+
+                if (expectedLength > 0 && position > expectedLength) {
+                    //The packet can never be right, start over.
+                    reset();
+                }
             }
 
             void Packetizer::addBytes(std::vector<uint8_t> bytes) {

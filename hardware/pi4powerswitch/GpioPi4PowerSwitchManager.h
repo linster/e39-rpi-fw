@@ -17,7 +17,7 @@ namespace pico {
 
             private:
                 std::shared_ptr<logger::BaseLogger> logger;
-                int gpio_pin = 18;
+                int gpio_pin = 18; //GP18
             public:
                 GpioPi4PowerSwitchManager(
                         std::shared_ptr<logger::BaseLogger> baseLogger

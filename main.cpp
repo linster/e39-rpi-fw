@@ -29,7 +29,9 @@ void core1_entry() {
     sleep_ms(4000); //Don't start looping until the main cpu0 loop starts.
 
     while(true) {
+        gpio_put(LED_PIN, true);
         applicationContainer->onCpu1Loop();
+        gpio_put(LED_PIN, false);
     }
 }
 
@@ -58,12 +60,9 @@ int main() {
 
     pico::ApplicationContainer* applicationContainer = factory->getApplicationContainer();
 
-    multicore_launch_core1(core1_entry); //Launch the coprocessor and have it block.
-
     applicationContainer->onMain(); //Run main one-time setup code.
-    //Wait for the CPU0 setup to complete.
-    sleep_ms(3000);
 
+    multicore_launch_core1(core1_entry); //Launch the coprocessor and have it block.
     //Push the pointer to the application container to the second core. This unblocks the co-processor.
     multicore_fifo_push_blocking((uint32_t)applicationContainer);
 
@@ -71,9 +70,9 @@ int main() {
     sleep_ms(3000);
 
     while (true) {
-        gpio_put(LED_PIN, true);
+
         applicationContainer->onLoop();
-        gpio_put(LED_PIN, false);
+
 
 //        const float voltage = adc_read() * conversion_factor;
 //        const float temperature = 27 - (voltage - 0.706) / 0.001721;

@@ -61,7 +61,8 @@ namespace pico {
                 inline static queue_t toProbeQ;    //Packets
                 inline static queue_t toCarQ;      //Packets
 
-
+                inline static uint8_t* paddedUart0RxPacketBuffer[255] = {0};
+                inline static uint8_t* paddedUart1RxPacketBuffer[255] = {0};
 
                 inline static void on_uart0_rx();
                 inline static void on_uart1_rx();
@@ -107,6 +108,8 @@ namespace pico {
                 //Runs on Cpu0. Called when cpu0 gets a packet out of the inter-processor queue and needs to
                 //dispatch it to the Observer registry.
                 void onCpu0IncomingPacket(std::unique_ptr<data::IbusPacket> packet);
+
+                uint8_t* incomingPacketBuffer[255] = {0};
 
             public:
 

@@ -18,8 +18,8 @@ namespace pico {
                 private:
                     std::shared_ptr<logger::BaseLogger> logger;
                     VideoSource previousVideoSource;
-                    int gpio_pin_lsb = 19;
-                    int gpio_pin_msb = 20;
+                    int gpio_pin_lsb = 19; //GP19
+                    int gpio_pin_msb = 20; //GP20
                 public:
                     Max4314VideoSwitch(
                             std::shared_ptr<logger::BaseLogger> baseLogger

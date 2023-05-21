@@ -36,6 +36,8 @@ namespace pico {
 
         //Setup the second core.
         void setupCpu1();
+
+        uint8_t cpu0LoopCount = 0;
     public:
 
         ApplicationContainer(

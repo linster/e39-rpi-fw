@@ -16,45 +16,52 @@ namespace pico {
                 staticLogger = logger;
                 this->observerRegistry = observerRegistry;
 
-                queue_init(
+                queue_init_with_spinlock(
                         &(pico::ibus::dma::DmaManager::incomingQ),
                         255, //Assume each packet is 255 bytes long. (Max_length for the rawBytes)
-                        8
+                        8,
+                        1
                 );
 
-                queue_init(
+                queue_init_with_spinlock(
                         &outgoingQ,
                         255,
-                        8
+                        8,
+                        2
                 );
 
-                queue_init(
+                queue_init_with_spinlock(
                         &outgoingProbeOnlyQ,
                         255,
-                        8
+                        8,
+                        3
                 );
 
-                queue_init(
+                queue_init_with_spinlock(
                         &fromCarQ,
                         255,
-                        8
+                        8,
+                        4
                 );
 
-                queue_init(
+                queue_init_with_spinlock(
                         &fromProbeQ,
                         255,
-                        8
+                        8,
+                        5
                         );
 
-                queue_init(
+                queue_init_with_spinlock(
                         &toCarQ,
                         255,
-                        8
+                        8,
+                        6
                         );
-                queue_init(
+                queue_init_with_spinlock(
                         &toProbeQ,
                         255,
-                        8
+                        8,
+                        7
                         );
 
                 fromCarQPacketizer = Packetizer();
@@ -75,13 +82,13 @@ namespace pico {
 
             //PicoProbe/Application Processor
             void DmaManager::on_uart1_rx() {
-                handleRxInterruptServiceRoutine(
-                        uart1,
-                        "uart1",
-                        &fromProbeQ,
-                        "fromProbeQ",
-                        &fromProbeQPacketizer
-                );
+//                handleRxInterruptServiceRoutine(
+//                        uart1,
+//                        "uart1",
+//                        &fromProbeQ,
+//                        "fromProbeQ",
+//                        &fromProbeQPacketizer
+//                );
             }
 
             void DmaManager::handleRxInterruptServiceRoutine(
@@ -93,39 +100,57 @@ namespace pico {
             ) {
                 //https://github.com/raspberrypi/pico-examples/blob/master/uart/uart_advanced/uart_advanced.c
                 while (uart_is_readable(uart)) { //TODO look up how to do inline assignment and comparison?
-                    packetizer->writeState(fmt::format("DmaManager Rx ISR Uart: {}", uartName), staticLogger);
-                    char newByte = uart_getc(uart);
+                    //packetizer->writeState(fmt::format("DmaManager Rx ISR Uart: {}", uartName), staticLogger);
+
+                    //TODO we get some bytes here. They are non-sense
+                    //TODO
+                    //TODO https://github.com/raspberrypi/pico-examples/blob/master/pio/uart_rx/uart_rx.pio
+                    //TODO write a PIO program to do a UART with even parity. When the parity bit for a byte is incorrect
+                    //TODO throw out the byte
+                    //TODO
+                    //TODO hook up the PIO program here. 
+
+                    char newByte = uart_getc(uart); //TODO we have parity bits we need to strip and/or check. 8E1. Even parity. 1 stop bit.
                     packetizer->addByte(newByte);
-                    packetizer->writeState(fmt::format("DmaManager Rx ISR Uart: {}", uartName), staticLogger);
+                    //packetizer->writeState(fmt::format("DmaManager Rx ISR Uart: {}", uartName), staticLogger);
                     if (packetizer->isPacketComplete()) {
                         //Shuffle the packet out.
-                        staticLogger->d("DmaManager", fmt::format("Got complete packet from uart {}", uartName));
+//                        staticLogger->d("DmaManager", fmt::format("Got complete packet from uart {}", uartName));
 
-                        void *paddedPacketBuffer = std::calloc(255, 1); //TODO no memory allocation allowed in interrupt service routes lol.
+                        uint8_t* paddedPacketBuffer; //No memory allocation allowed in interrupt service routes lol.
+                        if (uart == uart0) {
+                            paddedPacketBuffer = (uint8_t *)paddedUart0RxPacketBuffer;
+                        } else if (uart == uart1) {
+                            paddedPacketBuffer = (uint8_t *)paddedUart1RxPacketBuffer;
+                        } else {
+//                            staticLogger->d("Panic Uart RX ISR", "Invalid UART");
+                            panic("Invalid uart");
+                        }
+
+                        std::memset(paddedPacketBuffer, 0, 255);
                         std::memcpy(
                                 paddedPacketBuffer,
                                 (void *) packetizer->getPacketBytes().data(),
                                 packetizer->getPacketBytes().size()
                         );
-                        staticLogger->d("DmaManager", fmt::format("(uart: {}) Sending Padded buffer to Q: {}", uartName, toQName));
+//                        staticLogger->d("DmaManager", fmt::format("(uart: {}) Sending Padded buffer to Q: {}", uartName, toQName));
                         queue_add_blocking(toQ, paddedPacketBuffer);
-                        free(paddedPacketBuffer);
 
                         packetizer->recycle(); //Shuffle what's left in the packetizer to the front.
 
                         if (packetizer->isPacketComplete()) {
                             //Check just in case we have a complete packet so we're not waiting on one more byte to come in
                             //Before sending out a packet.
-                            staticLogger->d("DmaManager", fmt::format("After recycle for packetizer for uart {}, we have a complete packet.", uartName));
-                            void *paddedPacketBufferAfterRecycle = std::calloc(255, 1);
+//                            staticLogger->d("DmaManager", fmt::format("After recycle for packetizer for uart {}, we have a complete packet.", uartName));
+                            std::memset(paddedPacketBuffer, 0, 255);
                             std::memcpy(
-                                    paddedPacketBufferAfterRecycle,
+                                    paddedPacketBuffer,
                                     (void *) packetizer->getPacketBytes().data(),
                                     packetizer->getPacketBytes().size()
                             );
-                            staticLogger->d("DmaManager", fmt::format("(uart: {}) Sending Padded buffer to Q: {}", uartName, toQName));
-                            queue_add_blocking(toQ, paddedPacketBufferAfterRecycle);
-                            free(paddedPacketBufferAfterRecycle);
+//                            staticLogger->d("DmaManager", fmt::format("(uart: {}) Sending Padded buffer to Q: {}", uartName, toQName));
+                            queue_add_blocking(toQ, paddedPacketBuffer);
+
                             packetizer->recycle();
                         }
                     }
@@ -137,13 +162,20 @@ namespace pico {
                 logger->d("DmaManager", "cpu0Setup");
 
                 uart_init(uart0, 9600);
-                uart_init(uart1, 9600);
-
                 uart_set_hw_flow(uart0, false, false);
-                uart_set_hw_flow(uart1, false, false);
-
                 uart_set_format(uart0, 8, 1, UART_PARITY_EVEN); //8E1
-                uart_set_format(uart1, 8, 1, UART_PARITY_EVEN); //8E1
+
+                bool hookedUpToPicoProbe = true; //Set to false if the UART 1 is sent to rpi rx/tx pins
+                if (hookedUpToPicoProbe) {
+                    uart_init(uart1, 115200);
+                    uart_set_hw_flow(uart1, false, false);
+                    uart_set_format(uart1, 8, 1, UART_PARITY_NONE); //8N1
+                } else {
+                    uart_init(uart1, 9600);
+                    uart_set_hw_flow(uart1, false, false);
+                    //We're 9600 8E1, just like the modbmw interface
+                    uart_set_format(uart1, 8, 1, UART_PARITY_EVEN); //8E1
+                }
 
                 gpio_set_function(UART0_LIN_TRANS_RX, GPIO_FUNC_UART);
                 gpio_set_function(UART0_LIN_TRANS_TX, GPIO_FUNC_UART);
@@ -157,32 +189,37 @@ namespace pico {
                 //TODO do we want an IRQ when the fault line on the lin transceiver goes high?
                 //TODO what should we do then? Maybe add a method to nuke everything and re-setup DMAManager?
 
+                gpio_set_dir(LIN_Fault, true);
+                gpio_put(LIN_Fault, false); //Set TX enable
+
+                //Now that we're done the setup, turn on the lin transeiver
+                gpio_put(LIN_ChipSelect, true);
+
+
+                //uart_puts(uart0, "Hello");
+                //uart_puts(uart1, "Hello");
+
                 logger->d("DmaManager", "cpu0Setup done.");
             }
 
             void DmaManager::cpu1Setup() {
-                //LIN Transceiver RX. Need to shuffle those bytes to PICOPROBE TX, and also collec them
+                //LIN Transceiver RX. Need to shuffle those bytes to PICOPROBE TX, and also collect them
                 //in a buffer locally.
                 logger->d("DmaManager", "cpu1Setup");
-                irq_add_shared_handler(
+                irq_set_exclusive_handler(
                         UART0_IRQ,
-                        on_uart0_rx,
-                        PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY
+                        on_uart0_rx
                         );
                 irq_set_enabled(UART0_IRQ, true);
                 uart_set_irq_enables(uart0, true, false);
 
-                irq_add_shared_handler(
+                irq_set_exclusive_handler(
                         UART1_IRQ,
-                        on_uart1_rx,
-                        PICO_SHARED_IRQ_HANDLER_DEFAULT_ORDER_PRIORITY
+                        on_uart1_rx
                         );
                 irq_set_enabled(UART1_IRQ, true);
                 uart_set_irq_enables(uart1, true, false);
 
-
-                //Now that we're done the setup, turn on the lin transeiver
-                gpio_put(LIN_ChipSelect, true);
 
                 logger->d("DmaManager", "cpu1 Setup done.");
             }
@@ -191,9 +228,12 @@ namespace pico {
                 //We check the incoming queue without blocking on empty. If there's something in there,
                 //We dispatch it to the observer registry.
 
-                logger->d("DmaManager", "onCpu0Loop");
+//                logger->d("DmaManager", "onCpu0Loop");
+//
+//                uart_puts(uart1, "Test print");
+//                uart_puts(uart0, "Test print");
 
-                uint8_t* incomingPacketBuffer[255] = {0};
+                memset(incomingPacketBuffer, 0, 255);
                 bool havePacket = queue_try_remove(&incomingQ, (void*)incomingPacketBuffer);
                 if (havePacket) {
                     logger->d("DmaManager" ,"onCpu0Loop have packet");
@@ -204,7 +244,33 @@ namespace pico {
             }
 
             void DmaManager::onCpu1Loop() {
-                logger->d("DmaManager", "onCpu1Loop");
+                //logger->d("DmaManager", "onCpu1Loop");
+
+                if (queue_get_level(&incomingQ)             != 0 ||
+                    queue_get_level(&outgoingQ)             != 0 ||
+                    queue_get_level(&outgoingProbeOnlyQ)    != 0 ||
+                    queue_get_level(&fromCarQ)              != 0 ||
+                    queue_get_level(&fromProbeQ)            != 0 ||
+                    queue_get_level(&toProbeQ)              != 0 ||
+                    queue_get_level(&toCarQ)                != 0
+                    ) {
+                    logger->d("DmaManager",
+                              fmt::format("Cpu1 Queue Health: \n "
+                                          "\tIncomingQ: {}, \n"
+                                          "\tOutgoingQ: {}, \n"
+                                          "\tOutgoingProbeOnlyQ: {}, \n"
+                                          "\tFromCarQ: {}, \n"
+                                          "\tFromProbeQ: {}, \n"
+                                          "\tToProbeQ: {}, \n"
+                                          "\tToCarQ: {} \n",
+                                          queue_get_level(&incomingQ),
+                                          queue_get_level(&outgoingQ),
+                                          queue_get_level(&outgoingProbeOnlyQ),
+                                          queue_get_level(&fromCarQ),
+                                          queue_get_level(&fromProbeQ),
+                                          queue_get_level(&toProbeQ),
+                                          queue_get_level(&toCarQ)));
+                }
                 flushOutgoingQ();
                 flushOutgoingProbeOnlyQ();
                 flushFromCarQ();
@@ -212,7 +278,7 @@ namespace pico {
 
                 flushToProbeQ();
                 flushToCarQ();
-                logger->d("DmaManager", "onCpu1Loop Done");
+                //logger->d("DmaManager", "onCpu1Loop Done");
             }
 
             void DmaManager::flushFromProbeQ() {
@@ -388,6 +454,7 @@ namespace pico {
 
             void DmaManager::onCpu0IncomingPacket(std::unique_ptr<data::IbusPacket> packet) {
                 //A packet came into the pico for processing.
+                logger->d("DmaManager", "Dispatching packet to cpu0 observers");
                 observerRegistry->dispatchMessageToAllObservers(*packet);
             }
 

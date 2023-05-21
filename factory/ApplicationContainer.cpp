@@ -24,8 +24,11 @@ namespace pico {
     }
 
     void ApplicationContainer::onLoop() {
-        logger->d("onLoop", "onLoop");
-//
+//        logger->d("onLoop", "onLoop");
+        if (cpu0LoopCount % 1 == 0) {
+            logger->d("onLoop", fmt::format("Loop count {}", cpu0LoopCount++));
+        }
+        //
 //        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
 //        sleep_ms(2000);
 //        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
@@ -37,12 +40,14 @@ namespace pico {
 
         dmaManager->onCpu0Loop();
 
-        sleep_ms(2000);
-        heartbeatResponseWriter->sendHeartbeatResponse();
+        //sleep_ms(2000);
+        //heartbeatResponseWriter->sendHeartbeatResponse();
     }
 
     void ApplicationContainer::onCpu1Main() {
+        logger->i("onCpu1Main", "onCpu1Main");
         dmaManager->cpu1Setup();
+        logger->i("onCpu1Main", "dmaManager->cpu1Setup() done");
     }
 
     void ApplicationContainer::onCpu1Loop() {
