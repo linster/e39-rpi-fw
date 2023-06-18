@@ -61,7 +61,7 @@ pico_sdk_init()
 
 #TODO maybe I need to splitup add_executable?? add_executable, then generate pio header, then target_sources?
 
-add_executable(PicoTemplate)
+add_executable(PicoTemplate video/screenManager/ScreenItem.cpp video/screenManager/ScreenItem.h video/screenManager/Screen.cpp video/screenManager/Screen.h video/screenManager/ScreenManager.cpp video/screenManager/ScreenManager.h video/screenManager/mainScreen/MainScreen.cpp video/screenManager/mainScreen/MainScreen.h video/screenManager/mainScreen/TurnOnPi4MenuItem.cpp video/screenManager/mainScreen/TurnOnPi4MenuItem.h video/screenManager/mainScreen/SafePi4PowerOffMenuItem.cpp video/screenManager/mainScreen/SafePi4PowerOffMenuItem.h video/screenManager/mainScreen/HardPi4PowerOffMenuItem.cpp video/screenManager/mainScreen/HardPi4PowerOffMenuItem.h video/screenManager/mainScreen/RestartXMenuItem.cpp video/screenManager/mainScreen/RestartXMenuItem.h video/screenManager/mainScreen/VideoToRvcMenuItem.cpp video/screenManager/mainScreen/VideoToRvcMenuItem.h video/screenManager/mainScreen/VideoToUpstreamMenuItem.cpp video/screenManager/mainScreen/VideoToUpstreamMenuItem.h video/screenManager/mainScreen/VideoToPiMenuItem.cpp video/screenManager/mainScreen/VideoToPiMenuItem.h video/screenManager/mainScreen/ConfigPushMenuItem.cpp video/screenManager/mainScreen/ConfigPushMenuItem.h)
 
 
 

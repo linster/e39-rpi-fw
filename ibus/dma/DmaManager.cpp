@@ -108,7 +108,7 @@ namespace pico {
                     //TODO write a PIO program to do a UART with even parity. When the parity bit for a byte is incorrect
                     //TODO throw out the byte
                     //TODO
-                    //TODO hook up the PIO program here. 
+                    //TODO hook up the PIO program here.
 
                     char newByte = uart_getc(uart); //TODO we have parity bits we need to strip and/or check. 8E1. Even parity. 1 stop bit.
                     packetizer->addByte(newByte);

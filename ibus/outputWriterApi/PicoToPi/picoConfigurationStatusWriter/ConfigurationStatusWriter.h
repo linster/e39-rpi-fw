@@ -8,10 +8,7 @@
 #include "../../BaseOutputWriter.h"
 #include "../../../../proto_cpp/ConfigMessage.h"
 #include "../../../../logging/BaseLogger.h"
-namespace pico {
-    namespace ibus {
-        namespace output {
-            namespace writer {
+namespace pico::ibus::output::writer {
 
                 class ConfigurationStatusWriter : public BaseOutputWriter {
 
@@ -30,9 +27,6 @@ namespace pico {
                     std::shared_ptr<dma::DmaManager> getDmaManager() override;
                 };
 
-            } // pico
-        } // ibus
-    } // output
-} // writer
+            } // writer
 
 #endif //PICOTEMPLATE_CONFIGURATIONSTATUSWRITER_H
