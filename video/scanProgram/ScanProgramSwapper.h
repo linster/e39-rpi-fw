@@ -5,8 +5,7 @@
 #ifndef PICOTEMPLATE_SCANPROGRAMSWAPPER_H
 #define PICOTEMPLATE_SCANPROGRAMSWAPPER_H
 
-namespace video {
-    namespace scanProgram {
+namespace video::scanProgram {
 
         class ScanProgramSwapper {
 
@@ -21,6 +20,7 @@ namespace video {
 
             void swapTo(ScanProgram scanProgram);
 
+            ScanProgram getCurrentScanProgram();
 
 
             //This is here as a way for the main core to queue up, via mutexes and shared state,
@@ -30,7 +30,6 @@ namespace video {
             //(so that knob turn knows to activate the pico menu only when it's displayed)
         };
 
-    } // video
-} // scanProgram
+    } // scanProgram
 
 #endif //PICOTEMPLATE_SCANPROGRAMSWAPPER_H

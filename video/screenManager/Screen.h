@@ -10,6 +10,8 @@
 #include <memory>
 #include "ScreenItem.h"
 #include "../../logging/BaseLogger.h"
+#include "pico/mutex.h"
+#include "fmt/format.h"
 
 namespace video::ScreenManager {
 
@@ -17,18 +19,28 @@ namespace video::ScreenManager {
 
 
         private:
+
+            std::shared_ptr<pico::logger::BaseLogger> logger;
+
             /** Which item in the getScreenItems() currently has the selection focus? */
             int focusedIndex = -1;
 
             //TODO maybe a mutex for when it's okay to modify this focusedIndex?
 
+            mutex_t screenMutex;
+        protected:
+            void initialize(
+                    std::shared_ptr<pico::logger::BaseLogger> logger
+                    );
+
+            virtual std::string getTag() = 0;
         public:
 
             /** Subclasses must implement this to indicate items */
             virtual std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>>getScreenItems();
 
             /** A string that's a centered title */
-            virtual std::string getTitle();
+            virtual std::string getTitle() = 0;
 
             void focusFirstItem();
             void focusNextItem(int clicks);

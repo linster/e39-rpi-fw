@@ -7,9 +7,7 @@
 
 #include "VideoSource.h"
 
-namespace pico {
-    namespace hardware {
-        namespace videoSwitch {
+namespace pico::hardware::videoSwitch {
 
             class VideoSwitch {
             public:
@@ -17,8 +15,6 @@ namespace pico {
                 virtual VideoSource getPreviousVideoSource() = 0;
             };
 
-        } // pico
-    } // hardware
-} // videoSwitch
+        } // videoSwitch
 
 #endif //PICOTEMPLATE_VIDEOSWITCH_H

@@ -62,6 +62,7 @@ namespace video {
                 std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>> getScreenItems() override;
 
                 std::string getTitle() override;
+                std::string getTag() override;
             };
 
         } // video

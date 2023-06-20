@@ -7,8 +7,7 @@
 
 #include "Screen.h"
 
-namespace video {
-    namespace ScreenManager {
+namespace video::ScreenManager {
 
         class ScreenManager {
 
@@ -19,8 +18,15 @@ namespace video {
             std::shared_ptr<Screen> currentScreen;
 
         public:
+
+            ScreenManager(
+                    std::shared_ptr<Screen> initialScreen
+                    );
+
             std::shared_ptr<Screen> getCurrentScreen();
-            void switchToScreen(std::shared_ptr<Screen> screen);
+
+
+            //void switchToScreen(std::shared_ptr<Screen> screen);
 
             void focusFirstItem();
             void focusNextItem(int clicks);
@@ -29,7 +35,6 @@ namespace video {
 
         };
 
-    } // video
-} // ScreenManager
+    } // ScreenManager
 
 #endif //PICOTEMPLATE_SCREENMANAGER_H

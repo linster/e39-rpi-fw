@@ -40,6 +40,9 @@ namespace video {
 
                 uint16_t getDisplayHeightPx();
                 uint16_t getDisplayWidthPx();
+
+                /** Returns true if the scan program should keep running, false if it should end it's render loop */
+                bool shouldKeepRunning();
             };
 
         } // video

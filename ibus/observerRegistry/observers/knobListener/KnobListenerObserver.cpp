@@ -5,12 +5,17 @@
 #include "KnobListenerObserver.h"
 #include "fmt/format.h"
 
-namespace pico {
-    namespace ibus {
-        namespace observers {
+namespace pico::ibus::observers {
 
-            KnobListenerObserver::KnobListenerObserver(std::shared_ptr<logger::BaseLogger> baseLogger) {
+            KnobListenerObserver::KnobListenerObserver(
+                    std::shared_ptr<logger::BaseLogger> baseLogger,
+                    std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper,
+                    std::shared_ptr<pico::hardware::videoSwitch::VideoSwitch> videoSwitch,
+                    std::shared_ptr<video::ScreenManager::ScreenManager> screenManager) {
                 this->logger = baseLogger;
+                this->scanProgramSwapper = scanProgramSwapper;
+                this->videoSwitch = videoSwitch;
+                this->screenManager = screenManager;
             }
 
             void KnobListenerObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
@@ -41,17 +46,39 @@ namespace pico {
 
             void KnobListenerObserver::onKnobTurnedLeft(int clicks) {
                 logger->d(getTag(), fmt::format("onKnobTurnedLeft, clicks {:d}", clicks));
+
+                if (videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
+                    scanProgramSwapper->getCurrentScanProgram() == video::scanProgram::ScanProgramSwapper::ScanProgram::MENU) {
+
+                    logger->d(getTag(), "Dispatching to ScreenManager");
+
+                    screenManager->focusPreviousItem(clicks);
+                }
             }
 
             void KnobListenerObserver::onKnobTurnedRight(int clicks) {
                 logger->d(getTag(), fmt::format("onKnobTurnedRight, clicks {:d}", clicks));
+
+                if (videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
+                    scanProgramSwapper->getCurrentScanProgram() == video::scanProgram::ScanProgramSwapper::ScanProgram::MENU) {
+
+                    logger->d(getTag(), "Dispatching to ScreenManager");
+
+                    screenManager->focusNextItem(clicks);
+                }
             }
 
             void KnobListenerObserver::onKnobPressed() {
                 logger->d(getTag(), "onKnobPressed");
+
+                if (videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
+                    scanProgramSwapper->getCurrentScanProgram() == video::scanProgram::ScanProgramSwapper::ScanProgram::MENU) {
+
+                    logger->d(getTag(), "Dispatching to ScreenManager");
+
+                    screenManager->clickOnItem();
+                }
             }
 
 
-        } // pico
-    } // ibus
-} // observers
+        } // observers

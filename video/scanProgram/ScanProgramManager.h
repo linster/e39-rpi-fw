@@ -10,6 +10,8 @@ namespace video {
 
         class ScanProgramManager {
 
+
+            //This should get a reference to scan program swapper
         };
 
     } // video
