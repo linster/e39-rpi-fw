@@ -21,7 +21,7 @@ namespace video {
             public:
 
                 SafePi4PowerOffMenuItem(
-                        std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter;
+                        std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter
                         );
 
                 std::string getLabel() override;

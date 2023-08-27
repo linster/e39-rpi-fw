@@ -15,7 +15,8 @@ namespace pico {
 
 
             this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::GpioPi4PowerSwitchManager>(this->logger);
-            this->videoSwitch = std::make_shared<hardware::videoSwitch::mock::MockVideoSwitch>(this->logger);
+
+            this->videoSwitch = std::make_shared<hardware::videoSwitch::max4314::Max4314VideoSwitch>(this->logger);
 
             std::shared_ptr<config::FlashConfigurationStore> flashConfigurationStore = std::make_shared<config::FlashConfigurationStore>();
             std::shared_ptr<ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter =

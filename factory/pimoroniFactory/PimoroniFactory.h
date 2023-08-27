@@ -11,6 +11,7 @@
 #include "../../hardware/pi4powerswitch/MockPi4PowerSwitchManager.h"
 #include "../../hardware/pi4powerswitch/GpioPi4PowerSwitchManager.h"
 #include "../../hardware/videoSwitch/mock/MockVideoSwitch.h"
+#include "../../hardware/videoSwitch/max4314/Max4314VideoSwitch.h"
 #include "../../ibus/observerRegistry/observers/BaseObserver.h"
 #include "../../ibus/observerRegistry/observers/mockObserver/MockObserver.h"
 #include "../../ibus/observerRegistry/ObserverRegistry.h"
@@ -25,7 +26,7 @@ namespace pico {
         private:
             std::shared_ptr<logger::BaseLogger> logger;
             std::shared_ptr<hardware::pi4powerswitch::IPi4PowerSwitchManager> powerSwitchManager;
-            std::shared_ptr<hardware::videoSwitch::mock::MockVideoSwitch> videoSwitch;
+            std::shared_ptr<pico::hardware::videoSwitch::VideoSwitch> videoSwitch;
             std::shared_ptr<config::ConfigurationManager> configurationManager;
             std::shared_ptr<video::scanProgram::ScanProgramManager> scanProgramManager;
             std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;

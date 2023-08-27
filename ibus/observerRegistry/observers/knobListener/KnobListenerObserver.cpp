@@ -48,7 +48,7 @@ namespace pico::ibus::observers {
                 logger->d(getTag(), fmt::format("onKnobTurnedLeft, clicks {:d}", clicks));
 
                 if (videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
-                    scanProgramSwapper->getCurrentScanProgram() == video::scanProgram::ScanProgramSwapper::ScanProgram::MENU) {
+                    scanProgramSwapper->getCurrentScanProgram() == ScanProgram::MENU) {
 
                     logger->d(getTag(), "Dispatching to ScreenManager");
 
@@ -60,7 +60,7 @@ namespace pico::ibus::observers {
                 logger->d(getTag(), fmt::format("onKnobTurnedRight, clicks {:d}", clicks));
 
                 if (videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
-                    scanProgramSwapper->getCurrentScanProgram() == video::scanProgram::ScanProgramSwapper::ScanProgram::MENU) {
+                    scanProgramSwapper->getCurrentScanProgram() == ScanProgram::MENU) {
 
                     logger->d(getTag(), "Dispatching to ScreenManager");
 
@@ -72,7 +72,7 @@ namespace pico::ibus::observers {
                 logger->d(getTag(), "onKnobPressed");
 
                 if (videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
-                    scanProgramSwapper->getCurrentScanProgram() == video::scanProgram::ScanProgramSwapper::ScanProgram::MENU) {
+                    scanProgramSwapper->getCurrentScanProgram() == ScanProgram::MENU) {
 
                     logger->d(getTag(), "Dispatching to ScreenManager");
 

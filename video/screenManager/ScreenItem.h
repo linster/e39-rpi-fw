@@ -18,7 +18,7 @@ namespace video::ScreenManager {
             virtual std::string getLabel();
 
             virtual void onItemFocused();
-            virtual void onItemUnfocued();
+            virtual void onItemUnfocused();
 
             virtual void onItemClicked();
 

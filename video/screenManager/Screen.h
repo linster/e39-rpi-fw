@@ -28,10 +28,22 @@ namespace video::ScreenManager {
             //TODO maybe a mutex for when it's okay to modify this focusedIndex?
 
             mutex_t screenMutex;
+
+
+            void callOnUnFocusItem(int index);
+            void callOnFocusItem(int index);
+
+
+            /** When true, every focus event prints the menu as ascii art */
+            bool debugPrintAsciiArt = true;
         protected:
             void initialize(
                     std::shared_ptr<pico::logger::BaseLogger> logger
                     );
+
+
+            /** A string that's a centered title */
+            virtual std::string getTitle() = 0;
 
             virtual std::string getTag() = 0;
         public:
@@ -39,8 +51,6 @@ namespace video::ScreenManager {
             /** Subclasses must implement this to indicate items */
             virtual std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>>getScreenItems();
 
-            /** A string that's a centered title */
-            virtual std::string getTitle() = 0;
 
             void focusFirstItem();
             void focusNextItem(int clicks);

@@ -20,25 +20,28 @@ namespace pico {
 
 //        pi4PowerSwitchManager->setPower(false);
 
-        dmaManager->cpu0setup();
+//        dmaManager->cpu0setup();
+
+        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::RVC);
     }
 
     void ApplicationContainer::onLoop() {
 //        logger->d("onLoop", "onLoop");
-        if (cpu0LoopCount % 1 == 0) {
-            logger->d("onLoop", fmt::format("Loop count {}", cpu0LoopCount++));
-        }
+//        if (cpu0LoopCount % 1 == 0) {
+//            logger->d("onLoop", fmt::format("Loop count {}", cpu0LoopCount++));
+//        }
         //
-//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
-//        sleep_ms(2000);
-//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
+        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::RVC);
+        sleep_ms(4000);
+        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
+        sleep_ms(4000);
 //
 //        sleep_ms(2000);
 //        pi4PowerSwitchManager->setPower(true);
 //        sleep_ms(2000);
 //        pi4PowerSwitchManager->setPower(false);
 
-        dmaManager->onCpu0Loop();
+//        dmaManager->onCpu0Loop();
 
         //sleep_ms(2000);
         //heartbeatResponseWriter->sendHeartbeatResponse();

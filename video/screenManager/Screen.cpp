@@ -39,10 +39,13 @@ namespace video::ScreenManager {
             return;
         }
         if (clicks == 1) {
+            int oldFocusedIndex = focusedIndex;
+            callOnUnFocusItem(oldFocusedIndex);
             focusedIndex = focusedIndex + 1;
             if (focusedIndex == this->getScreenItems().size()) {
                 focusedIndex = 0;
             }
+            callOnFocusItem(focusedIndex);
             logger->d(getTag(), fmt::format("focusNextItem: New focusedIndex: {}", focusedIndex));
         }
 
@@ -64,10 +67,13 @@ namespace video::ScreenManager {
             return;
         }
         if (clicks == 1) {
+            int oldFocusedIndex = focusedIndex;
+            callOnUnFocusItem(oldFocusedIndex);
             focusedIndex = focusedIndex - 1;
             if (focusedIndex < 0) {
                 focusedIndex = this->getScreenItems().size() - 1;
             }
+            callOnFocusItem(focusedIndex);
             logger->d(getTag(), fmt::format("focusPreviousItem: New focusedIndex: {}", focusedIndex));
         }
 
@@ -88,6 +94,49 @@ namespace video::ScreenManager {
         logger->d(getTag(), fmt::format("Dispatching click to item with label: {}", item->getLabel()));
         item->onItemClicked();
         logger->d(getTag(), fmt::format("Dispatched click to item with label: {}", item->getLabel()));
+    }
+
+    void Screen::callOnFocusItem(int index) {
+        logger->d(getTag(), fmt::format("Focusing item with index: {}", index));
+
+        auto item = getScreenItems()[index];
+
+        item->onItemUnfocused();
+
+        if (this->debugPrintAsciiArt) {
+            drawToLogger(logger);
+        }
+
+        logger->d(getTag(), fmt::format("Focused item with index: {}", index));
+    }
+
+    void Screen::callOnUnFocusItem(int index) {
+        logger->d(getTag(), fmt::format("UnFocusing item with index: {}", index));
+
+        auto item = getScreenItems()[index];
+
+        item->onItemFocused();
+
+        logger->d(getTag(), fmt::format("UnFocused item with index: {}", index));
+    }
+
+    void Screen::drawToLogger(std::shared_ptr<pico::logger::BaseLogger> logger) {
+        std::string debugTag = fmt::format("ASCII_SCREEN", getTitle());
+
+        logger->d(debugTag, fmt::format("=== %s ===", getTitle()));
+
+        for (int i = 0; i < getScreenItems().size() -1 ; i++) {
+
+            auto item = getScreenItems()[i];
+
+            if (focusedIndex == i) {
+                logger->d(debugTag, fmt::format("> %s", item->getLabel()));
+            } else {
+                logger->d(debugTag, fmt::format("- %s", item->getLabel()));
+            }
+        }
+
+        logger->d(debugTag, fmt::format("^^^ %s ^^^", getTitle()));
     }
 
 

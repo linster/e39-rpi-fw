@@ -79,7 +79,7 @@ namespace pico {
                         //Turn the pi on
                         pi4PowerSwitchManager->setPower(true);
                         videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PICO);
-                        scanProgramSwapper->swapTo(video::scanProgram::ScanProgramSwapper::ScanProgram::CLOCK);
+                        scanProgramSwapper->swapTo(ScanProgram::CLOCK);
                         screenPowerManager->sendScreenPowerMessage(true);
                         //TODO The PI will need to monitor for a 2->1 transition state,
                         //TODO and if it happens, start halting right away.

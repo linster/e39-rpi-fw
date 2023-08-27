@@ -5,18 +5,13 @@
 #ifndef PICOTEMPLATE_SCANPROGRAMSWAPPER_H
 #define PICOTEMPLATE_SCANPROGRAMSWAPPER_H
 
+#include "ScanProgram.h"
+
 namespace video::scanProgram {
 
         class ScanProgramSwapper {
 
         public:
-            enum ScanProgram {
-                BOOT_SPLASH,
-                CLOCK,
-                DEMO,
-                MENU,
-                NOOP
-            };
 
             void swapTo(ScanProgram scanProgram);
 

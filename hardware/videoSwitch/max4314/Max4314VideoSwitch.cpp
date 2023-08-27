@@ -18,15 +18,17 @@ namespace pico {
                     logger->d("Max4314VideoSwitch", "Setting previous video source to default to RVC.");
                     previousVideoSource = RVC;
 
+                    gpio_set_function(gpio_pin_lsb, GPIO_FUNC_SIO);
+                    gpio_set_function(gpio_pin_msb, GPIO_FUNC_SIO);
                     //TODO use bit masks for this later.
                     gpio_set_dir(gpio_pin_lsb, true);
                     gpio_set_dir(gpio_pin_msb, true);
-                    gpio_pull_down(gpio_pin_lsb);
-                    gpio_pull_down(gpio_pin_msb);
+
+                    switchTo(RVC);
                 }
 
                 void Max4314VideoSwitch::switchTo(pico::hardware::videoSwitch::VideoSource source) {
-                    logger->d("Max4314VideoSwitch", fmt::format("Setting video source to %i", (int)source));
+                    logger->d("Max4314VideoSwitch", fmt::format("Setting video source to {:x}", (int)source));
                     switch (source) {
                         case VideoSource::RVC:
                             gpio_put(gpio_pin_msb, false);
@@ -51,7 +53,7 @@ namespace pico {
                 }
 
                 VideoSource Max4314VideoSwitch::getPreviousVideoSource() {
-                    logger->d("Max4314VideoSwitch", fmt::format("Returning previous video source: %i", (int)previousVideoSource));
+                    logger->d("Max4314VideoSwitch", fmt::format("Returning previous video source: {:x}", (int)previousVideoSource));
                     return previousVideoSource;
                 }
 

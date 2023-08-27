@@ -35,7 +35,7 @@ namespace pico {
             void TelephoneLongPressObserver::onTelephoneLongPressed() {
                 logger->d(getTag(), "onTelephoneLongPressed()");
 
-                scanProgramSwapper->swapTo(video::scanProgram::ScanProgramSwapper::ScanProgram::MENU);
+                scanProgramSwapper->swapTo(ScanProgram::MENU);
                 videoSwitch->switchTo(hardware::videoSwitch::PICO);
                 screenPowerManager->sendScreenPowerMessage(true);
             }
