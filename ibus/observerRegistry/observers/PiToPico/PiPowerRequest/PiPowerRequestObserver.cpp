@@ -4,9 +4,7 @@
 
 #include "PiPowerRequestObserver.h"
 
-namespace pico {
-    namespace ibus {
-        namespace observers {
+namespace pico::ibus::observers {
 
             PiPowerRequestObserver::PiPowerRequestObserver(
                     std::shared_ptr<logger::BaseLogger> logger,
@@ -33,6 +31,4 @@ namespace pico {
                 }
             }
 
-        } // pico
-    } // ibus
-} // observers
+        } // observers

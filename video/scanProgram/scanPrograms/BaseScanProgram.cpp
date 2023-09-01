@@ -13,9 +13,19 @@
 #include "pico/sync.h"
 #include "pico/stdlib.h"
 
-namespace video {
-    namespace scanProgram {
-        namespace scanPrograms {
-        } // video
-    } // scanProgram
+namespace video::scanProgram::scanPrograms {
+
+
+    void BaseScanProgram::init(
+            std::shared_ptr<pico::logger::BaseLogger> logger
+            ) {
+
+        this->logger = logger;
+
+        mutex_init(&this->isScanProgramRunningMutex);
+
+        logger->d("BaseScanProgram", "Completed init()");
+    }
+
+
 } // scanPrograms

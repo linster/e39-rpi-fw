@@ -25,14 +25,16 @@ namespace pico {
         std::shared_ptr<hardware::pi4powerswitch::IPi4PowerSwitchManager> pi4PowerSwitchManager;
         std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch;
         std::shared_ptr<config::ConfigurationManager> configurationManager;
-        std::shared_ptr<video::scanProgram::ScanProgramManager> scanProgramManager;
-        std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;
+
         std::shared_ptr<ibus::observerRegistry::ObserverRegistry> observerRegistry;
         std::shared_ptr<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>> baseObservers;
 
         std::shared_ptr<ibus::dma::DmaManager> dmaManager;
 
         std::shared_ptr<ibus::output::writer::HeartbeatResponseWriter> heartbeatResponseWriter;
+
+        std::shared_ptr<video::scanProgram::ScanProgramManager> scanProgramManager;
+        std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;
 
         //Setup the second core.
         void setupCpu1();

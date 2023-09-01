@@ -7,11 +7,24 @@
 
 #include "ScanProgram.h"
 
+#include <memory>
+#include "ScanProgramManager.h"
+#include "../../logging/BaseLogger.h"
+
 namespace video::scanProgram {
 
         class ScanProgramSwapper {
 
+        private:
+            std::shared_ptr<pico::logger::BaseLogger> logger;
+            std::shared_ptr<ScanProgramManager> scanProgramManager;
+
         public:
+
+            ScanProgramSwapper(
+                    std::shared_ptr<pico::logger::BaseLogger> logger,
+                    std::shared_ptr<ScanProgramManager> scanProgramManager
+            );
 
             void swapTo(ScanProgram scanProgram);
 

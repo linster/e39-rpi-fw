@@ -23,18 +23,23 @@ namespace pico {
 //        dmaManager->cpu0setup();
 
         videoSwitch->switchTo(hardware::videoSwitch::VideoSource::RVC);
+
+        scanProgramManager->cpu0setup();
+
+        scanProgramSwapper->swapTo(ScanProgram::DEMO);
     }
 
     void ApplicationContainer::onLoop() {
+        scanProgramManager->onCpu0Loop();
 //        logger->d("onLoop", "onLoop");
 //        if (cpu0LoopCount % 1 == 0) {
 //            logger->d("onLoop", fmt::format("Loop count {}", cpu0LoopCount++));
 //        }
         //
-        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::RVC);
-        sleep_ms(4000);
-        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
-        sleep_ms(4000);
+//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::RVC);
+//        sleep_ms(4000);
+//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
+//        sleep_ms(4000);
 //
 //        sleep_ms(2000);
 //        pi4PowerSwitchManager->setPower(true);
@@ -45,15 +50,19 @@ namespace pico {
 
         //sleep_ms(2000);
         //heartbeatResponseWriter->sendHeartbeatResponse();
+
+
     }
 
     void ApplicationContainer::onCpu1Main() {
         logger->i("onCpu1Main", "onCpu1Main");
         dmaManager->cpu1Setup();
+        scanProgramManager->cpu1setup();
         logger->i("onCpu1Main", "dmaManager->cpu1Setup() done");
     }
 
     void ApplicationContainer::onCpu1Loop() {
         dmaManager->onCpu1Loop();
+        scanProgramManager->onCpu1Loop();
     }
 } // pico

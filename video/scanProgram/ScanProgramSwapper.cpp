@@ -6,5 +6,23 @@
 
 namespace video {
     namespace scanProgram {
+        ScanProgramSwapper::ScanProgramSwapper(
+                std::shared_ptr <pico::logger::BaseLogger> logger,
+                std::shared_ptr <ScanProgramManager> scanProgramManager) {
+
+            this->logger = logger;
+            this->scanProgramManager = scanProgramManager;
+        }
+
+        void ScanProgramSwapper::swapTo(ScanProgram scanProgram) {
+            logger->d("ScanProgramSwapper", );
+            scanProgramManager->swapTo(scanProgram);
+        }
+
+        ScanProgram ScanProgramSwapper::getCurrentScanProgram() {
+            return scanProgramManager->getCurrentScanProgram();
+        }
+
+
     } // video
 } // scanProgram
