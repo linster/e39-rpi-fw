@@ -8,6 +8,7 @@
 #include "../BaseOutputWriter.h"
 #include "../../../logging/BaseLogger.h"
 #include "../../../configuration/Configuration.h"
+#include "../../../configuration/default/PimoroniDefaultConfigurationProvider.h"
 
 namespace pico {
     namespace ibus {
@@ -18,6 +19,7 @@ namespace pico {
 
                 private:
                     std::shared_ptr<logger::BaseLogger> logger;
+                    std::shared_ptr<config::defaults::PimoroniDefaultConfigurationProvider> defaultConfigurationProvider;
                     std::shared_ptr<pico::config::Configuration> defaultConfiguration;
                     std::shared_ptr<dma::DmaManager> dmaManager;
                     //https://github.com/piersholt/wilhelm-docs/blob/master/bmbt/4f.md
@@ -32,7 +34,7 @@ namespace pico {
                     bool isPowerOn;
                 public:
                     ScreenPowerManager(
-                            std::shared_ptr<pico::config::Configuration> defaultConfiguration,
+                            std::shared_ptr<config::defaults::PimoroniDefaultConfigurationProvider> defaultConfigurationProvider,
                             std::shared_ptr<logger::BaseLogger> baseLogger,
                             std::shared_ptr<dma::DmaManager> dmaManager
                             );

@@ -20,9 +20,7 @@
 #include "../../../configuration/ConfigurationManager.h"
 #include "ConfigPushMenuItem.h"
 
-namespace video {
-    namespace ScreenManager {
-        namespace MainScreen {
+namespace video::ScreenManager::MainScreen {
 
             class MainScreen : Screen {
 
@@ -65,8 +63,6 @@ namespace video {
                 std::string getTag() override;
             };
 
-        } // video
-    } // ScreenManager
-} // MainScreen
+        } // MainScreen
 
 #endif //PICOTEMPLATE_MAINSCREEN_H

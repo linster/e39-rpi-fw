@@ -10,12 +10,12 @@ namespace pico {
             namespace writer {
 
                 ScreenPowerManager::ScreenPowerManager(
-                        std::shared_ptr<pico::config::Configuration> defaultConfiguration,
+                        std::shared_ptr<config::defaults::PimoroniDefaultConfigurationProvider> defaultConfigurationProvider,
                         std::shared_ptr<logger::BaseLogger> baseLogger,
                         std::shared_ptr<dma::DmaManager> dmaManager) {
 
                     this->logger = baseLogger;
-                    this->defaultConfiguration = defaultConfiguration;
+                    this->defaultConfiguration = std::make_shared<config::Configuration>(defaultConfigurationProvider->getDefaultConfiguration());
                     this->dmaManager = dmaManager;
 
                     aspectRatioIs16_9 = defaultConfiguration->getAspectRatio() == messages::ConfigMessage::AspectRatio::SixteenNine;
@@ -36,6 +36,7 @@ namespace pico {
                 }
 
                 void ScreenPowerManager::setScreenPowerStateFromObservedIbusMessage(bool isOn) {
+                    //TODO this needs to be hooked up to the ObserverRegistry... maybe need a separate observer for this?
                     logger->d(getTag(), fmt::format("setScreenPowerStateFromObservedIbusMessage. Current state is: {:b}", this->isPowerOn));
                     logger->d(getTag(), fmt::format("setScreenPowerStateFromObservedIbusMessage, new state is: {:b}", isOn));
 

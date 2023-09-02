@@ -54,6 +54,9 @@ namespace pico::ibus::observers {
 
                     screenManager->focusPreviousItem(clicks);
                 }
+                if (debugDraw) {
+                    screenManager->getCurrentScreen()->drawToLogger(logger);
+                }
             }
 
             void KnobListenerObserver::onKnobTurnedRight(int clicks) {
@@ -65,6 +68,9 @@ namespace pico::ibus::observers {
                     logger->d(getTag(), "Dispatching to ScreenManager");
 
                     screenManager->focusNextItem(clicks);
+                }
+                if (debugDraw) {
+                    screenManager->getCurrentScreen()->drawToLogger(logger);
                 }
             }
 

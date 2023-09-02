@@ -83,7 +83,6 @@ target_sources(
         logging/BaseLogger.h
         logging/StdioPrintFLogger.cpp
         logging/StdioPrintFLogger.h
-        video/scanProgram/scanPrograms/bmbtVGATiming.cpp
         video/scanProgram/scanPrograms/BaseScanProgram.cpp
         configuration/store/IConfigurationStore.cpp
         configuration/store/IConfigurationStore.h

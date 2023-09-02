@@ -32,6 +32,8 @@ namespace pico::ibus::observers {
                 void onKnobTurnedRight(int clicks);
                 void onKnobTurnedLeft(int clicks);
                 void onKnobPressed();
+
+                bool debugDraw = true;
             protected:
                 std::string getTag() override { return "KnobListenerObserver"; };
                 void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) override;

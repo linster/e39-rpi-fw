@@ -9,6 +9,7 @@
 #include "pico/mutex.h"
 #include "ScanProgram.h"
 
+#include "scanPrograms/BaseScanProgram.h"
 #include "scanPrograms/noop/NoopScanProgram.h"
 #include "scanPrograms/menu/MenuScanProgram.h"
 #include "scanPrograms/demo/DemoScanProgram.h"
@@ -16,6 +17,8 @@
 #include "scanPrograms/bootsplash/BootsplashScanProgram.h"
 
 #include "../../logging/BaseLogger.h"
+#include "fmt/format.h"
+
 namespace video::scanProgram {
 
         class ScanProgramManager {
@@ -34,17 +37,18 @@ namespace video::scanProgram {
             //True to make all the running hooks do nothing.
             bool classIsNoOp = true;
 
+            static std::string getTag();
+
             /** Guard the currently running scan program */
             mutex_t scanProgramStateMutex;
+            //Guard: scanProgramStateMutex
+            ScanProgram previousScanProgram = NOOP;
+            ScanProgram currentScanProgram = NOOP;
+            //End Guard: scanProgramStateMutex
+
+            std::shared_ptr<scanPrograms::BaseScanProgram> getScanProgramPtr(ScanProgram scanProgram);
 
 
-
-
-            mutex_t scanProgramMutex;
-
-
-            void cpu0swapScanprogam(ScanProgram scanProgram);
-            ScanProgram cpu0getCurrentScanprogram();
 
         public:
 

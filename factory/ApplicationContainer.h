@@ -36,9 +36,6 @@ namespace pico {
         std::shared_ptr<video::scanProgram::ScanProgramManager> scanProgramManager;
         std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;
 
-        //Setup the second core.
-        void setupCpu1();
-
         uint8_t cpu0LoopCount = 0;
     public:
 
