@@ -15,7 +15,7 @@ namespace video {
         }
 
         void ScanProgramSwapper::swapTo(ScanProgram scanProgram) {
-            logger->d("ScanProgramSwapper", );
+            logger->d("ScanProgramSwapper", "Swapping to scan program");
             scanProgramManager->swapTo(scanProgram);
         }
 

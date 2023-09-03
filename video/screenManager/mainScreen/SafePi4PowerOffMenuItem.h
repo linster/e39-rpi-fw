@@ -9,9 +9,7 @@
 #include "../../../ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.h"
 #include "../ScreenItem.h"
 
-namespace video {
-    namespace ScreenManager {
-        namespace MainScreen {
+namespace video::ScreenManager::MainScreen {
 
             class SafePi4PowerOffMenuItem : ScreenItem {
 
@@ -29,8 +27,6 @@ namespace video {
 
             };
 
-        } // video
-    } // ScreenManager
-} // MainScreen
+        } // MainScreen
 
 #endif //PICOTEMPLATE_SAFEPI4POWEROFFMENUITEM_H

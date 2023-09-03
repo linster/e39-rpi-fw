@@ -10,11 +10,9 @@
 #include "../../../ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h"
 #include "../../../configuration/ConfigurationManager.h"
 
-namespace video {
-    namespace ScreenManager {
-        namespace MainScreen {
+namespace video::ScreenManager::MainScreen {
 
-            class ConfigPushMenuItem : ScreenItem {
+            class ConfigPushMenuItem : public ScreenItem {
 
             private:
                 std::shared_ptr<pico::ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter;
@@ -30,8 +28,6 @@ namespace video {
                 void onItemClicked() override;
             };
 
-        } // video
-    } // ScreenManager
 } // MainScreen
 
 #endif //PICOTEMPLATE_CONFIGPUSHMENUITEM_H

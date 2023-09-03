@@ -16,7 +16,7 @@ namespace video::scanProgram::scanPrograms::bootsplash {
 
     public:
         BootsplashScanProgram(
-            std::shared_ptr<pico::logger::BaseLogger> logger;
+            std::shared_ptr<pico::logger::BaseLogger> logger
         );
 
     protected:

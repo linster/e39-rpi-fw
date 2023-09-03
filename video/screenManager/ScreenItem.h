@@ -15,12 +15,12 @@ namespace video::ScreenManager {
             bool isFocused;
         public:
 
-            virtual std::string getLabel();
+            virtual std::string getLabel() = 0;
 
-            virtual void onItemFocused();
-            virtual void onItemUnfocused();
+            virtual void onItemFocused() {};
+            virtual void onItemUnfocused() { };
 
-            virtual void onItemClicked();
+            virtual void onItemClicked() = 0;
 
             bool getIsFocused();
         };

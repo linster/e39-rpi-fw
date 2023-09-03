@@ -9,9 +9,7 @@
 #include "../ScreenItem.h"
 #include "../../../hardware/videoSwitch/VideoSwitch.h"
 
-namespace video {
-    namespace ScreenManager {
-        namespace MainScreen {
+namespace video::ScreenManager::MainScreen {
 
             class VideoToUpstreamMenuItem : ScreenItem {
 
@@ -27,8 +25,6 @@ namespace video {
 
             };
 
-        } // video
-    } // ScreenManager
-} // MainScreen
+        } // MainScreen
 
 #endif //PICOTEMPLATE_VIDEOTOUPSTREAMMENUITEM_H

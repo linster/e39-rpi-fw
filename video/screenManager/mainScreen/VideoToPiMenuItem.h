@@ -9,9 +9,7 @@
 #include "../ScreenItem.h"
 #include "../../../hardware/videoSwitch/VideoSwitch.h"
 
-namespace video {
-    namespace ScreenManager {
-        namespace MainScreen {
+namespace video::ScreenManager::MainScreen {
 
             class VideoToPiMenuItem : ScreenItem {
 
@@ -26,8 +24,6 @@ namespace video {
                 std::string getLabel() override;
             };
 
-        } // video
-    } // ScreenManager
-} // MainScreen
+        } // MainScreen
 
 #endif //PICOTEMPLATE_VIDEOTOPIMENUITEM_H

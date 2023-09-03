@@ -4,9 +4,7 @@
 
 #include "ConfigPushMenuItem.h"
 
-namespace video {
-    namespace ScreenManager {
-        namespace MainScreen {
+namespace video::ScreenManager::MainScreen {
 
             ConfigPushMenuItem::ConfigPushMenuItem(
                     std::shared_ptr<pico::ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter,
@@ -23,6 +21,4 @@ namespace video {
                 configurationStatusWriter->scheduleEmit(
                         configurationManager->getConfigurationCopy().toMessage());
             }
-        } // video
-    } // ScreenManager
 } // MainScreen

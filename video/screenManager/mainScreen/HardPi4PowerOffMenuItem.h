@@ -9,9 +9,7 @@
 #include "../../../hardware/pi4powerswitch/IPi4PowerSwitchManager.h"
 #include "../ScreenItem.h"
 
-namespace video {
-    namespace ScreenManager {
-        namespace MainScreen {
+namespace video::ScreenManager::MainScreen {
 
             class HardPi4PowerOffMenuItem : ScreenItem {
 
@@ -27,8 +25,6 @@ namespace video {
                 std::string getLabel() override;
             };
 
-        } // video
-    } // ScreenManager
-} // MainScreen
+        } // MainScreen
 
 #endif //PICOTEMPLATE_HARDPI4POWEROFFMENUITEM_H

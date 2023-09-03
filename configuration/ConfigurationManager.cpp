@@ -57,5 +57,9 @@ namespace pico {
 //            flashConfigurationStore->saveConfiguration(configuration1);
             iBusConfigMessageStore->saveConfiguration(configuration1);
         }
+
+        Configuration ConfigurationManager::getConfigurationCopy() {
+            return Configuration(messages::ConfigMessage());
+        }
     } // pico
 } // config
