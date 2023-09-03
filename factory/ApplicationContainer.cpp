@@ -27,6 +27,8 @@ namespace pico {
         scanProgramManager->cpu0setup();
 
         scanProgramSwapper->swapTo(ScanProgram::DEMO);
+
+        videoSwitch->switchTo(hardware::videoSwitch::PICO);
     }
 
     void ApplicationContainer::onLoop() {

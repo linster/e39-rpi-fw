@@ -13,7 +13,7 @@
 #include "pico/scanvideo.h"
 #include "../../pico_extras/src/common/pico_scanvideo/scanvideo.pio.h"
 #include "../../../logging/BaseLogger.h"
-
+#include "pico/scanvideo/composable_scanline.h""
 
 namespace video::scanProgram::scanPrograms {
 

@@ -9,14 +9,14 @@
 #include "GpioPi4PowerSwitchManager.h"
 #include "../../libs/fmt/include/fmt/format.h"
 
-namespace pico {
-    namespace hardware {
-        namespace pi4powerswitch {
+namespace pico::hardware::pi4powerswitch {
 
             GpioPi4PowerSwitchManager::GpioPi4PowerSwitchManager(std::shared_ptr<logger::BaseLogger> baseLogger) {
                 this->logger = baseLogger;
 
                 logger->d("GpioPi4PowerSwitchManager", "Constructor");
+
+                gpio_set_function(gpio_pin, GPIO_FUNC_SIO);
 
                 gpio_init(gpio_pin);
                 gpio_set_dir(gpio_pin, GPIO_OUT);
@@ -29,6 +29,4 @@ namespace pico {
                 gpio_put(gpio_pin, isOn);
             }
 
-        } // pico
-    } // hardware
 } // pi4powerswitch

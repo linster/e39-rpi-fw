@@ -117,7 +117,7 @@ namespace pico::di {
                      scanProgramSwapper,
                      screenPowerManager
                      );
-             
+
             this->observerRegistry = std::make_shared<ibus::observerRegistry::ObserverRegistry>(this->logger);
             this->baseObservers = std::make_shared<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>>(
                     std::vector<std::shared_ptr<ibus::observers::BaseObserver>>()
