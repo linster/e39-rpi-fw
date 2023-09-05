@@ -23,9 +23,9 @@ namespace video::scanProgram::scanPrograms {
 
         this->logger = logger;
 
+
         mutex_init(&this->isScanProgramRunningMutex);
 
-        scanvideo_setup(&mode_bmbt);
 
         logger->d(getTag(), "Completed init()");
     }

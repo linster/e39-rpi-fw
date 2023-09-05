@@ -6,6 +6,8 @@
 #define PICOTEMPLATE_SCANPROGRAMMANAGER_H
 
 #include <memory>
+#include <cstdint>
+#include "pico/stdio.h"
 #include "pico/mutex.h"
 #include "ScanProgram.h"
 
@@ -18,6 +20,11 @@
 
 #include "../../logging/BaseLogger.h"
 #include "fmt/format.h"
+
+#include "hardware/pll.h"
+#include "hardware/clocks.h"
+#include "hardware/structs/pll.h"
+#include "hardware/structs/clocks.h"
 
 namespace video::scanProgram {
 
@@ -35,7 +42,7 @@ namespace video::scanProgram {
             std::shared_ptr<video::scanProgram::scanPrograms::bootsplash::BootsplashScanProgram> bootsplashScanProgram;
 
             //True to make all the running hooks do nothing.
-            bool classIsNoOp = true;
+            bool classIsNoOp = false;
 
             static std::string getTag();
 
@@ -49,6 +56,7 @@ namespace video::scanProgram {
             std::shared_ptr<scanPrograms::BaseScanProgram> getScanProgramPtr(ScanProgram scanProgram);
 
 
+            void measureFreqs();
 
         public:
 

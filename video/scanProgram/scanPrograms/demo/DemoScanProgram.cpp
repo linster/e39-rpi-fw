@@ -34,13 +34,13 @@ namespace video::scanProgram::scanPrograms::demo {
         uint16_t *p = (uint16_t *) scanline_buffer->data;
 
         *p++ = COMPOSABLE_COLOR_RUN;
-        if (scanline_buffer->scanline_id < 117) {
+//        if (scanline_buffer->scanline_id < 117) {
             //Blue
             *p++ = color_blue;
-        } else {
+//        } else {
             //Yellow
-            *p++ = color_yellow;
-        }
+//            *p++ = color_yellow;
+//        }
         // black pixel to end line
         *p++ = COMPOSABLE_RAW_1P;
         *p++ = PICO_SCANVIDEO_PIXEL_FROM_RGB5(0,0,0);

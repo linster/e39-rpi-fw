@@ -15,6 +15,9 @@
 #include "../../../logging/BaseLogger.h"
 #include "pico/scanvideo/composable_scanline.h"
 
+#include "fmt/format.h"
+
+
 namespace video::scanProgram::scanPrograms {
 
             class BaseScanProgram {
@@ -42,20 +45,7 @@ namespace video::scanProgram::scanPrograms {
                 //todo nope, we're doing rendering on cpu0. We have LIN interrupts on cpu1.
                 void onCpu1Loop();
 
-
-            private:
-
-                std::shared_ptr<pico::logger::BaseLogger> logger;
-
-                //Guard isScanProgramRunningMutex
-                mutex_t isScanProgramRunningMutex;
-                bool isScanProgramRunning;
-                //End Guard: isScanProgramRunningMutex
-
-                scanvideo_timing_t getScanProgramTiming();
-                scanvideo_mode_t getScanVideoMode();
-
-                //https://github.com/linster/e39-rpi/blob/master/systemImage/builder/config_txt/config.400x234.menu.ntsc.txt
+//https://github.com/linster/e39-rpi/blob/master/systemImage/builder/config_txt/config.400x234.menu.ntsc.txt
                 //hdmi_timings=400 0 20 29 59 234 0 7 3 19 0 0 0 50 1 7867500 3
                 //hdmi_timings=
                 // h_active_pixels = 400
@@ -76,7 +66,8 @@ namespace video::scanProgram::scanPrograms {
                 // pixel_freq = 7867500
                 // aspect_ratio (16:9) = 3
                 constexpr static const scanvideo_timing_t vga_timing_bmbt = {
-                        .clock_freq = 7867500,
+//                        .clock_freq = 7867500, //Original.
+                        .clock_freq = 7875000, //CPU needs to go up to 125MHz.
 
                         .h_active = 400, /* OK */
                         .v_active = 234, /* OK */
@@ -106,6 +97,19 @@ namespace video::scanProgram::scanPrograms {
                         .yscale = 1,
                         .yscale_denominator = 1
                 };
+
+            private:
+
+                std::shared_ptr<pico::logger::BaseLogger> logger;
+
+                //Guard isScanProgramRunningMutex
+                mutex_t isScanProgramRunningMutex;
+                bool isScanProgramRunning;
+                //End Guard: isScanProgramRunningMutex
+
+                scanvideo_timing_t getScanProgramTiming();
+                scanvideo_mode_t getScanVideoMode();
+
 
             protected:
 

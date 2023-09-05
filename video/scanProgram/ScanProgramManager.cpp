@@ -12,7 +12,7 @@ namespace video::scanProgram {
         }
 
         void ScanProgramManager::swapTo(ScanProgram scanProgram) {
-            mutex_enter_blocking(&this->scanProgramStateMutex);
+//            mutex_enter_blocking(&this->scanProgramStateMutex);
             logger->d(getTag(), fmt::format("Swap to: {:x}. Previous: {:x}", (int)scanProgram, (int)previousScanProgram));
             this->previousScanProgram = this->currentScanProgram;
             this->currentScanProgram = scanProgram;
@@ -22,14 +22,14 @@ namespace video::scanProgram {
                 getScanProgramPtr(currentScanProgram)->startScanProgram();
             }
 
-            mutex_exit(&this->scanProgramStateMutex);
+//            mutex_exit(&this->scanProgramStateMutex);
         }
 
         ScanProgram ScanProgramManager::getCurrentScanProgram() {
             ScanProgram ret;
-            mutex_enter_blocking(&this->scanProgramStateMutex);
+//            mutex_enter_blocking(&this->scanProgramStateMutex);
             ret = this->currentScanProgram;
-            mutex_exit(&this->scanProgramStateMutex);
+//            mutex_exit(&this->scanProgramStateMutex);
             logger->d(getTag(), fmt::format("Current: {:x}", (int)ret));
             return ret;
         }
@@ -58,12 +58,52 @@ namespace video::scanProgram {
 
         void ScanProgramManager::cpu0setup() {
             if (classIsNoOp) { return; }
-            getScanProgramPtr(getCurrentScanProgram())->cpu0setup();
+
+
+            measureFreqs();
+
+
+            //TODO fix panic:
+            //TODO panic("System clock (%d) must be an integer multiple of the requested pixel clock (%d).", sys_clk, timing->clock_freq);
+            //TODO Sysclk is 125000000
+            //TODO pixel clock is 7867500
+
+            //https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#rpipf786bb684fa58b12b349
+            //https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#rpipa610f0db2a24674346fd
+
+
+            //We need to set sys_clk to 118012500 (so that it is 15 times the pixel clock)
+
+            clock_configure(
+                    clk_sys,
+                    0,
+                    0,
+                    126 * MHZ,
+                    126 * MHZ
+            );
+
+            // Re init uart now that clk_peri has changed
+            stdio_init_all();
+
+            measureFreqs();
+
+            scanvideo_setup(&scanPrograms::BaseScanProgram::mode_bmbt);
+
+
+
+            //Set up all the scan programs...
+            this->noopScanProgram->cpu0setup();
+            this->menuScanProgram->cpu0setup();
+            this->demoScanProgram->cpu0setup();
+            this->clockScanProgram->cpu0setup();
         }
 
         void ScanProgramManager::cpu1setup() {
             if (classIsNoOp) { return; }
-            getScanProgramPtr(getCurrentScanProgram())->cpu1Setup();
+            this->noopScanProgram->cpu1Setup();
+            this->menuScanProgram->cpu1Setup();
+            this->demoScanProgram->cpu1Setup();
+            this->clockScanProgram->cpu1Setup();
         }
 
         void ScanProgramManager::onCpu0Loop() {
@@ -90,4 +130,30 @@ namespace video::scanProgram {
             this->demoScanProgram = demoScanProgram;
             this->clockScanProgram = clockScanProgram;
         }
+
+    void ScanProgramManager::measureFreqs() {
+        //Borrowed from https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#ga7ac25aa331f7c2624795b6088f87d133
+
+        uint f_pll_sys = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_PLL_SYS_CLKSRC_PRIMARY);
+        uint f_pll_usb = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_PLL_USB_CLKSRC_PRIMARY);
+        uint f_rosc = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_ROSC_CLKSRC);
+        uint f_clk_sys = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_CLK_SYS);
+        uint f_clk_peri = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_CLK_PERI);
+        uint f_clk_usb = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_CLK_USB);
+        uint f_clk_adc = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_CLK_ADC);
+        uint f_clk_rtc = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_CLK_RTC);
+
+        logger->d(getTag(), fmt::format("pll_sys  = %d kHz\n", f_pll_sys));
+        logger->d(getTag(), fmt::format("pll_usb  = %dkHz\n", f_pll_usb));
+        logger->d(getTag(), fmt::format("rosc     = %dkHz\n", f_rosc));
+        logger->d(getTag(), fmt::format("clk_sys  = %dkHz\n", f_clk_sys));
+        logger->d(getTag(), fmt::format("clk_peri = %dkHz\n", f_clk_peri));
+        logger->d(getTag(), fmt::format("clk_usb  = %dkHz\n", f_clk_usb));
+        logger->d(getTag(), fmt::format("clk_adc  = %dkHz\n", f_clk_adc));
+        logger->d(getTag(), fmt::format("clk_rtc  = %dkHz\n", f_clk_rtc));
+
+        // Can't measure clk_ref / xosc as it is the ref
+
+    }
+
 } // scanProgram
