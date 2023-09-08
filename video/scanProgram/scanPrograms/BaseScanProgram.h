@@ -65,21 +65,42 @@ namespace video::scanProgram::scanPrograms {
                 // interlaced = 1
                 // pixel_freq = 7867500
                 // aspect_ratio (16:9) = 3
-                constexpr static const scanvideo_timing_t vga_timing_bmbt = {
+
+
+                constexpr static const uint16_t h_active = 800;
+                constexpr static const uint16_t h_front_porch = 20;
+                constexpr static const uint16_t h_pulse = 29;
+                constexpr static const uint16_t h_back = 59;
+
+                constexpr static const uint16_t v_active = 234;
+                constexpr static const uint16_t v_front = 7;
+                constexpr static const uint16_t v_back = 19;
+                constexpr static const uint16_t v_sync = 3;
+
+
+
+        constexpr static const scanvideo_timing_t vga_timing_bmbt = {
 //                        .clock_freq = 7867500, //Original.
-                        .clock_freq = 7875000, //CPU needs to go up to 125MHz.
+                        .clock_freq = 7875000, //CPU needs to go up to 126MHz.
 
-                        .h_active = 400, /* OK */
-                        .v_active = 234, /* OK */
+                        //TODO Almost works. We can make the same active width as
+                        //TODO before by compensating on h_active. Need to make sure
+                        //TODO the h porches and pulses are the same width as before.
+                        //TODO then take up the slack with h_active.
+                        .h_active = h_active, /* OK */
+                        .v_active = v_active, /* OK */
 
-                        .h_front_porch = 20, /* OK */
-                        .h_pulse = 29,
-                        .h_total = 508, /* Active + front + back + sync = 400 + 20 + 59 + 29 = 508 */
+                        .h_front_porch = h_front_porch, /* OK */
+                        .h_pulse = h_pulse,
+                        //.h_total = 508, /* Active + front + back + sync = 400 + 20 + 59 + 29 = 508 */
+                        .h_total = h_active + h_front_porch + h_back + h_pulse, /* Active + front + back + sync = 400 + 20 + 59 + 29 = 508 */
                         .h_sync_polarity = 1,
 
-                        .v_front_porch = 7, /* OK */
-                        .v_pulse = 3, /* OK */
-                        .v_total = 263, /* Active + front + back + sync = 234 + 7 + 19 + 3 = 263 */
+                        //TODO the porches and pulse width might also have to be scaled.
+                        //TODO I know we want 234 active lines to avoid rolling.
+                        .v_front_porch = v_front, /* OK */
+                        .v_pulse = v_sync, /* OK */
+                        .v_total = v_active + v_front + v_back + v_sync, /* Active + front + back + sync = 234 + 7 + 19 + 3 = 263 */
                         .v_sync_polarity = 0,
 
                         .enable_clock = 0,
@@ -91,8 +112,8 @@ namespace video::scanProgram::scanPrograms {
                 constexpr static const scanvideo_mode_t mode_bmbt = {
                         .default_timing = &vga_timing_bmbt,
                         .pio_program = &video_24mhz_composable,
-                        .width = 400,
-                        .height = 234,
+                        .width = h_active,
+                        .height = v_active,
                         .xscale = 1,
                         .yscale = 1,
                         .yscale_denominator = 1

@@ -33,6 +33,23 @@ namespace video::scanProgram::scanPrograms::demo {
 
         uint16_t *p = (uint16_t *) scanline_buffer->data;
 
+//        if (scanline_buffer->scanline_id %2 == 1) {
+////            // black pixel to end line
+////            *p++ = COMPOSABLE_RAW_1P;
+////            *p++ = PICO_SCANVIDEO_PIXEL_FROM_RGB5(0,0,0);
+////
+////
+////            // end of line with alignment padding
+////            *p++ = COMPOSABLE_EOL_SKIP_ALIGN;
+////            *p++ = 0;
+////            //Some pointer arithmetic... gross!
+////            scanline_buffer->data_used = ((uint32_t *) p) - scanline_buffer->data;
+////            assert(scanline_buffer->data_used < scanline_buffer->data_max);
+////
+////            scanline_buffer->status = SCANLINE_OK;
+//            scanline_buffer->status = SCANLINE_SKIPPED;
+//            return;
+//        }
         *p++ = COMPOSABLE_COLOR_RUN;
 //        if (scanline_buffer->scanline_id < 117) {
             //Blue
@@ -41,9 +58,13 @@ namespace video::scanProgram::scanPrograms::demo {
             //Yellow
 //            *p++ = color_yellow;
 //        }
+
+        *p++ = getDisplayWidthPx() - 3;
+
         // black pixel to end line
         *p++ = COMPOSABLE_RAW_1P;
         *p++ = PICO_SCANVIDEO_PIXEL_FROM_RGB5(0,0,0);
+
 
         // end of line with alignment padding
         *p++ = COMPOSABLE_EOL_SKIP_ALIGN;
