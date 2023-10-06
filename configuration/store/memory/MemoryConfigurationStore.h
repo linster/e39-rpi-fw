@@ -6,12 +6,11 @@
 #define PICOTEMPLATE_MEMORYCONFIGURATIONSTORE_H
 
 #include "../IConfigurationStore.h"
-namespace pico {
-    namespace config {
+namespace pico::config {
 
         class MemoryConfigurationStore : public IConfigurationStore {
         private:
-            Configuration* inMemoryConfiguration = nullptr;
+            Configuration inMemoryConfiguration = Configuration();
             bool hasConfiguration = false;
         public:
             MemoryConfigurationStore();
@@ -20,7 +19,6 @@ namespace pico {
             void saveConfiguration(Configuration configuration) override;
         };
 
-    } // pico
-} // config
+    } // config
 
 #endif //PICOTEMPLATE_MEMORYCONFIGURATIONSTORE_H

@@ -8,8 +8,7 @@
 #include "../IConfigurationStore.h"
 #include "../../../logging/BaseLogger.h"
 #include "../../../ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h"
-namespace pico {
-    namespace config {
+namespace pico::config {
 
         class IBusConfigMessageStore : public IConfigurationStore {
 
@@ -29,7 +28,6 @@ namespace pico {
             void saveConfiguration(Configuration configuration) override;
         };
 
-    } // pico
-} // config
+    } // config
 
 #endif //PICOTEMPLATE_IBUSCONFIGMESSAGESTORE_H

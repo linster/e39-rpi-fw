@@ -4,8 +4,7 @@
 
 #include "MemoryConfigurationStore.h"
 
-namespace pico {
-    namespace config {
+namespace pico::config {
 
         MemoryConfigurationStore::MemoryConfigurationStore() {}
         bool MemoryConfigurationStore::canReadConfiguration() {
@@ -13,12 +12,11 @@ namespace pico {
         }
 
         Configuration MemoryConfigurationStore::getConfiguration() {
-            return *inMemoryConfiguration;
+            return inMemoryConfiguration;
         }
 
         void MemoryConfigurationStore::saveConfiguration(Configuration configuration) {
-            inMemoryConfiguration = &configuration;
+            inMemoryConfiguration = configuration;
             hasConfiguration = true;
         }
-    } // pico
-} // config
+    } // config

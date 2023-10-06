@@ -67,10 +67,23 @@ namespace video::scanProgram::scanPrograms {
                 // aspect_ratio (16:9) = 3
 
 
+                //Let's try this line for DE PAL
+                //hdmi_timings=
+                // h_active = 800
+                // h_sync_polarity = 0
+                // h_front_porch = 31
+                // h_sync_pulse = 56
+                // h_back_porch = 129
+                // v_active = 288
+                // v_sync_polarity = 0
+                // v_front_porch = 1
+                // v_sync_pulse = 3
+                // v_back_porch = 20
+                // 0 0 0 50 1 15625000 3
                 constexpr static const uint16_t h_active = 800;
-                constexpr static const uint16_t h_front_porch = 20;
-                constexpr static const uint16_t h_pulse = 29;
-                constexpr static const uint16_t h_back = 59;
+                constexpr static const uint16_t h_front_porch = 40;
+                constexpr static const uint16_t h_pulse = 58;
+                constexpr static const uint16_t h_back = 118;
 
                 constexpr static const uint16_t v_active = 234;
                 constexpr static const uint16_t v_front = 7;
@@ -81,7 +94,7 @@ namespace video::scanProgram::scanPrograms {
 
         constexpr static const scanvideo_timing_t vga_timing_bmbt = {
 //                        .clock_freq = 7867500, //Original.
-                        .clock_freq = 7875000, //CPU needs to go up to 126MHz.
+                        .clock_freq = 15625000, //CPU needs to go up to 126MHz.
 
                         //TODO Almost works. We can make the same active width as
                         //TODO before by compensating on h_active. Need to make sure

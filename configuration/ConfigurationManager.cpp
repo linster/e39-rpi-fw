@@ -4,8 +4,7 @@
 
 #include "ConfigurationManager.h"
 
-namespace pico {
-    namespace config {
+namespace pico::config {
 
         ConfigurationManager::ConfigurationManager(std::shared_ptr<FlashConfigurationStore> flashConfigurationStore,
                                                    std::shared_ptr<IBusConfigMessageStore> iBusConfigMessageStore,
@@ -35,7 +34,7 @@ namespace pico {
             logger->d("ConfigurationManager", "Getting new default configuration and saving it.");
             Configuration newDefault = defaultConfigurationProvider->getDefaultConfiguration();
             memoryConfigurationStore->saveConfiguration(newDefault);
-//            flashConfigurationStore->saveConfiguration(newDefault);
+            flashConfigurationStore->saveConfiguration(newDefault);
             iBusConfigMessageStore->saveConfiguration(newDefault);
 
             return std::make_unique<Configuration>(newDefault);
@@ -54,12 +53,11 @@ namespace pico {
             Configuration configuration1 = *configuration;
 
             memoryConfigurationStore->saveConfiguration(configuration1);
-//            flashConfigurationStore->saveConfiguration(configuration1);
+            flashConfigurationStore->saveConfiguration(configuration1);
             iBusConfigMessageStore->saveConfiguration(configuration1);
         }
 
         Configuration ConfigurationManager::getConfigurationCopy() {
-            return Configuration(messages::ConfigMessage());
+            return Configuration(getMutableConfiguration()->toMessage());
         }
-    } // pico
-} // config
+    } // config

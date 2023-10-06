@@ -4,28 +4,47 @@
 
 #include "FlashConfigurationStore.h"
 
-namespace pico {
-    namespace config {
+namespace pico::config {
 
-        bool FlashConfigurationStore::canReadConfiguration() {
-            //TODO Try-catch reading a block of flash memory
-            //No catch on this platform.
-            return false;
+    FlashConfigurationStore::FlashConfigurationStore(
+            std::shared_ptr<logger::BaseLogger> logger) {
+        this->logger = logger;
+    }
+
+    bool FlashConfigurationStore::canReadConfiguration() {
+        std::pair<bool, Configuration> result = decodeConfiguration(
+                getPointerToConfigurationStorageInFlash(),
+                getLengthOfConfigurationStorageInFlash()
+        );
+
+        return result.first;
+    }
+
+    Configuration FlashConfigurationStore::getConfiguration() {
+        std::pair<bool, Configuration> result = decodeConfiguration(
+                getPointerToConfigurationStorageInFlash(),
+                getLengthOfConfigurationStorageInFlash()
+        );
+
+        return result.second;
+    }
+
+    void FlashConfigurationStore::saveConfiguration(Configuration configuration) {
+
+        std::pair<bool, std::vector<uint8_t>> encodeResult = encodeConfiguration(configuration);
+
+        if (!encodeResult.first) {
+            logger->w("FlashConfigurationStore", "Failed to encode message to save,");
+            return;
         }
 
-        Configuration FlashConfigurationStore::getConfiguration() {
-            //TODO read the block of memory
-        }
+        saveConfigurationBytes(getPointerToConfigurationStorageInFlash(), encodeResult.second);
+    }
 
-        void FlashConfigurationStore::saveConfiguration(Configuration configuration) {
-            //TODO save the block
-
-
-        }
-
-        std::vector<uint8_t> FlashConfigurationStore::encodeConfiguration(
-                Configuration configuration
-        ) {
+    std::pair<bool, std::vector<uint8_t>> FlashConfigurationStore::encodeConfiguration(
+            Configuration configuration
+    ) {
+        return std::pair<bool, std::vector<uint8_t>>(false, std::vector<uint8_t>());
 //            NanoPb::StringOutputStream outputStream;
 //
 //
@@ -44,7 +63,23 @@ namespace pico {
 //            }
 //
 //            return bytes;
-        }
+    }
 
-    } // pico
+    uint8_t *FlashConfigurationStore::getPointerToConfigurationStorageInFlash() {
+        return nullptr;
+    }
+
+    uint16_t FlashConfigurationStore::getLengthOfConfigurationStorageInFlash() {
+        return 0;
+    }
+
+    void FlashConfigurationStore::saveConfigurationBytes(uint8_t * ptr, std::vector<uint8_t>) {
+
+    }
+
+    std::pair<bool, Configuration> FlashConfigurationStore::decodeConfiguration(uint8_t *ptr, uint16_t len) {
+        return std::pair<bool, Configuration>(false, Configuration());
+    }
+
+
 } // config

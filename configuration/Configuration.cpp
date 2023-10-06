@@ -4,14 +4,17 @@
 
 #include "Configuration.h"
 
-namespace pico {
-    namespace config {
-
-
+namespace pico::config {
 
         Configuration::Configuration(messages::ConfigMessage from) {
             this->backingMessage = from;
             this->isSyncRequired = true;
+        }
+
+        Configuration::Configuration() {
+            //Make an empty configuration
+            this->backingMessage = messages::ConfigMessage();
+            isSyncRequired = false;
         }
 
         messages::ConfigMessage Configuration::toMessage() {
@@ -98,5 +101,6 @@ namespace pico {
             isSyncRequired = false;
         }
 
-    } // pico
-} // config
+
+
+    } // config

@@ -7,12 +7,18 @@
 
 #include "../BaseScanProgram.h"
 
+
+#define MIN_COLOR_RUN 3
+
 namespace video::scanProgram::scanPrograms::demo {
 
     class DemoScanProgram : public BaseScanProgram {
 
     private:
         std::shared_ptr<pico::logger::BaseLogger> logger;
+
+
+        int32_t single_color_scanline(uint32_t *buf, size_t buf_length, int width, uint32_t color16);
 
     public:
         DemoScanProgram(

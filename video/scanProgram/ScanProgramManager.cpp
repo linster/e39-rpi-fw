@@ -78,8 +78,8 @@ namespace video::scanProgram {
                     clk_sys,
                     0,
                     0,
-                    126 * MHZ,
-                    126 * MHZ
+                    125 * MHZ,
+                    125 * MHZ
             );
 
             // Re init uart now that clk_peri has changed

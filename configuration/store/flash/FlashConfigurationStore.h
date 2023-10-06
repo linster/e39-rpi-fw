@@ -7,25 +7,35 @@
 
 #include <vector>
 #include "../IConfigurationStore.h"
-namespace pico {
-    namespace config {
+namespace pico::config {
 
         class FlashConfigurationStore : IConfigurationStore {
 
         private:
-            std::vector<uint8_t> encodeConfiguration(Configuration configuration);
-            Configuration decodeConfiguration(void* ptr);
+
+            std::shared_ptr<logger::BaseLogger> logger;
+
+            std::pair<bool, std::vector<uint8_t>> encodeConfiguration(Configuration configuration);
+            std::pair<bool, Configuration> decodeConfiguration(uint8_t * ptr, uint16_t len);
 
             //https://www.raspberrypi.com/documentation/pico-sdk/high_level.html#mutex
 
+            uint8_t * getPointerToConfigurationStorageInFlash();
+            uint16_t getLengthOfConfigurationStorageInFlash();
+
+            void saveConfigurationBytes(uint8_t * ptr, std::vector<uint8_t>);
 
         public:
+
+            FlashConfigurationStore(
+                    std::shared_ptr<logger::BaseLogger> logger
+            );
+
             void saveConfiguration(Configuration configuration) override;
             Configuration getConfiguration() override;
             bool canReadConfiguration() override;
         };
 
-    } // pico
-} // config
+    } // config
 
 #endif //PICOTEMPLATE_FLASHCONFIGURATIONSTORE_H

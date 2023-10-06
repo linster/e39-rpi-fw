@@ -17,7 +17,7 @@ namespace pico::di {
 
             this->videoSwitch = std::make_shared<hardware::videoSwitch::max4314::Max4314VideoSwitch>(this->logger);
 
-            std::shared_ptr<config::FlashConfigurationStore> flashConfigurationStore = std::make_shared<config::FlashConfigurationStore>();
+            std::shared_ptr<config::FlashConfigurationStore> flashConfigurationStore = std::make_shared<config::FlashConfigurationStore>(this->logger);
             std::shared_ptr<ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter =
                     std::make_shared<ibus::output::writer::ConfigurationStatusWriter>(
                             logger, dmaManager);

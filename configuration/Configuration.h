@@ -21,7 +21,10 @@ namespace pico {
 
         public:
 
-            Configuration(messages::ConfigMessage from);
+
+            Configuration();
+
+            explicit Configuration(messages::ConfigMessage from);
 
             messages::ConfigMessage toMessage();
 
