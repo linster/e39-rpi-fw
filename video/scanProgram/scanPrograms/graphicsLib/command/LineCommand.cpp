@@ -54,13 +54,11 @@ namespace video::scanVideo::graphics::command {
     std::map<uint16_t, std::vector<RleRun>> LineCommand::getRleRunsForVerticalLine() {
         std::map<uint16_t, std::vector<RleRun>> returnMap = std::map<uint16_t, std::vector<RleRun>>();
 
-        uint16_t len = topLeftPx.getX() + lineWidth;
-
         for (int i = topLeftPx.getY(); i <= bottomRightPx.getY(); i++) {
             std::vector<RleRun> runForLine = std::vector<RleRun>();
             runForLine.push_back(RleRun(
                     topLeftPx.getX(),
-                    len,
+                    lineWidth,
                     colour
             ));
             returnMap[i] = runForLine;

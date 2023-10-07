@@ -133,7 +133,7 @@ namespace video::scanVideo::graphics::command {
         }
 
         //Now we compress the line buffer.
-        RleRun runToInsert = RleRun(0, 1, baseColour);
+        RleRun runToInsert = RleRun(0, 0, baseColour);
         for (int i = 0; i < maxDisplayWidth - 1; i++) {
             if (lineBuffer[i] == lineBuffer[i + 1]) {
                 runToInsert.setColour(lineBuffer[i]);
@@ -141,7 +141,7 @@ namespace video::scanVideo::graphics::command {
             } else {
                 //We're at the end of a run. Insert it into the vector and refresh.
                 retVec.emplace_back(runToInsert);
-                runToInsert = RleRun(i + 1, 1, lineBuffer[i+1]);
+                runToInsert = RleRun(i + 1, 0, lineBuffer[i+1]);
             }
 
         }
