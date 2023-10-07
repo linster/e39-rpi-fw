@@ -27,4 +27,8 @@ namespace video::scanVideo::graphics::command {
         }
         return std::pair<uint16_t, uint16_t>(topLeftPx.getY(), topLeftPx.getY() + height);
     }
+
+    std::map<uint16_t, std::vector<RleRun>> TextCommand::getRleRunsForShape() {
+        return std::map<uint16_t, std::vector<RleRun>>();
+    }
 } // command

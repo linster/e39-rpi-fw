@@ -10,4 +10,21 @@ namespace video::scanVideo::graphics::command {
         this->len = len;
         this->colour = colour;
     }
+
+    RleRun RleRun::appendSameColor(RleRun other) {
+        return RleRun(
+                this->startX,
+                this->len + other.len,
+                this->colour);
+    }
+
+    uint16_t RleRun::getLen() { return len; }
+    void RleRun::setLen(uint16_t newLen) { this->len = newLen; }
+
+    uint16_t RleRun::getStartX() {return startX;}
+    uint32_t RleRun::getColour() { return colour; }
+
+    void RleRun::setColour(uint32_t colour) {
+        this->colour = colour;
+    }
 } // command

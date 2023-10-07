@@ -25,6 +25,9 @@ namespace video::scanProgram::scanPrograms::demo {
 
         void render_text(scanvideo_scanline_buffer_t *scanline_buffer);
 
+
+        void setupComputedFrame();
+        void render_computedFrame(scanvideo_scanline_buffer_t *scanline_buffer);
     public:
         DemoScanProgram(
                 std::shared_ptr<pico::logger::BaseLogger> logger,

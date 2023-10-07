@@ -120,7 +120,6 @@ namespace video::scanProgram {
                     );
 
             void addCommandToFrame(std::unique_ptr<scanVideo::graphics::command::BaseCommand> command);
-            void removeCommandFromFrame(std::unique_ptr<scanVideo::graphics::command::BaseCommand> command);
 
             uint8_t getUserFrameState();
             void setUserFrameState(uint8_t state);

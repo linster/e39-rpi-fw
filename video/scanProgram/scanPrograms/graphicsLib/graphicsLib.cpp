@@ -95,10 +95,6 @@ namespace video::scanProgram {
         commandProcessor->addCommand(std::move(command));
     }
 
-    void graphicsLib::removeCommandFromFrame(std::unique_ptr<scanVideo::graphics::command::BaseCommand> command) {
-        commandProcessor->removeCommand(std::move(command));
-    }
-
     uint8_t graphicsLib::getUserFrameState() {
         return commandProcessor->getUserFrameState();
     }
@@ -109,6 +105,10 @@ namespace video::scanProgram {
 
     void graphicsLib::render_commandProcessed(scanvideo_scanline_buffer_t *scanline_buffer) {
         commandProcessor->render_computed(scanline_buffer);
+    }
+
+    graphicsLib::graphicsLib(std::shared_ptr<scanVideo::graphics::command::CommandProcessor> commandProcessor) {
+        this->commandProcessor = commandProcessor;
     }
 
 

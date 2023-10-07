@@ -9,6 +9,7 @@
 #include <vector>
 #include "../../../../../logging/BaseLogger.h"
 #include "BaseCommand.h"
+#include "pico/scanvideo/composable_scanline.h"
 #include "pico/scanvideo/scanvideo_base.h"
 #include <cstdint>
 namespace video::scanVideo::graphics::command {
@@ -21,9 +22,26 @@ namespace video::scanVideo::graphics::command {
 
         uint8_t userFrameState;
 
+
         std::vector<std::unique_ptr<BaseCommand>> commandsToProcess;
 
+        //Key is scanline
+        //Value is a vector of RleRuns
+        std::map<uint16_t, std::vector<RleRun>> rleRunsForLine;
+
         bool isFrameComputed = false;
+
+        /**
+         *
+         * @param runs
+         * @return returns a vector of RleRun where no runs overlap, and the runs are sorted in
+         *         ascending order of startX.
+         */
+        std::vector<RleRun> mergeRuns(std::vector<RleRun> runs);
+
+
+        void drawScanline(scanvideo_scanline_buffer_t *scanline_buffer, std::vector<RleRun> merged);
+        void skipScanline(scanvideo_scanline_buffer_t *scanline_buffer);
     public:
 
         CommandProcessor(
@@ -35,12 +53,6 @@ namespace video::scanVideo::graphics::command {
          * @param baseCommand
          */
         void addCommand(std::unique_ptr<BaseCommand> baseCommand);
-
-        /**
-         * Remove a command from the processing stack.
-         * @param baseCommand
-         */
-        void removeCommand(std::unique_ptr<BaseCommand> baseCommand);
 
         /**
          * Remove all the commands from the frame.

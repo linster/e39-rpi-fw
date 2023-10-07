@@ -26,7 +26,7 @@ namespace video::scanVideo::graphics::command {
 
         virtual std::map<uint16_t, std::vector<RleRun>> getRleRunsForShape() = 0;
 
-        virtual ~BaseCommand() = 0; //TODO each subclass should implement the virtual dtor?
+        virtual ~BaseCommand() = default;; //TODO each subclass should implement the virtual dtor?
 
         //TODO we should also made operator= virtual?
 

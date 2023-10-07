@@ -23,6 +23,7 @@ namespace video::scanProgram::scanPrograms::demo {
 
     void DemoScanProgram::onScanProgramStart() {
         logger->d(getTag(), "onScanProgramStart()");
+        setupComputedFrame();
     }
 
     void DemoScanProgram::onScanProgramStop() {
@@ -32,15 +33,13 @@ namespace video::scanProgram::scanPrograms::demo {
     void DemoScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
         //render_flag_ua(scanline_buffer);
         render_text(scanline_buffer);
+
+        render_computedFrame(scanline_buffer);
     }
 
     void DemoScanProgram::render_text(scanvideo_scanline_buffer_t *scanline_buffer) {
 
-        graphicsLib->drawFilledRectangle(
-                scanVideo::graphics::command::PxCoord(50,50),
-                scanVideo::graphics::command::PxCoord(80,80),
-                graphicsLib->getPalette()[2]
-                );
+
     }
 
     void DemoScanProgram::render_flag_ua(scanvideo_scanline_buffer_t *scanline_buffer) {
@@ -65,6 +64,41 @@ namespace video::scanProgram::scanPrograms::demo {
         buf[2] = 0 | (COMPOSABLE_EOL_ALIGN << 16);
 
         return 3;
+    }
+
+    void DemoScanProgram::setupComputedFrame() {
+        graphicsLib->drawFilledRectangle(
+                scanVideo::graphics::command::PxCoord(50,50),
+                scanVideo::graphics::command::PxCoord(80,80),
+                graphicsLib->getPalette()[15]
+        );
+
+        graphicsLib->drawEmptyRectangle(
+                scanVideo::graphics::command::PxCoord(60,60),
+                scanVideo::graphics::command::PxCoord(90,90),
+                graphicsLib->getPalette()[14],
+                2
+        );
+
+        graphicsLib->drawLine(
+                scanVideo::graphics::command::PxCoord(120,120),
+                scanVideo::graphics::command::PxCoord(12,180),
+                graphicsLib->getPalette()[6],
+                2
+        );
+
+
+
+
+        graphicsLib->setUserFrameState(1);
+    }
+
+    void DemoScanProgram::render_computedFrame(scanvideo_scanline_buffer_t *scanline_buffer) {
+
+        //We can check the frame number here, and optionally update state
+        //to change the graphics on screen.
+
+        graphicsLib->render_commandProcessed(scanline_buffer);
     }
 
 } // demo

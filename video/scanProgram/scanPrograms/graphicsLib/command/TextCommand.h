@@ -27,6 +27,8 @@ namespace video::scanVideo::graphics::command {
         std::pair<uint16_t, uint16_t> getAffectedScanlines() override;
         std::map<uint16_t, std::vector<RleRun>> getRleRunsForShape() override;
 
+        ~TextCommand() override = default;
+
     private:
         std::string text;
         PxCoord topLeftPx;

@@ -33,6 +33,7 @@ namespace video::scanVideo::graphics::command {
 
         std::map<uint16_t, std::vector<RleRun>> getRleRunsForShape() override;
 
+        ~EmptyRectangleCommand() override = default;
 
     };
 

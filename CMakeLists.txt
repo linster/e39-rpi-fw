@@ -61,7 +61,7 @@ pico_sdk_init()
 
 #TODO maybe I need to splitup add_executable?? add_executable, then generate pio header, then target_sources?
 
-add_executable(PicoTemplate video/scanProgram/scanPrograms/graphicsLib/graphicsLib.cpp video/scanProgram/scanPrograms/graphicsLib/graphicsLib.h video/scanProgram/scanPrograms/graphicsLib/DisplayMetrics.cpp video/scanProgram/scanPrograms/graphicsLib/DisplayMetrics.h video/scanProgram/scanPrograms/graphicsLib/command/BaseCommand.cpp video/scanProgram/scanPrograms/graphicsLib/command/BaseCommand.h video/scanProgram/scanPrograms/graphicsLib/command/LineCommand.cpp video/scanProgram/scanPrograms/graphicsLib/command/LineCommand.h video/scanProgram/scanPrograms/graphicsLib/command/FilledRectangleCommand.cpp video/scanProgram/scanPrograms/graphicsLib/command/FilledRectangleCommand.h video/scanProgram/scanPrograms/graphicsLib/command/EmptyRectangleCommand.cpp video/scanProgram/scanPrograms/graphicsLib/command/EmptyRectangleCommand.h video/scanProgram/scanPrograms/graphicsLib/command/TextCommand.cpp video/scanProgram/scanPrograms/graphicsLib/command/TextCommand.h video/scanProgram/scanPrograms/graphicsLib/command/PxCoord.cpp video/scanProgram/scanPrograms/graphicsLib/command/PxCoord.h video/scanProgram/scanPrograms/graphicsLib/command/CommandProcessor.cpp video/scanProgram/scanPrograms/graphicsLib/command/CommandProcessor.h video/scanProgram/scanPrograms/graphicsLib/command/RleRun.cpp video/scanProgram/scanPrograms/graphicsLib/command/RleRun.h)
+add_executable(PicoTemplate)
 
 
 
@@ -226,7 +226,27 @@ target_sources(
         video/scanProgram/ScanProgramSwapper.cpp
         ibus/observerRegistry/observers/PiToPico/ScanProgramRequest/ScanProgramRequestObserver.cpp
         ibus/observerRegistry/observers/PiToPico/ScanProgramRequest/ScanProgramRequestObserver.h
-        video/scanProgram/ScanProgramManager.cpp)
+        video/scanProgram/ScanProgramManager.cpp
+        video/scanProgram/scanPrograms/graphicsLib/graphicsLib.cpp
+        video/scanProgram/scanPrograms/graphicsLib/graphicsLib.h
+        video/scanProgram/scanPrograms/graphicsLib/DisplayMetrics.cpp
+        video/scanProgram/scanPrograms/graphicsLib/DisplayMetrics.h
+        video/scanProgram/scanPrograms/graphicsLib/command/BaseCommand.cpp
+        video/scanProgram/scanPrograms/graphicsLib/command/BaseCommand.h
+        video/scanProgram/scanPrograms/graphicsLib/command/LineCommand.cpp
+        video/scanProgram/scanPrograms/graphicsLib/command/LineCommand.h
+        video/scanProgram/scanPrograms/graphicsLib/command/FilledRectangleCommand.cpp
+        video/scanProgram/scanPrograms/graphicsLib/command/FilledRectangleCommand.h
+        video/scanProgram/scanPrograms/graphicsLib/command/EmptyRectangleCommand.cpp
+        video/scanProgram/scanPrograms/graphicsLib/command/EmptyRectangleCommand.h
+        video/scanProgram/scanPrograms/graphicsLib/command/TextCommand.cpp
+        video/scanProgram/scanPrograms/graphicsLib/command/TextCommand.h
+        video/scanProgram/scanPrograms/graphicsLib/command/PxCoord.cpp
+        video/scanProgram/scanPrograms/graphicsLib/command/PxCoord.h
+        video/scanProgram/scanPrograms/graphicsLib/command/CommandProcessor.cpp
+        video/scanProgram/scanPrograms/graphicsLib/command/CommandProcessor.h
+        video/scanProgram/scanPrograms/graphicsLib/command/RleRun.cpp
+        video/scanProgram/scanPrograms/graphicsLib/command/RleRun.h)
 
 
 #https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf -- page 36
