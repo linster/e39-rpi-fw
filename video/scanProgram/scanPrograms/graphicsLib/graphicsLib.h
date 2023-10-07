@@ -10,12 +10,22 @@
 #include "pico/scanvideo/composable_scanline.h"
 
 #include "DisplayMetrics.h"
+#include "command/CommandProcessor.h"
+#include "command/BaseCommand.h"
+#include "command/PxCoord.h"
+#include "command/LineCommand.h"
+#include "command/EmptyRectangleCommand.h"
+#include "command/FilledRectangleCommand.h"
+#include "command/TextCommand.h"
+
 namespace video::scanProgram {
 
         class graphicsLib {
 
 
         private:
+
+            std::shared_ptr<scanVideo::graphics::command::CommandProcessor> commandProcessor;
 
             bool haveDisplayMetrics = false;
             DisplayMetrics displayMetrics = DisplayMetrics(0,0);
@@ -45,6 +55,9 @@ namespace video::scanProgram {
 
         public:
 
+            graphicsLib(
+                    std::shared_ptr<scanVideo::graphics::command::CommandProcessor> commandProcessor
+            );
 
 
         void setDisplayMetrics(DisplayMetrics displayMetrics);
@@ -77,6 +90,42 @@ namespace video::scanProgram {
             //since the existing scanline is run-length encoded (RLE)
             // However, what we can do is do a font routine that RLEs
             // part of the font onto a solid colour.
+
+
+            void clearFrame();
+            void drawLine(
+                    scanVideo::graphics::command::PxCoord topLeftPx,
+                    scanVideo::graphics::command::PxCoord bottomRightPx,
+                    uint32_t colour,
+                    uint8_t lineWidth
+                    );
+            void drawEmptyRectangle(
+                    scanVideo::graphics::command::PxCoord topLeftPx,
+                    scanVideo::graphics::command::PxCoord bottomRightPx,
+                    uint32_t colour,
+                    uint8_t lineWidth
+                    );
+
+            void drawFilledRectangle(
+                    scanVideo::graphics::command::PxCoord topLeftPx,
+                    scanVideo::graphics::command::PxCoord bottomRightPx,
+                    uint32_t colour
+                    );
+
+            void drawText(
+                    std::string text,
+                    scanVideo::graphics::command::PxCoord topLeftPx,
+                    uint32_t colour,
+                    scanVideo::graphics::command::TextCommand::Size size
+                    );
+
+            void addCommandToFrame(std::unique_ptr<scanVideo::graphics::command::BaseCommand> command);
+            void removeCommandFromFrame(std::unique_ptr<scanVideo::graphics::command::BaseCommand> command);
+
+            uint8_t getUserFrameState();
+            void setUserFrameState(uint8_t state);
+            void render_commandProcessed(scanvideo_scanline_buffer_t *scanline_buffer);
+
         };
 
     } // scanProgram

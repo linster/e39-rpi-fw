@@ -30,9 +30,22 @@ namespace video::scanProgram::scanPrograms::demo {
     }
 
     void DemoScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
+        //render_flag_ua(scanline_buffer);
+        render_text(scanline_buffer);
+    }
+
+    void DemoScanProgram::render_text(scanvideo_scanline_buffer_t *scanline_buffer) {
+
+        graphicsLib->drawFilledRectangle(
+                scanVideo::graphics::command::PxCoord(50,50),
+                scanVideo::graphics::command::PxCoord(80,80),
+                graphicsLib->getPalette()[2]
+                );
+    }
+
+    void DemoScanProgram::render_flag_ua(scanvideo_scanline_buffer_t *scanline_buffer) {
         //Let's make the Ukrainian flag here. Solid runs of scanline for blue, for half the height
         //Then, solid runs of yellow scanlines for the rest of the height.
-
         if (scanvideo_scanline_number(scanline_buffer->scanline_id) < getDisplayHeightPx() / 2) {
             graphicsLib->writeSolidColourScanline(scanline_buffer, graphicsLib->getPalette()[3]);
         } else {

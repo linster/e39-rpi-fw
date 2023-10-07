@@ -21,6 +21,10 @@ namespace video::scanProgram::scanPrograms::demo {
 
         int32_t single_color_scanline(uint32_t *buf, size_t buf_length, int width, uint32_t color16);
 
+        void render_flag_ua(scanvideo_scanline_buffer_t *scanline_buffer);
+
+        void render_text(scanvideo_scanline_buffer_t *scanline_buffer);
+
     public:
         DemoScanProgram(
                 std::shared_ptr<pico::logger::BaseLogger> logger,

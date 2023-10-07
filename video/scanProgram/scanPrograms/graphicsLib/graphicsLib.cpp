@@ -47,4 +47,69 @@ namespace video::scanProgram {
         scanline_buffer->status = SCANLINE_OK;
 
     }
+
+    void graphicsLib::clearFrame() {
+        commandProcessor->clearFrame();
+    }
+
+    void graphicsLib::drawLine(scanVideo::graphics::command::PxCoord topLeftPx,
+                               scanVideo::graphics::command::PxCoord bottomRightPx, uint32_t colour,
+                               uint8_t lineWidth) {
+
+        std::unique_ptr<scanVideo::graphics::command::LineCommand> ptr =
+                std::make_unique<scanVideo::graphics::command::LineCommand>(topLeftPx, bottomRightPx, colour, lineWidth);
+
+        addCommandToFrame(std::move(ptr));
+    }
+
+    void graphicsLib::drawEmptyRectangle(scanVideo::graphics::command::PxCoord topLeftPx,
+                                         scanVideo::graphics::command::PxCoord bottomRightPx, uint32_t colour,
+                                         uint8_t lineWidth) {
+
+
+        std::unique_ptr<scanVideo::graphics::command::EmptyRectangleCommand> ptr =
+                std::make_unique<scanVideo::graphics::command::EmptyRectangleCommand>(topLeftPx, bottomRightPx, colour, lineWidth);
+
+        addCommandToFrame(std::move(ptr));
+    }
+
+    void graphicsLib::drawFilledRectangle(scanVideo::graphics::command::PxCoord topLeftPx,
+                                          scanVideo::graphics::command::PxCoord bottomRightPx, uint32_t colour) {
+
+        std::unique_ptr<scanVideo::graphics::command::FilledRectangleCommand> ptr =
+                std::make_unique<scanVideo::graphics::command::FilledRectangleCommand>(topLeftPx, bottomRightPx, colour);
+
+        addCommandToFrame(std::move(ptr));
+    }
+
+    void graphicsLib::drawText(std::string text, scanVideo::graphics::command::PxCoord topLeftPx, uint32_t colour,
+                               scanVideo::graphics::command::TextCommand::Size size) {
+
+        std::unique_ptr<scanVideo::graphics::command::TextCommand> ptr =
+                std::make_unique<scanVideo::graphics::command::TextCommand>(text, topLeftPx, colour, size);
+
+        addCommandToFrame(std::move(ptr));
+    }
+
+    void graphicsLib::addCommandToFrame(std::unique_ptr<scanVideo::graphics::command::BaseCommand> command) {
+        commandProcessor->addCommand(std::move(command));
+    }
+
+    void graphicsLib::removeCommandFromFrame(std::unique_ptr<scanVideo::graphics::command::BaseCommand> command) {
+        commandProcessor->removeCommand(std::move(command));
+    }
+
+    uint8_t graphicsLib::getUserFrameState() {
+        return commandProcessor->getUserFrameState();
+    }
+
+    void graphicsLib::setUserFrameState(uint8_t state) {
+        commandProcessor->setUserFrameState(state);
+    }
+
+    void graphicsLib::render_commandProcessed(scanvideo_scanline_buffer_t *scanline_buffer) {
+        commandProcessor->render_computed(scanline_buffer);
+    }
+
+
 } // scanProgram
