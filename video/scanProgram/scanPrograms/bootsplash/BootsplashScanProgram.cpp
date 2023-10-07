@@ -6,8 +6,15 @@
 
 namespace video::scanProgram::scanPrograms::bootsplash {
 
-    BootsplashScanProgram::BootsplashScanProgram(std::shared_ptr<pico::logger::BaseLogger> logger) {
+    BootsplashScanProgram::BootsplashScanProgram(
+            std::shared_ptr<pico::logger::BaseLogger> logger,
+            std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib) {
         this->logger = logger;
+        this->graphicsLib = graphicsLib;
+        this->graphicsLib->setDisplayMetrics(
+                DisplayMetrics(getDisplayHeightPx(), getDisplayWidthPx())
+        );
+
         init(logger);
     }
 

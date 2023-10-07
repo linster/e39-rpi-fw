@@ -6,6 +6,7 @@
 #define PICOTEMPLATE_MENUSCANPROGRAM_H
 
 #include "../BaseScanProgram.h"
+#include "../graphicsLib/graphicsLib.h"
 
 namespace video::scanProgram::scanPrograms::menu {
 
@@ -13,10 +14,12 @@ namespace video::scanProgram::scanPrograms::menu {
 
     private:
         std::shared_ptr<pico::logger::BaseLogger> logger;
+        std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
 
     public:
         MenuScanProgram(
-                std::shared_ptr<pico::logger::BaseLogger> logger
+                std::shared_ptr<pico::logger::BaseLogger> logger,
+                std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib
         );
 
     protected:

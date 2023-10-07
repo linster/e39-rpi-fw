@@ -6,8 +6,14 @@
 
 namespace video::scanProgram::scanPrograms::demo {
 
-    DemoScanProgram::DemoScanProgram(std::shared_ptr<pico::logger::BaseLogger> logger) {
+    DemoScanProgram::DemoScanProgram(std::shared_ptr<pico::logger::BaseLogger> logger,
+                                     std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib) {
         this->logger = logger;
+        this->graphicsLib = graphicsLib;
+        this->graphicsLib->setDisplayMetrics(
+                DisplayMetrics(getDisplayHeightPx(), getDisplayWidthPx())
+        );
+
         init(logger);
     }
 
@@ -25,104 +31,13 @@ namespace video::scanProgram::scanPrograms::demo {
 
     void DemoScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
         //Let's make the Ukrainian flag here. Solid runs of scanline for blue, for half the height
-        //Then, solid runs of yellow scalines for the rest of the height.
+        //Then, solid runs of yellow scanlines for the rest of the height.
 
-        bool invert = false;
-
-        // figure out 1/32 of the color value
-        uint16_t line_num = scanvideo_scanline_number(scanline_buffer->scanline_id);
-//        if (line_num == 0 || line_num == 239 || line_num == 240) {
-//            logger->d(getTag(), fmt::format("line_num {}", line_num));
-//        }
-        uint32_t primary_color = 1u + (line_num * 7 / getDisplayHeightPx());
-        uint32_t color_mask = PICO_SCANVIDEO_PIXEL_FROM_RGB5(0x1f * (primary_color & 1u), 0x1f * ((primary_color >> 1u) & 1u), 0x1f * ((primary_color >> 2u) & 1u));
-        uint bar_width = getDisplayWidthPx() / 32;
-
-        uint16_t *p = (uint16_t *) scanline_buffer->data;
-
-        uint32_t invert_bits = invert ? PICO_SCANVIDEO_PIXEL_FROM_RGB5(0x1f,0x1f,0x1f) : 0;
-        for (uint bar = 0; bar < 32; bar++) {
-            *p++ = COMPOSABLE_COLOR_RUN;
-            uint32_t color = PICO_SCANVIDEO_PIXEL_FROM_RGB5(bar, bar, bar);
-            *p++ = (color & color_mask) ^ invert_bits;
-            *p++ = bar_width - 3;
+        if (scanvideo_scanline_number(scanline_buffer->scanline_id) < getDisplayHeightPx() / 2) {
+            graphicsLib->writeSolidColourScanline(scanline_buffer, graphicsLib->getPalette()[3]);
+        } else {
+            graphicsLib->writeSolidColourScanline(scanline_buffer, graphicsLib->getPalette()[14]);
         }
-
-        // 32 * 3, so we should be word aligned
-        assert(!(3u & (uintptr_t) p));
-
-        // black pixel to end line
-        *p++ = COMPOSABLE_RAW_1P;
-        *p++ = 0;
-        // end of line with alignment padding
-        *p++ = COMPOSABLE_EOL_SKIP_ALIGN;
-        *p++ = 0;
-
-        scanline_buffer->data_used = ((uint32_t *) p) - scanline_buffer->data;
-        assert(scanline_buffer->data_used < scanline_buffer->data_max);
-
-        scanline_buffer->status = SCANLINE_OK;
-
-//        uint32_t color_blue = PICO_SCANVIDEO_PIXEL_FROM_RGB5(255, 255, 255);
-//        uint32_t color_yellow = PICO_SCANVIDEO_PIXEL_FROM_RGB5(127, 127, 0);
-//
-//        uint16_t *p = (uint16_t *) scanline_buffer->data;
-//
-//        if (scanline_buffer->scanline_id > 525) {
-//            //Somehow we are in the VBI
-//            scanline_buffer->status = SCANLINE_SKIPPED;
-//            return;
-//        }
-//
-//        if (scanline_buffer->scanline_id == getDisplayHeightPx()) {
-//            //We're on the last display line, and we need to change fields for interlacing.
-//            scanline_buffer->status = SCANLINE_SKIPPED;
-//            return;
-//
-//        }
-
-//
-//        if (scanline_buffer->scanline_id %2 != 0) {
-//            scanline_buffer->status = SCANLINE_SKIPPED;
-//            return;
-//        }
-//
-//        *p++ = COMPOSABLE_COLOR_RUN;
-//        if (scanline_buffer->scanline_id < 117) {
-//            //Blue
-//            *p++ = color_blue;
-//        } else {
-//            //Yellow
-//            *p++ = color_yellow;
-//        }
-//
-//        *p++ = 32;
-
-//
-//        *p++ = COMPOSABLE_COLOR_RUN;
-//        *p++ = color_yellow;
-//        *p++ = getDisplayWidthPx() - 3 - 1;// - 32;
-//
-//        // black pixel to end line
-//        *p++ = COMPOSABLE_RAW_1P;
-//        *p++ = PICO_SCANVIDEO_PIXEL_FROM_RGB5(0,0,0);
-//
-//
-//        // end of line with alignment padding
-//        *p++ = COMPOSABLE_EOL_SKIP_ALIGN;
-//        *p++ = 0;
-//
-//        //Some pointer arithmetic... gross!
-//        scanline_buffer->data_used = ((uint32_t *) p) - scanline_buffer->data;
-//        assert(scanline_buffer->data_used < scanline_buffer->data_max);
-//
-//        uint32_t *buf = scanline_buffer->data;
-//        size_t buf_length = scanline_buffer->data_max;
-//
-//        int l = scanvideo_scanline_number(scanline_buffer->scanline_id);
-//        uint16_t bgcolour = (uint16_t) l << 2;
-//        scanline_buffer->data_used = single_color_scanline(buf, buf_length, 32, bgcolour);
-//        scanline_buffer->status = SCANLINE_OK;
     }
 
     int32_t DemoScanProgram::single_color_scanline(uint32_t *buf, size_t buf_length, int width, uint32_t color16) {

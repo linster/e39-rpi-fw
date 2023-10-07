@@ -6,6 +6,7 @@
 #define PICOTEMPLATE_BOOTSPLASHSCANPROGRAM_H
 
 #include "../BaseScanProgram.h"
+#include "../graphicsLib/graphicsLib.h"
 
 namespace video::scanProgram::scanPrograms::bootsplash {
 
@@ -13,6 +14,7 @@ namespace video::scanProgram::scanPrograms::bootsplash {
 
     private:
         std::shared_ptr<pico::logger::BaseLogger> logger;
+        std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
 
     public:
 
@@ -21,7 +23,8 @@ namespace video::scanProgram::scanPrograms::bootsplash {
         };
 
         BootsplashScanProgram(
-            std::shared_ptr<pico::logger::BaseLogger> logger
+            std::shared_ptr<pico::logger::BaseLogger> logger,
+            std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib
         );
 
     protected:

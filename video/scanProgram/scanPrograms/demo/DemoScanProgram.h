@@ -6,7 +6,7 @@
 #define PICOTEMPLATE_DEMOSCANPROGRAM_H
 
 #include "../BaseScanProgram.h"
-
+#include "../graphicsLib/graphicsLib.h"
 
 #define MIN_COLOR_RUN 3
 
@@ -16,13 +16,15 @@ namespace video::scanProgram::scanPrograms::demo {
 
     private:
         std::shared_ptr<pico::logger::BaseLogger> logger;
+        std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
 
 
         int32_t single_color_scanline(uint32_t *buf, size_t buf_length, int width, uint32_t color16);
 
     public:
         DemoScanProgram(
-                std::shared_ptr<pico::logger::BaseLogger> logger
+                std::shared_ptr<pico::logger::BaseLogger> logger,
+                std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib
         );
 
     protected:

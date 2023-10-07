@@ -73,6 +73,10 @@ namespace video::scanProgram::scanPrograms {
         scanvideo_scanline_buffer_t *scanlineBuffer = scanvideo_begin_scanline_generation(true);
         render(scanlineBuffer);
         scanvideo_end_scanline_generation(scanlineBuffer);
+
+        //TODO future, we can do non-blocking IO here (cooperative multitasking?) by
+        //TODO not blocking here, and instead only calling render if we're not in the vblank
+        //TODO or hblank intervals.
     }
 
     void BaseScanProgram::cpu1Setup() {
