@@ -244,7 +244,7 @@ namespace pico {
             }
 
             void DmaManager::onCpu1Loop() {
-                //logger->d("DmaManager", "onCpu1Loop");
+                logger->d("DmaManager", "onCpu1Loop");
 
                 if (queue_get_level(&incomingQ)             != 0 ||
                     queue_get_level(&outgoingQ)             != 0 ||

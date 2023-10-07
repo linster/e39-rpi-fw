@@ -6,6 +6,7 @@
 #define PICOTEMPLATE_CLOCKSCANPROGRAM_H
 
 #include "../BaseScanProgram.h"
+#include "../graphicsLib/graphicsLib.h"
 
 namespace video::scanProgram::scanPrograms::clock {
 
@@ -14,10 +15,12 @@ namespace video::scanProgram::scanPrograms::clock {
 
     private:
         std::shared_ptr<pico::logger::BaseLogger> logger;
+        std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
 
     public:
         ClockScanProgram(
-            std::shared_ptr<pico::logger::BaseLogger> logger
+            std::shared_ptr<pico::logger::BaseLogger> logger,
+            std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib
         );
 
     protected:

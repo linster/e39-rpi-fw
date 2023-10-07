@@ -15,6 +15,11 @@ namespace video::scanProgram::scanPrograms::bootsplash {
         std::shared_ptr<pico::logger::BaseLogger> logger;
 
     public:
+
+        enum BootSplashType {
+            LINSTER_OS, BMW, GOOSE
+        };
+
         BootsplashScanProgram(
             std::shared_ptr<pico::logger::BaseLogger> logger
         );

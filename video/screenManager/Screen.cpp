@@ -121,7 +121,7 @@ namespace video::ScreenManager {
     }
 
     void Screen::drawToLogger(std::shared_ptr<pico::logger::BaseLogger> logger) {
-        std::string debugTag = fmt::format("ASCII_SCREEN", getTitle());
+        std::string debugTag = fmt::format("ASCII_SCREEN" , getTitle());
 
         logger->d(debugTag, fmt::format("=== %s ===", getTitle()));
 

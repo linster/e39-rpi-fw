@@ -30,7 +30,7 @@ namespace video::scanProgram {
 //            mutex_enter_blocking(&this->scanProgramStateMutex);
             ret = this->currentScanProgram;
 //            mutex_exit(&this->scanProgramStateMutex);
-            logger->d(getTag(), fmt::format("Current: {:x}", (int)ret));
+            //logger->d(getTag(), fmt::format("Current: {:x}", (int)ret));
             return ret;
         }
 
@@ -72,18 +72,18 @@ namespace video::scanProgram {
             //https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#rpipa610f0db2a24674346fd
 
 
-            //We need to set sys_clk to 118012500 (so that it is 15 times the pixel clock)
-
-            clock_configure(
-                    clk_sys,
-                    0,
-                    0,
-                    125 * MHZ,
-                    125 * MHZ
-            );
-
-            // Re init uart now that clk_peri has changed
-            stdio_init_all();
+//            //We need to set sys_clk to 118012500 (so that it is 15 times the pixel clock)
+//
+//            clock_configure(
+//                    clk_sys,
+//                    0,
+//                    0,
+//                    125 * MHZ,
+//                    125 * MHZ
+//            );
+//
+//            // Re init uart now that clk_peri has changed
+//            stdio_init_all();
 
             measureFreqs();
 

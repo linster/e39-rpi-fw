@@ -10,8 +10,7 @@
 #include "../logging/BaseLogger.h"
 #include "../hardware/videoSwitch/VideoSource.h"
 
-namespace pico {
-    namespace messages {
+namespace pico::messages {
 
         class ConfigMessage {
 
@@ -200,11 +199,12 @@ namespace pico {
             };
             static bool decoderApply(const ProtoType& proto, LocalType& local) {
                 //TODO?? Should I do something here?
+                //TODO STEFAN this is the visitor pattern, and I think I need to call
+                //TODO all the things. use both params as out-parameters.
                 return true;
             };
         };
 
-    } // pico
-} // messages
+    } // messages
 
 #endif //PICOTEMPLATE_CONFIGMESSAGE_H

@@ -44,12 +44,11 @@ int main() {
 
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
-
-    adc_init();
-    adc_gpio_init(26);
-    adc_set_temp_sensor_enabled(true);
-
-    adc_select_input(TEMP_ADC);
+//
+//    adc_init();
+//    adc_gpio_init(26);
+//    adc_set_temp_sensor_enabled(true);
+//    adc_select_input(TEMP_ADC);
 
     auto* logger = new pico::logger::StdioPrintFLogger();
 

@@ -18,7 +18,10 @@ namespace pico {
         }
         logger->d("onMain", "Registered all observers to ObserverRegistry");
 
-//        pi4PowerSwitchManager->setPower(false);
+
+        sleep_ms(1000);
+
+        pi4PowerSwitchManager->setPower(false);
 
 //        dmaManager->cpu0setup();
 
@@ -26,9 +29,13 @@ namespace pico {
 
         scanProgramManager->cpu0setup();
 
-        scanProgramSwapper->swapTo(ScanProgram::DEMO);
+        sleep_ms(1000);
+
+        scanProgramSwapper->swapTo(ScanProgram::CLOCK);
 
         videoSwitch->switchTo(hardware::videoSwitch::PICO);
+
+        logger->d("onMain", "Finished onMain()");
     }
 
     void ApplicationContainer::onLoop() {
@@ -58,13 +65,13 @@ namespace pico {
 
     void ApplicationContainer::onCpu1Main() {
         logger->i("onCpu1Main", "onCpu1Main");
-        dmaManager->cpu1Setup();
-        scanProgramManager->cpu1setup();
+//        dmaManager->cpu1Setup();
+//        scanProgramManager->cpu1setup();
         logger->i("onCpu1Main", "dmaManager->cpu1Setup() done");
     }
 
     void ApplicationContainer::onCpu1Loop() {
-        dmaManager->onCpu1Loop();
-        scanProgramManager->onCpu1Loop();
+//        dmaManager->onCpu1Loop();
+//        scanProgramManager->onCpu1Loop();
     }
 } // pico

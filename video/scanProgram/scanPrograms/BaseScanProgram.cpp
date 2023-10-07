@@ -94,11 +94,11 @@ namespace video::scanProgram::scanPrograms {
     }
 
     uint16_t BaseScanProgram::getDisplayHeightPx() {
-        return getScanProgramTiming().v_active; //Vertical is height
+        return getScanVideoMode().height; //Vertical is height
     }
 
     uint16_t BaseScanProgram::getDisplayWidthPx() {
-        return getScanProgramTiming().h_active; //Horizontal is width
+        return getScanVideoMode().width; //Horizontal is width
     }
 
 

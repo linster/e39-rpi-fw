@@ -61,7 +61,7 @@ pico_sdk_init()
 
 #TODO maybe I need to splitup add_executable?? add_executable, then generate pio header, then target_sources?
 
-add_executable(PicoTemplate)
+add_executable(PicoTemplate video/scanProgram/scanPrograms/graphicsLib/graphicsLib.cpp video/scanProgram/scanPrograms/graphicsLib/graphicsLib.h video/scanProgram/scanPrograms/graphicsLib/DisplayMetrics.cpp video/scanProgram/scanPrograms/graphicsLib/DisplayMetrics.h)
 
 
 

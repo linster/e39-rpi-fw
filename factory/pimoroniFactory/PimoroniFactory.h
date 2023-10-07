@@ -47,6 +47,8 @@ namespace pico {
             std::shared_ptr<video::ScreenManager::MainScreen::MainScreen> mainScreen;
             std::shared_ptr<video::ScreenManager::ScreenManager> screenManager;
 
+            std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
+
             std::shared_ptr<video::scanProgram::scanPrograms::noop::NoopScanProgram> noopScanProgram;
             std::shared_ptr<video::scanProgram::scanPrograms::menu::MenuScanProgram> menuScanProgram;
             std::shared_ptr<video::scanProgram::scanPrograms::demo::DemoScanProgram> demoScanProgram;

@@ -61,10 +61,12 @@ namespace pico::di {
                     );
 
 
+            this->graphicsLib = std::make_shared<video::scanProgram::graphicsLib>();
+
             this->noopScanProgram = std::make_shared<video::scanProgram::scanPrograms::noop::NoopScanProgram>(logger);
             this->menuScanProgram = std::make_shared<video::scanProgram::scanPrograms::menu::MenuScanProgram>(logger);
             this->demoScanProgram = std::make_shared<video::scanProgram::scanPrograms::demo::DemoScanProgram>(logger);
-            this->clockScanProgram = std::make_shared<video::scanProgram::scanPrograms::clock::ClockScanProgram>(logger);
+            this->clockScanProgram = std::make_shared<video::scanProgram::scanPrograms::clock::ClockScanProgram>(logger, graphicsLib);
             this->bootsplashScanProgram = std::make_shared<video::scanProgram::scanPrograms::bootsplash::BootsplashScanProgram>(logger);
 
             this->scanProgramManager = std::make_shared<video::scanProgram::ScanProgramManager>(
