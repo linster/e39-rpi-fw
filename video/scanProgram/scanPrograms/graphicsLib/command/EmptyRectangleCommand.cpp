@@ -30,13 +30,13 @@ namespace video::scanVideo::graphics::command {
             std::vector<RleRun> runForLine = std::vector<RleRun>();
 
             if (i == topLeftPx.getY()
-                    || i <= topLeftPx.getY() + lineWidth
+                    || i < topLeftPx.getY() + lineWidth
                     || i == bottomRightPx.getY()
-                    || i >= bottomRightPx.getY() - lineWidth
+                    || i > bottomRightPx.getY() - lineWidth
                 ) {
                 runForLine.push_back(RleRun(
                         topLeftPx.getX(),
-                        len + lineWidth,
+                        len,
                         colour
                 ));
             } else {
@@ -46,7 +46,7 @@ namespace video::scanVideo::graphics::command {
                         colour
                 ));
                 runForLine.push_back(RleRun(
-                        bottomRightPx.getX() - (2* lineWidth),
+                        bottomRightPx.getX() - (lineWidth),
                         lineWidth,
                         colour
                 ));

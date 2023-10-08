@@ -72,14 +72,21 @@ namespace video::scanProgram::scanPrograms::demo {
                 scanVideo::graphics::command::PxCoord(10,10),
                 scanVideo::graphics::command::PxCoord(30,30),
                 graphicsLib->getPalette()[14],
-                2
+                1
         );
 
-//        graphicsLib->drawFilledRectangle(
-//                scanVideo::graphics::command::PxCoord(50,50),
-//                scanVideo::graphics::command::PxCoord(80,80),
-//                graphicsLib->getPalette()[15]
-//        );
+
+        graphicsLib->drawFilledRectangle(
+                scanVideo::graphics::command::PxCoord(50,5),
+                scanVideo::graphics::command::PxCoord(120,70),
+                graphicsLib->getPalette()[9]
+        );
+
+        graphicsLib->drawFilledRectangle(
+                scanVideo::graphics::command::PxCoord(50,50),
+                scanVideo::graphics::command::PxCoord(80,80),
+                graphicsLib->getPalette()[15]
+        );
 
         graphicsLib->drawEmptyRectangle(
                 scanVideo::graphics::command::PxCoord(60,60),
@@ -101,21 +108,39 @@ namespace video::scanProgram::scanPrograms::demo {
                 graphicsLib->getPalette()[10],
                 1
         );
+        graphicsLib->drawLine(
+                scanVideo::graphics::command::PxCoord(190,97),
+                scanVideo::graphics::command::PxCoord(190,100),
+                graphicsLib->getPalette()[10],
+                1
+        );
+        graphicsLib->drawLine(
+                scanVideo::graphics::command::PxCoord(190,97),
+                scanVideo::graphics::command::PxCoord(191,97),
+                graphicsLib->getPalette()[10],
+                1
+        );
 
-//        graphicsLib->drawLine(
-//                scanVideo::graphics::command::PxCoord(100,120),
-//                scanVideo::graphics::command::PxCoord(100,180),
-//                graphicsLib->getPalette()[6],
-//                1
-//        );
-//
-//        graphicsLib->drawLine(
-//                scanVideo::graphics::command::PxCoord(120,120),
-//                scanVideo::graphics::command::PxCoord(120,180),
-//                graphicsLib->getPalette()[6],
-//                2
-//        );
+        graphicsLib->drawLine(
+                scanVideo::graphics::command::PxCoord(100,120),
+                scanVideo::graphics::command::PxCoord(100,180),
+                graphicsLib->getPalette()[6],
+                1
+        );
 
+        graphicsLib->drawLine(
+                scanVideo::graphics::command::PxCoord(120,120),
+                scanVideo::graphics::command::PxCoord(120,180),
+                graphicsLib->getPalette()[6],
+                2
+        );
+
+        graphicsLib->drawText(
+                "Test",
+                scanVideo::graphics::command::PxCoord(100, 200),
+                graphicsLib->getPalette()[3],
+                scanVideo::graphics::command::TextCommand::LARGE
+                );
 
 
 

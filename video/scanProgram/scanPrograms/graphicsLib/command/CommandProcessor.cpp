@@ -62,9 +62,20 @@ namespace video::scanVideo::graphics::command {
         uint16_t *p = (uint16_t *) scanline_buffer->data;
 
         for (auto run : merged) {
-            *p++ = COMPOSABLE_COLOR_RUN;
-            *p++ = run.getColour();
-            *p++ = run.getLen();
+            if (run.getLen() == 1) {
+                *p++ = COMPOSABLE_RAW_1P;
+                *p++ = run.getColour();
+            }
+            if (run.getLen() == 2) {
+                *p++ = COMPOSABLE_RAW_2P;
+                *p++ = run.getColour();
+                *p++ = run.getColour();
+            }
+            if (run.getLen() >= 3) {
+                *p++ = COMPOSABLE_COLOR_RUN;
+                *p++ = run.getColour();
+                *p++ = run.getLen() - 3;
+            }
         }
 
         // black pixel to end line
@@ -98,33 +109,20 @@ namespace video::scanVideo::graphics::command {
         }
 
         for (const auto &g : unsortedRleRuns) {
-            rleRunsForLine[g.first] = mergeRuns(g.second);
+            std::unique_ptr<std::vector<RleRun>> runs = std::make_unique<std::vector<RleRun>>(g.second);
+            rleRunsForLine[g.first] = mergeRuns(std::move(runs));
         }
 
         isFrameComputed = true;
     }
 
-    std::vector<RleRun> CommandProcessor::mergeRuns(std::vector<RleRun> runs) {
+    std::vector<RleRun> CommandProcessor::mergeRuns(std::unique_ptr<std::vector<RleRun>> runs) {
         std::vector<RleRun> retVec = std::vector<RleRun>();
 
-        //We only need a 400*234 display max, so we'll just use a line buffer.
-        //Someday I'll clean this function up, but is should consumer only ~2kb of ram,
-        //So it's already better than a frame buffer.
-        const uint16_t maxDisplayWidth = 400;
+        lineBuffer.fill(baseColour);
 
-        const uint32_t baseColour = 0;
-
-        std::array<uint32_t, maxDisplayWidth> lineBuffer = {baseColour};
-        struct
-        {
-            bool operator()(RleRun a, RleRun b) const { return a.getStartX() < b.getStartX(); }
-        }
-        comparator;
-
-        std::sort(runs.begin(), runs.end(), comparator);
-
-        for (auto run : runs) {
-            for (int i = run.getStartX(); i <= run.getStartX() + run.getLen() - 1; i++) {
+        for (auto run : *runs) {
+            for (int i = run.getStartX(); i <= run.getStartX() + run.getLen(); i++) {
                 if (i < 0 || i >= maxDisplayWidth) {
                     continue;
                 }
@@ -133,15 +131,21 @@ namespace video::scanVideo::graphics::command {
         }
 
         //Now we compress the line buffer.
-        RleRun runToInsert = RleRun(0, 0, baseColour);
+        RleRun runToInsert = RleRun(0, 1, baseColour);
         for (int i = 0; i < maxDisplayWidth - 1; i++) {
+
+            runToInsert.setColour(lineBuffer[i]);
+
             if (lineBuffer[i] == lineBuffer[i + 1]) {
-                runToInsert.setColour(lineBuffer[i]);
                 runToInsert.setLen(runToInsert.getLen() + 1);
+                if (i + 1 >= maxDisplayWidth) {
+                    //We're at the end of the line, insert the run
+                    retVec.emplace_back(runToInsert);
+                }
             } else {
                 //We're at the end of a run. Insert it into the vector and refresh.
                 retVec.emplace_back(runToInsert);
-                runToInsert = RleRun(i + 1, 0, lineBuffer[i+1]);
+                runToInsert = RleRun(i + 1, 1, lineBuffer[i+1]);
             }
 
         }
