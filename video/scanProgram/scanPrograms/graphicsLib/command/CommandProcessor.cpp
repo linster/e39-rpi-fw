@@ -24,6 +24,15 @@ namespace video::scanVideo::graphics::command {
         computeFrame();
     }
 
+    void CommandProcessor::addRleRuns(
+            std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs) {
+
+
+
+        //TODO make a container command.
+
+    }
+
     void CommandProcessor::clearFrame() {
         commandsToProcess.clear();
         computeFrame();
@@ -151,4 +160,6 @@ namespace video::scanVideo::graphics::command {
         }
         return retVec;
     }
+
+
 } // command

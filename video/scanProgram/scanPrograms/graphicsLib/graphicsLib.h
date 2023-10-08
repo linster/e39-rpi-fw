@@ -17,6 +17,7 @@
 #include "command/EmptyRectangleCommand.h"
 #include "command/FilledRectangleCommand.h"
 #include "command/TextCommand.h"
+#include "command/RleRun.h"
 
 namespace video::scanProgram {
 
@@ -42,18 +43,20 @@ namespace video::scanProgram {
                 PICO_COLOR_FROM_RGB5(15, 0, 0),
                 PICO_COLOR_FROM_RGB5(15, 0, 15),
                 PICO_COLOR_FROM_RGB5(15, 15, 0),
-                PICO_COLOR_FROM_RGB5(15, 15, 15),
-                PICO_COLOR_FROM_RGB5(7, 7, 7),
-                PICO_COLOR_FROM_RGB5(0, 0, 31),
-                PICO_COLOR_FROM_RGB5(0, 31, 0),
-                PICO_COLOR_FROM_RGB5(0, 31, 31),
-                PICO_COLOR_FROM_RGB5(31, 0, 0),
-                PICO_COLOR_FROM_RGB5(31, 0, 31),
-                PICO_COLOR_FROM_RGB5(31, 31, 0),
-                PICO_COLOR_FROM_RGB5(31, 31, 31)
+                PICO_COLOR_FROM_RGB5(15, 15, 15),   // 7, Lighter Grey
+                PICO_COLOR_FROM_RGB5(7, 7, 7),      // 8, Light Grey
+                PICO_COLOR_FROM_RGB5(0, 0, 31),     // 9, Bright Blue
+                PICO_COLOR_FROM_RGB5(0, 31, 0),    //10, Bright Green
+                PICO_COLOR_FROM_RGB5(0, 31, 31),   //11, Bright Light Blue
+                PICO_COLOR_FROM_RGB5(31, 0, 0),    //12, Bright red
+                PICO_COLOR_FROM_RGB5(31, 0, 31),   //13, Bright purple
+                PICO_COLOR_FROM_RGB5(31, 31, 0),   //14, Bright Yellow
+                PICO_COLOR_FROM_RGB5(31, 31, 31)   //15, Bright White
         };
 
         public:
+
+            uint8_t* SPECIAL_CHARACTER_COPYRIGHT = const_cast<uint8_t *>(fonts::FontProvider::font8x8_ext_latin[9]);
 
             graphicsLib(
                     std::shared_ptr<scanVideo::graphics::command::CommandProcessor> commandProcessor
@@ -116,10 +119,22 @@ namespace video::scanProgram {
                     std::string text,
                     scanVideo::graphics::command::PxCoord topLeftPx,
                     uint32_t colour,
-                    scanVideo::graphics::command::TextCommand::Size size
+                    uint8_t pixelSize
                     );
 
+            void drawTextSpecialCharacter(
+                    uint8_t* bitmap,
+                    scanVideo::graphics::command::PxCoord topLeftPx,
+                    uint32_t colour,
+                    uint8_t pixelSize
+            );
+
             void addCommandToFrame(std::unique_ptr<scanVideo::graphics::command::BaseCommand> command);
+
+            //So we can add arbitrary RLE runs (like a special character)
+            void contributeRleRuns(
+                    std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs
+            );
 
             uint8_t getUserFrameState();
             void setUserFrameState(uint8_t state);

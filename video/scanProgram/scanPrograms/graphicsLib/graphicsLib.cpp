@@ -83,10 +83,10 @@ namespace video::scanProgram {
     }
 
     void graphicsLib::drawText(std::string text, scanVideo::graphics::command::PxCoord topLeftPx, uint32_t colour,
-                               scanVideo::graphics::command::TextCommand::Size size) {
+                               uint8_t pixelSize) {
 
         std::unique_ptr<scanVideo::graphics::command::TextCommand> ptr =
-                std::make_unique<scanVideo::graphics::command::TextCommand>(text, topLeftPx, colour, size);
+                std::make_unique<scanVideo::graphics::command::TextCommand>(text, topLeftPx, colour, pixelSize);
 
         addCommandToFrame(std::move(ptr));
     }
@@ -109,6 +109,24 @@ namespace video::scanProgram {
 
     graphicsLib::graphicsLib(std::shared_ptr<scanVideo::graphics::command::CommandProcessor> commandProcessor) {
         this->commandProcessor = commandProcessor;
+    }
+
+    void graphicsLib::contributeRleRuns(
+            std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs) {
+        this->commandProcessor->addRleRuns(runs);
+    }
+
+    void graphicsLib::drawTextSpecialCharacter(uint8_t *bitmap, scanVideo::graphics::command::PxCoord topLeftPx,
+                                               uint32_t colour, uint8_t pixelSize) {
+
+        scanVideo::graphics::command::TextCommand textCommand = scanVideo::graphics::command::TextCommand(
+                "",
+                topLeftPx,
+                colour,
+                pixelSize
+                );
+
+        contributeRleRuns(textCommand.getRleRunsForSpecialCharacter(bitmap));
     }
 
 

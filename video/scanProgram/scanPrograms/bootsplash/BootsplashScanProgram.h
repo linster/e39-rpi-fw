@@ -12,9 +12,6 @@ namespace video::scanProgram::scanPrograms::bootsplash {
 
     class BootsplashScanProgram : public BaseScanProgram {
 
-    private:
-        std::shared_ptr<pico::logger::BaseLogger> logger;
-        std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
 
     public:
 
@@ -27,11 +24,26 @@ namespace video::scanProgram::scanPrograms::bootsplash {
             std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib
         );
 
+    private:
+        std::shared_ptr<pico::logger::BaseLogger> logger;
+        std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
+
+        BootSplashType bootSplashType = LINSTER_OS;
+
+        void onScanProgramStart_drawLinsterOS();
+        void onScanProgramStart_BMW();
+        void onScanProgramStart_Goose();
+
+        void render_LinsterOS(scanvideo_scanline_buffer_t *scanline_buffer);
+        void render_BMW(scanvideo_scanline_buffer_t *scanline_buffer);
+        void render_Goose(scanvideo_scanline_buffer_t *scanline_buffer);
+
     protected:
         std::string getTag() override;
         void onScanProgramStart() override;
         void onScanProgramStop() override;
         void render(scanvideo_scanline_buffer_t *scanline_buffer) override;
+
     };
 } // bootsplash
 

@@ -64,6 +64,9 @@ namespace video::scanVideo::graphics::command {
          */
         void addCommand(std::unique_ptr<BaseCommand> baseCommand);
 
+
+        void addRleRuns(std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs);
+
         /**
          * Remove all the commands from the frame.
          */

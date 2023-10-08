@@ -9,19 +9,21 @@
 #include <cstdint>
 #include "PxCoord.h"
 #include "BaseCommand.h"
+
+#include "../fonts/FontProvider.h"
+
 namespace video::scanVideo::graphics::command {
 
     class TextCommand : public BaseCommand{
 
 
     public:
-        enum Size { SMALL, MEDIUM, LARGE };
 
         TextCommand(
                 std::string text,
                 PxCoord topLeftPx,
                 uint32_t colour,
-                Size size
+                uint8_t pixelSize
                 );
 
         std::pair<uint16_t, uint16_t> getAffectedScanlines() override;
@@ -29,15 +31,17 @@ namespace video::scanVideo::graphics::command {
 
         ~TextCommand() override = default;
 
+        std::map<uint16_t, std::vector<RleRun>> getRleRunsForSpecialCharacter(uint8_t* bitmap);
+
     private:
         std::string text;
         PxCoord topLeftPx;
         uint32_t colour;
-        Size size;
+        uint8_t pixelSize;
 
-        uint8_t height_small = 10;
-        uint8_t height_medium = 15;
-        uint8_t height_large = 19;
+        std::map<uint16_t, std::vector<RleRun>> getRleRunsForCharacter(uint8_t index, char c);
+
+        std::map<uint16_t, std::vector<RleRun>> getRleRunsForBitmap(uint8_t index, uint8_t* bitmap);
     };
 
 } // command

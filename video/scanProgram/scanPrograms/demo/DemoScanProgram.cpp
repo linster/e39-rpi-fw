@@ -79,7 +79,7 @@ namespace video::scanProgram::scanPrograms::demo {
         graphicsLib->drawFilledRectangle(
                 scanVideo::graphics::command::PxCoord(50,5),
                 scanVideo::graphics::command::PxCoord(120,70),
-                graphicsLib->getPalette()[9]
+                graphicsLib->getPalette()[13]
         );
 
         graphicsLib->drawFilledRectangle(
@@ -136,13 +136,31 @@ namespace video::scanProgram::scanPrograms::demo {
         );
 
         graphicsLib->drawText(
-                "Test",
-                scanVideo::graphics::command::PxCoord(100, 200),
-                graphicsLib->getPalette()[3],
-                scanVideo::graphics::command::TextCommand::LARGE
+                "Hello, World!",
+                scanVideo::graphics::command::PxCoord(181, 10),
+                graphicsLib->getPalette()[15],
+                1
+                );
+        graphicsLib->drawText(
+                "AAA",
+                scanVideo::graphics::command::PxCoord(181, 20),
+                graphicsLib->getPalette()[15],
+                2
+                );
+        graphicsLib->drawText(
+                "BBBB",
+                scanVideo::graphics::command::PxCoord(81, 80),
+                graphicsLib->getPalette()[15],
+                5
                 );
 
 
+        graphicsLib->drawLine(
+                scanVideo::graphics::command::PxCoord(10,120),
+                scanVideo::graphics::command::PxCoord(80,180),
+                graphicsLib->getPalette()[6],
+                1
+        );
 
         graphicsLib->setUserFrameState(1);
     }
