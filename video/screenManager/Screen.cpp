@@ -100,6 +100,7 @@ namespace video::ScreenManager {
 
         auto item = getScreenItems()[index];
 
+        item->setIsFocused(true);
         item->onItemUnfocused();
 
         if (this->debugPrintAsciiArt) {
@@ -114,7 +115,8 @@ namespace video::ScreenManager {
 
         auto item = getScreenItems()[index];
 
-        item->onItemFocused();
+        item->setIsFocused(false);
+        item->onItemUnfocused();
 
         logger->d(getTag(), fmt::format("UnFocused item with index: {}", index));
     }

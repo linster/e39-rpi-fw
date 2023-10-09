@@ -44,6 +44,28 @@ namespace video::scanProgram::scanPrograms::menu {
         //TODO every so many frames (not every frame, because re-drawing the screen
         //TODO is expensive.
 
+        uint16_t frameNumber = scanvideo_frame_number(scanline_buffer->scanline_id);
+
+        if (previousFrameNumber == 0) {
+            previousFrameNumber = frameNumber;
+        }
+
+
+        if (frameNumber >= previousFrameNumber + (24 * 4)) {
+            screenManager->focusNextItem(1);
+        }
+
+
+        if (frameNumber >= previousFrameNumber + (24 * 4)) {
+//            blankMenuItemArea();
+            graphicsLib->clearFrame();
+            drawScreenBackground();
+            drawScreen(screenManager->getCurrentScreen());
+            previousFrameNumber = frameNumber;
+        }
+
+
+
         graphicsLib->render_commandProcessed(scanline_buffer);
     }
 
@@ -159,6 +181,14 @@ namespace video::scanProgram::scanPrograms::menu {
         );
 
         return 8 + 8;
+    }
+
+    void MenuScanProgram::blankMenuItemArea() {
+        graphicsLib->drawFilledRectangle(
+                scanVideo::graphics::command::PxCoord(30,58),
+                scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, getDisplayHeightPx() - 40 - 2),
+                PICO_COLOR_FROM_RGB5(0, 0, 8)
+                );
     }
 
 } // menu
