@@ -9,6 +9,7 @@
 #include <vector>
 #include "../../../../../logging/BaseLogger.h"
 #include "BaseCommand.h"
+#include "RleRunContainerCommand.h"
 #include "pico/scanvideo/composable_scanline.h"
 #include "pico/scanvideo/scanvideo_base.h"
 #include <cstdint>

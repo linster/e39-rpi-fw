@@ -12,7 +12,7 @@ namespace video::ScreenManager {
         class ScreenItem {
 
         private:
-            bool isFocused;
+            bool isFocused = false;
         public:
 
             virtual std::string getLabel() = 0;
@@ -23,6 +23,7 @@ namespace video::ScreenManager {
             virtual void onItemClicked() = 0;
 
             bool getIsFocused();
+            void setIsFocused(bool isFocused);
         };
 
     } // screenManager

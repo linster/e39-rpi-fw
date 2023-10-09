@@ -31,7 +31,7 @@ namespace pico {
 
         sleep_ms(1000);
 
-        scanProgramSwapper->swapTo(ScanProgram::DEMO);
+        scanProgramSwapper->swapTo(ScanProgram::MENU);
 
         videoSwitch->switchTo(hardware::videoSwitch::PICO);
 

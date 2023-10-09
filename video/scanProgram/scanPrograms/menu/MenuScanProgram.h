@@ -7,6 +7,9 @@
 
 #include "../BaseScanProgram.h"
 #include "../graphicsLib/graphicsLib.h"
+#include "../../../screenManager/Screen.h"
+#include "../../../screenManager/ScreenItem.h"
+#include "../../../screenManager/ScreenManager.h"
 
 namespace video::scanProgram::scanPrograms::menu {
 
@@ -16,10 +19,20 @@ namespace video::scanProgram::scanPrograms::menu {
         std::shared_ptr<pico::logger::BaseLogger> logger;
         std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
 
+        std::shared_ptr<ScreenManager::ScreenManager> screenManager;
+
+        void drawScreen(std::shared_ptr<ScreenManager::Screen> screen);
+
+        void drawScreenBackground();
+
+        void drawScreenMenuItems(std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>>);
+        uint16_t drawScreenMenuItem(uint16_t tl, std::shared_ptr<video::ScreenManager::ScreenItem> item);
+
     public:
         MenuScanProgram(
                 std::shared_ptr<pico::logger::BaseLogger> logger,
-                std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib
+                std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib,
+                std::shared_ptr<ScreenManager::ScreenManager> screenManager
         );
 
     protected:

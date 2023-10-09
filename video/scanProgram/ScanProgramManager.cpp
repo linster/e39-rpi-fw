@@ -129,6 +129,7 @@ namespace video::scanProgram {
             this->menuScanProgram = menuScanProgram;
             this->demoScanProgram = demoScanProgram;
             this->clockScanProgram = clockScanProgram;
+            this->bootsplashScanProgram = bootsplashScanProgram;
         }
 
     void ScanProgramManager::measureFreqs() {

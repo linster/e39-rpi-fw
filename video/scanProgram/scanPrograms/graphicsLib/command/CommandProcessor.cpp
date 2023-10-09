@@ -27,10 +27,13 @@ namespace video::scanVideo::graphics::command {
     void CommandProcessor::addRleRuns(
             std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs) {
 
+        RleRunContainerCommand containerCommand = RleRunContainerCommand(runs);
 
+        std::unique_ptr<BaseCommand> ptr = std::make_unique<RleRunContainerCommand>(containerCommand);
 
-        //TODO make a container command.
+        commandsToProcess.push_back(std::move(ptr));
 
+        computeFrame();
     }
 
     void CommandProcessor::clearFrame() {

@@ -47,7 +47,7 @@ namespace video::ScreenManager::MainScreen {
         }
 
         std::string MainScreen::getTitle() {
-            return "e39-Rpi -- 2023 Stefan Martynkiw";
+            return "Main Screen";
         }
 
         std::string MainScreen::getTag() {

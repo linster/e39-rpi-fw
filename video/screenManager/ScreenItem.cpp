@@ -6,5 +6,12 @@
 
 namespace video {
     namespace ScreenManager {
+        void ScreenItem::setIsFocused(bool isFocused) {
+            this->isFocused = isFocused;
+        }
+
+        bool ScreenItem::getIsFocused() {
+            return isFocused;
+        }
     } // video
 } // screenManager

@@ -56,7 +56,7 @@ namespace video::scanProgram {
 
         public:
 
-            uint8_t* SPECIAL_CHARACTER_COPYRIGHT = const_cast<uint8_t *>(fonts::FontProvider::font8x8_ext_latin[9]);
+            constexpr static uint8_t* SPECIAL_CHARACTER_COPYRIGHT = const_cast<uint8_t *>(fonts::FontProvider::font8x8_ext_latin[9]);
 
             graphicsLib(
                     std::shared_ptr<scanVideo::graphics::command::CommandProcessor> commandProcessor

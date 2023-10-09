@@ -42,14 +42,11 @@ namespace video::ScreenManager {
                     );
 
 
-            /** A string that's a centered title */
-            virtual std::string getTitle() = 0;
-
             virtual std::string getTag() = 0;
         public:
 
             /** Subclasses must implement this to indicate items */
-            virtual std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>>getScreenItems();
+            virtual std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>>getScreenItems() = 0;
 
 
             void focusFirstItem();
@@ -60,6 +57,8 @@ namespace video::ScreenManager {
             /** Draw an ascii art representation of the screen to the provided logger */
             void drawToLogger(std::shared_ptr<pico::logger::BaseLogger> logger);
 
+            /** A string that's a centered title */
+            virtual std::string getTitle() = 0;
         };
 
     } // ScreenManager

@@ -6,9 +6,6 @@
 
 
 namespace video::ScreenManager {
-    std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>> Screen::getScreenItems() {
-        return {};
-    }
 
     void Screen::initialize(
             std::shared_ptr<pico::logger::BaseLogger> logger
@@ -27,6 +24,8 @@ namespace video::ScreenManager {
             focusedIndex = 0;
         }
         logger->d(getTag(), fmt::format("Current focusedIndex: {}", focusedIndex));
+
+        getScreenItems()[focusedIndex]->setIsFocused(true);
     }
 
     void Screen::focusNextItem(int clicks) {
