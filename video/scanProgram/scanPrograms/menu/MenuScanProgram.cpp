@@ -34,6 +34,8 @@ namespace video::scanProgram::scanPrograms::menu {
 
     void MenuScanProgram::onScanProgramStop() {
         logger->d(getTag(), "onScanProgramStop()");
+
+        graphicsLib->clearFrame(); //Free up some memory
     }
 
     void MenuScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
