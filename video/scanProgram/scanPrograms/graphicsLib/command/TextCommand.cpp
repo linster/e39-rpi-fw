@@ -82,7 +82,7 @@ namespace video::scanVideo::graphics::command {
                     } else {
                         RleRun bigPixelRun = RleRun(topLeftPx.getX() + (9 * index * pixelSize) + (col * pixelSize), pixelSize, colour);
                         for (int i = 0; i < pixelSize; ++i) {
-                            uint16_t y = topLeftPx.getY() + row * i;
+                            uint16_t y = topLeftPx.getY() + i + (row * pixelSize);
                             if (retRuns.count(y) == 0) {
                                 retRuns[y] = std::vector<RleRun>();
                             }
