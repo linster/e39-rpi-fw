@@ -5,10 +5,10 @@
 #ifndef PICOTEMPLATE_TELEPHONELONGPRESSOBSERVER_H
 #define PICOTEMPLATE_TELEPHONELONGPRESSOBSERVER_H
 
-#include "../BaseObserver.h"
-#include "../../../../hardware/videoSwitch/VideoSwitch.h"
-#include "../../../../video/scanProgram/ScanProgramSwapper.h"
-#include "../../../outputWriterApi/screenPowerManager/ScreenPowerManager.h"
+#include <ibus/observerRegistry/observers/BaseObserver.h>
+#include <hardware/videoSwitch/VideoSwitch.h>
+#include <video/scanProgram/ScanProgramSwapper.h>
+#include <ibus/outputWriterApi/screenPowerManager/ScreenPowerManager.h>
 
 namespace pico {
     namespace ibus {

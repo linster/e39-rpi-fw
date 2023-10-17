@@ -5,9 +5,10 @@
 #ifndef PICOTEMPLATE_BASEOBSERVER_H
 #define PICOTEMPLATE_BASEOBSERVER_H
 
-#include "../../data/IbusPacket.h"
-#include "../../../logging/BaseLogger.h"
-#include "../../../proto_cpp/PiToPico.h"
+#include <ibus/data/IbusPacket.h>
+#include <logging/BaseLogger.h>
+#include <proto_cpp/PiToPico.h>
+#include <libs/fmt/include/fmt/format.h>
 
 namespace pico {
     namespace ibus {

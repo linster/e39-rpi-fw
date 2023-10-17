@@ -9,7 +9,7 @@
 
 #include <memory>
 #include "ScanProgramManager.h"
-#include "../../logging/BaseLogger.h"
+#include <logging/BaseLogger.h>
 
 namespace video::scanProgram {
 

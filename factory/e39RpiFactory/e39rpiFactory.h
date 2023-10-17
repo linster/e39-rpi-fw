@@ -5,7 +5,7 @@
 #ifndef PICOTEMPLATE_E39RPIFACTORY_H
 #define PICOTEMPLATE_E39RPIFACTORY_H
 
-#include "../ApplicationContainer.h"
+#include <factory/ApplicationContainer.h>
 
 namespace pico {
     namespace di {

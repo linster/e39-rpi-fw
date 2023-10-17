@@ -5,8 +5,8 @@
 #ifndef PICOTEMPLATE_DEMOSCANPROGRAM_H
 #define PICOTEMPLATE_DEMOSCANPROGRAM_H
 
-#include "../BaseScanProgram.h"
-#include "../graphicsLib/graphicsLib.h"
+#include <video/scanProgram/scanPrograms/BaseScanProgram.h>
+#include <video/scanProgram/scanPrograms/graphicsLib/graphicsLib.h>
 
 #define MIN_COLOR_RUN 3
 

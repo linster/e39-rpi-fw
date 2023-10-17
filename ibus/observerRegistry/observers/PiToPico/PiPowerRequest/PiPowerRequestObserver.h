@@ -6,11 +6,11 @@
 #define PICOTEMPLATE_PIPOWERREQUESTOBSERVER_H
 
 
-#include "../../BaseObserver.h"
-#include "../../../logging/BaseLogger.h"
-#include "../../../../data/IBusDevices.h"
-#include "../../../../proto_cpp/PiToPico.h"
-#include "../../../hardware/pi4powerswitch/IPi4PowerSwitchManager.h"
+#include <ibus/observerRegistry/observers/BaseObserver.h>
+#include <logging/BaseLogger.h>
+#include <ibus/data/IBusDevices.h>
+#include <proto_cpp/PiToPico.h>
+#include <hardware/pi4powerswitch/IPi4PowerSwitchManager.h>
 
 namespace pico {
     namespace ibus {

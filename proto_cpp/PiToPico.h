@@ -7,7 +7,7 @@
 
 
 #include "ConfigMessage.h"
-#include "../proto_generated/PiToPico.pb.h"
+#include <proto_generated/PiToPico.pb.h>
 
 namespace pico {
     namespace messages {

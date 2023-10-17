@@ -5,9 +5,9 @@
 #ifndef PICOTEMPLATE_IBUSCONFIGMESSAGESTORE_H
 #define PICOTEMPLATE_IBUSCONFIGMESSAGESTORE_H
 
-#include "../IConfigurationStore.h"
-#include "../../../logging/BaseLogger.h"
-#include "../../../ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h"
+#include <configuration/store/IConfigurationStore.h>
+#include <logging/BaseLogger.h>
+#include <ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h>
 namespace pico::config {
 
         class IBusConfigMessageStore : public IConfigurationStore {

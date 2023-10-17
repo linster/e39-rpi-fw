@@ -5,7 +5,7 @@
 #ifndef PICOTEMPLATE_ICONFIGURATIONSTORE_H
 #define PICOTEMPLATE_ICONFIGURATIONSTORE_H
 
-#include "../Configuration.h"
+#include <configuration/Configuration.h>
 
 namespace pico {
     namespace config {

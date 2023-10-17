@@ -9,7 +9,7 @@
 #include <string>
 #include <memory>
 #include "ScreenItem.h"
-#include "../../logging/BaseLogger.h"
+#include <logging/BaseLogger.h>
 #include "pico/mutex.h"
 #include "fmt/format.h"
 

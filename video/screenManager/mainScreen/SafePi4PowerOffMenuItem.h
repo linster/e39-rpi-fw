@@ -6,8 +6,8 @@
 #define PICOTEMPLATE_SAFEPI4POWEROFFMENUITEM_H
 
 #include <memory>
-#include "../../../ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.h"
-#include "../ScreenItem.h"
+#include <ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.h>
+#include <video/screenManager/ScreenItem.h>
 
 namespace video::ScreenManager::MainScreen {
 

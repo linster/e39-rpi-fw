@@ -6,9 +6,9 @@
 #define PICOTEMPLATE_TURNONPI4MENUITEM_H
 
 #include <memory>
-#include "../../../hardware/pi4powerswitch/IPi4PowerSwitchManager.h"
-#include "../../../logging/BaseLogger.h"
-#include "../ScreenItem.h"
+#include <hardware/pi4powerswitch/IPi4PowerSwitchManager.h>
+#include <logging/BaseLogger.h>
+#include <video/screenManager/ScreenItem.h>
 
 namespace video::ScreenManager::MainScreen {
 

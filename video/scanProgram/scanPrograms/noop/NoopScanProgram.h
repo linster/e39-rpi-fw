@@ -5,7 +5,7 @@
 #ifndef PICOTEMPLATE_NOOPSCANPROGRAM_H
 #define PICOTEMPLATE_NOOPSCANPROGRAM_H
 
-#include "../BaseScanProgram.h"
+#include <video/scanProgram/scanPrograms/BaseScanProgram.h>
 
 namespace video::scanProgram::scanPrograms::noop {
 

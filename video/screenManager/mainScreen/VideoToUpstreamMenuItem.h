@@ -6,8 +6,8 @@
 #define PICOTEMPLATE_VIDEOTOUPSTREAMMENUITEM_H
 
 #include <memory>
-#include "../ScreenItem.h"
-#include "../../../hardware/videoSwitch/VideoSwitch.h"
+#include <video/screenManager/ScreenItem.h>
+#include <hardware/videoSwitch/VideoSwitch.h>
 
 namespace video::ScreenManager::MainScreen {
 

@@ -6,11 +6,11 @@
 #define PICOTEMPLATE_KNOBLISTENEROBSERVER_H
 
 #include <memory>
-#include "../../../../logging/BaseLogger.h"
-#include "../BaseObserver.h"
-#include "../../../video/scanProgram/ScanProgramSwapper.h"
-#include "../../../../hardware/videoSwitch/VideoSwitch.h"
-#include "../../../../video/screenManager/ScreenManager.h"
+#include <logging/BaseLogger.h>
+#include <ibus/observerRegistry/observers/BaseObserver.h>
+#include <video/scanProgram/ScanProgramSwapper.h>
+#include <hardware/videoSwitch/VideoSwitch.h>
+#include <video/screenManager/ScreenManager.h>
 
 namespace pico::ibus::observers {
 

@@ -5,9 +5,8 @@
 #ifndef PICOTEMPLATE_MOCKOBSERVER_H
 #define PICOTEMPLATE_MOCKOBSERVER_H
 
-#include "../BaseObserver.h"
-#include "../../../../logging/BaseLogger.h"
-
+#include <ibus/observerRegistry/observers/BaseObserver.h>
+#include <logging/BaseLogger.h>
 namespace pico {
     namespace ibus {
         namespace observers {

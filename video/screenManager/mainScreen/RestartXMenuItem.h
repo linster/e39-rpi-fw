@@ -6,8 +6,8 @@
 #define PICOTEMPLATE_RESTARTXMENUITEM_H
 
 #include <memory>
-#include "../ScreenItem.h"
-#include "../../../ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.h"
+#include <video/screenManager/ScreenItem.h>
+#include <ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.h>
 
 namespace video::ScreenManager::MainScreen {
 

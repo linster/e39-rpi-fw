@@ -7,11 +7,12 @@
 
 #include <cstring>
 #include <memory>
-#include "../../logging/BaseLogger.h"
-#include "../../ibus/observerRegistry/ObserverRegistry.h"
+
+#include <logging/BaseLogger.h>
+#include <ibus/observerRegistry/ObserverRegistry.h>
 #include "pico/util/queue.h"
 #include <pico.h>
-#include "../../ibus/data/IbusPacket.h"
+#include <ibus/data/IbusPacket.h>
 
 #include "pico/stdlib.h"
 #include "hardware/pio.h"

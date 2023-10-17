@@ -5,7 +5,7 @@
 #ifndef PICOTEMPLATE_SOFTPOWERREQUESTWRITER_H
 #define PICOTEMPLATE_SOFTPOWERREQUESTWRITER_H
 
-#include "../../BaseOutputWriter.h"
+#include <ibus/outputWriterApi/BaseOutputWriter.h>
 
 namespace pico {
     namespace ibus {

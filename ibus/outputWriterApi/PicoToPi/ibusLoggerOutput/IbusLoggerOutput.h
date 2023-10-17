@@ -5,7 +5,7 @@
 #ifndef PICOTEMPLATE_IBUSLOGGEROUTPUT_H
 #define PICOTEMPLATE_IBUSLOGGEROUTPUT_H
 
-#include "../../BaseOutputWriter.h"
+#include <ibus/outputWriterApi/BaseOutputWriter.h>
 
 namespace pico {
     namespace ibus {

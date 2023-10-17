@@ -5,8 +5,9 @@
 #ifndef PICOTEMPLATE_HEARTBEATRESPONSEWRITER_H
 #define PICOTEMPLATE_HEARTBEATRESPONSEWRITER_H
 
-#include "../../BaseOutputWriter.h"
-#include "../../../logging/BaseLogger.h"
+#include <ibus/outputWriterApi/BaseOutputWriter.h>
+#include <logging/BaseLogger.h>
+
 namespace pico {
     namespace ibus {
         namespace output {

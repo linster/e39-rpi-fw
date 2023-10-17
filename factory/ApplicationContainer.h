@@ -6,15 +6,15 @@
 #define PICOTEMPLATE_APPLICATIONCONTAINER_H
 
 #include <memory>
-#include "../logging/BaseLogger.h"
-#include "../hardware/pi4powerswitch/IPi4PowerSwitchManager.h"
-#include "../hardware/videoSwitch/VideoSwitch.h"
-#include "../configuration/ConfigurationManager.h"
-#include "../video/scanProgram/ScanProgramManager.h"
-#include "../video/scanProgram/ScanProgramSwapper.h"
-#include "../ibus/observerRegistry/ObserverRegistry.h"
-#include "../ibus/dma/DmaManager.h"
-#include "../ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h"
+#include <logging/BaseLogger.h>
+#include <hardware/pi4powerswitch/IPi4PowerSwitchManager.h>
+#include <hardware/videoSwitch/VideoSwitch.h>
+#include <configuration/ConfigurationManager.h>
+#include <video/scanProgram/ScanProgramManager.h>
+#include <video/scanProgram/ScanProgramSwapper.h>
+#include <ibus/observerRegistry/ObserverRegistry.h>
+#include <ibus/dma/DmaManager.h>
+#include <ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h>
 
 namespace pico {
 

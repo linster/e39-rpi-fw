@@ -6,9 +6,9 @@
 #define PICOTEMPLATE_CONFIGPUSHMENUITEM_H
 
 #include <memory>
-#include "../ScreenItem.h"
-#include "../../../ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h"
-#include "../../../configuration/ConfigurationManager.h"
+#include <video/screenManager/ScreenItem.h>
+#include <ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h>
+#include <configuration/ConfigurationManager.h>
 
 namespace video::ScreenManager::MainScreen {
 

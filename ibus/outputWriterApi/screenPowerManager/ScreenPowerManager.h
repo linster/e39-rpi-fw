@@ -5,10 +5,11 @@
 #ifndef PICOTEMPLATE_SCREENPOWERMANAGER_H
 #define PICOTEMPLATE_SCREENPOWERMANAGER_H
 
-#include "../BaseOutputWriter.h"
-#include "../../../logging/BaseLogger.h"
-#include "../../../configuration/Configuration.h"
-#include "../../../configuration/default/PimoroniDefaultConfigurationProvider.h"
+#include <ibus/outputWriterApi/BaseOutputWriter.h>
+#include <logging/BaseLogger.h>
+#include <configuration/Configuration.h>
+#include <configuration/default/PimoroniDefaultConfigurationProvider.h>
+#include <libs/fmt/include/fmt/format.h>
 
 namespace pico {
     namespace ibus {

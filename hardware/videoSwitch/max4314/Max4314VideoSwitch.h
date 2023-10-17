@@ -6,8 +6,11 @@
 #define PICOTEMPLATE_MAX4314VIDEOSWITCH_H
 
 #include <memory>
-#include "../VideoSwitch.h"
-#include "../../../logging/BaseLogger.h"
+#include <hardware/videoSwitch/VideoSwitch.h>
+#include <logging/BaseLogger.h>
+#include <libs/fmt/include/fmt/format.h>
+#include "pico.h"
+
 
 namespace pico {
     namespace hardware {

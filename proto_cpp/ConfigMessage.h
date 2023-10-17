@@ -5,10 +5,10 @@
 #ifndef PICOTEMPLATE_CONFIGMESSAGE_H
 #define PICOTEMPLATE_CONFIGMESSAGE_H
 
-#include "../libs/nanopb_cpp/nanopb_cpp.h"
-#include "../proto_generated/ConfigProto.pb.h"
-#include "../logging/BaseLogger.h"
-#include "../hardware/videoSwitch/VideoSource.h"
+#include "libs/nanopb_cpp/nanopb_cpp.h"
+#include <proto_generated/ConfigProto.pb.h>
+#include <logging/BaseLogger.h>
+#include <hardware/videoSwitch/VideoSource.h>
 
 namespace pico::messages {
 

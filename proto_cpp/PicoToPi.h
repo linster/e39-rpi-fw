@@ -6,7 +6,7 @@
 #define PICOTEMPLATE_PICOTOPI_H
 
 #include "ConfigMessage.h"
-#include "../proto_generated/PicoToPi.pb.h"
+#include <proto_generated/PicoToPi.pb.h>
 
 namespace pico {
     namespace messages {

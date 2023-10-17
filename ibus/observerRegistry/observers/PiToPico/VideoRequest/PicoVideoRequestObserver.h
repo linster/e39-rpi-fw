@@ -5,11 +5,11 @@
 #ifndef PICOTEMPLATE_PICOVIDEOREQUESTOBSERVER_H
 #define PICOTEMPLATE_PICOVIDEOREQUESTOBSERVER_H
 
-#include "../../BaseObserver.h"
-#include "../../../logging/BaseLogger.h"
-#include "../../../../data/IBusDevices.h"
-#include "../../../../proto_cpp/PiToPico.h"
-#include "../../../hardware/videoSwitch/VideoSwitch.h"
+#include <ibus/observerRegistry/observers/BaseObserver.h>
+#include <logging/BaseLogger.h>
+#include <ibus/data/IBusDevices.h>
+#include <proto_cpp/PiToPico.h>
+#include <hardware/videoSwitch/VideoSwitch.h>
 
 namespace pico {
     namespace ibus {

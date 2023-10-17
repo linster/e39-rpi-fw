@@ -6,28 +6,28 @@
 #define PICOTEMPLATE_PIMORONIFACTORY_H
 
 #include <vector>
-#include "../ApplicationContainer.h"
-#include "../../logging/StdioPrintFLogger.h"
-#include "../../hardware/pi4powerswitch/MockPi4PowerSwitchManager.h"
-#include "../../hardware/pi4powerswitch/GpioPi4PowerSwitchManager.h"
-#include "../../hardware/videoSwitch/mock/MockVideoSwitch.h"
-#include "../../hardware/videoSwitch/max4314/Max4314VideoSwitch.h"
+#include <factory/ApplicationContainer.h>
+#include <logging/StdioPrintFLogger.h>
+#include <hardware/pi4powerswitch/MockPi4PowerSwitchManager.h>
+#include <hardware/pi4powerswitch/GpioPi4PowerSwitchManager.h>
+#include <hardware/videoSwitch/mock/MockVideoSwitch.h>
+#include <hardware/videoSwitch/max4314/Max4314VideoSwitch.h>
 
-#include "../../ibus/observerRegistry/observers/BaseObserver.h"
-#include "../../ibus/observerRegistry/observers/mockObserver/MockObserver.h"
-#include "../../ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.h"
-#include "../../ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h"
-#include "../../ibus/observerRegistry/observers/PiToPico/heartbeatRequest/HeatbeatRequestObserver.h"
-#include "../../ibus/observerRegistry/observers/PiToPico/picoConfigurationReadRequest/PicoConfigurationReadRequestObserver.h"
-#include "../../ibus/observerRegistry/observers/PiToPico/PiPowerRequest/PiPowerRequestObserver.h"
-#include "../../ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h"
-#include "../../ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h"
+#include <ibus/observerRegistry/observers/BaseObserver.h>
+#include <ibus/observerRegistry/observers/mockObserver/MockObserver.h>
+#include <ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.h>
+#include <ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h>
+#include <ibus/observerRegistry/observers/PiToPico/heartbeatRequest/HeatbeatRequestObserver.h>
+#include <ibus/observerRegistry/observers/PiToPico/picoConfigurationReadRequest/PicoConfigurationReadRequestObserver.h>
+#include <ibus/observerRegistry/observers/PiToPico/PiPowerRequest/PiPowerRequestObserver.h>
+#include <ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h>
+#include <ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h>
 
 
-#include "../../ibus/observerRegistry/ObserverRegistry.h"
-#include "../../configuration/default/DefaultConfigurationProvider.h"
-#include "../../configuration/default/PimoroniDefaultConfigurationProvider.h"
-#include "../../video/screenManager/mainScreen/MainScreen.h"
+#include <ibus/observerRegistry/ObserverRegistry.h>
+#include <configuration/default/DefaultConfigurationProvider.h>
+#include <configuration/default/PimoroniDefaultConfigurationProvider.h>
+#include <video/screenManager/mainScreen/MainScreen.h>
 
 namespace pico {
     namespace di {

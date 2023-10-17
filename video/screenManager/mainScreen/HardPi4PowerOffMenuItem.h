@@ -6,8 +6,8 @@
 #define PICOTEMPLATE_HARDPI4POWEROFFMENUITEM_H
 
 #include <memory>
-#include "../../../hardware/pi4powerswitch/IPi4PowerSwitchManager.h"
-#include "../ScreenItem.h"
+#include <hardware/pi4powerswitch/IPi4PowerSwitchManager.h>
+#include <video/screenManager/ScreenItem.h>
 
 namespace video::ScreenManager::MainScreen {
 

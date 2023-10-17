@@ -6,8 +6,9 @@
 #define PICOTEMPLATE_MOCKVIDEOSWITCH_H
 
 #include <memory>
-#include "../VideoSwitch.h"
-#include "../../../logging/BaseLogger.h"
+#include <hardware/videoSwitch/VideoSwitch.h>
+#include <logging/BaseLogger.h>
+#include <libs/fmt/include/fmt/format.h>
 
 namespace pico {
     namespace hardware {

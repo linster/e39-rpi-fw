@@ -6,7 +6,7 @@
 #define PICOTEMPLATE_FLASHCONFIGURATIONSTORE_H
 
 #include <vector>
-#include "../IConfigurationStore.h"
+#include <configuration/store/IConfigurationStore.h>
 namespace pico::config {
 
         class FlashConfigurationStore : IConfigurationStore {

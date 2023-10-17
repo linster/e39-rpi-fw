@@ -5,7 +5,7 @@
 #ifndef PICOTEMPLATE_MEMORYCONFIGURATIONSTORE_H
 #define PICOTEMPLATE_MEMORYCONFIGURATIONSTORE_H
 
-#include "../IConfigurationStore.h"
+#include <configuration/store/IConfigurationStore.h>
 namespace pico::config {
 
         class MemoryConfigurationStore : public IConfigurationStore {

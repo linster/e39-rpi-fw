@@ -6,9 +6,8 @@
 #define PICOTEMPLATE_OBSERVERREGISTRY_H
 
 #include <vector>
-#include "observers/BaseObserver.h"
-#include "../../ibus/data/IbusPacket.h"
-
+#include <ibus/observerRegistry/observers/BaseObserver.h>
+#include <ibus/data/IbusPacket.h>
 namespace pico {
     namespace ibus {
         namespace observerRegistry {

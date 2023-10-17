@@ -2,10 +2,9 @@
 // Created by stefan on 11/21/22.
 //
 
-#include "pico.h"
 #include "hardware/pio.h"
 #include "Max4314VideoSwitch.h"
-#include "../../../libs/fmt/include/fmt/format.h"
+
 
 namespace pico {
     namespace hardware {

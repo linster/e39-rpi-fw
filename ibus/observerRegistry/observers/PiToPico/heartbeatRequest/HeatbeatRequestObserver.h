@@ -5,11 +5,12 @@
 #ifndef PICOTEMPLATE_HEATBEATREQUESTOBSERVER_H
 #define PICOTEMPLATE_HEATBEATREQUESTOBSERVER_H
 
-#include "../../BaseObserver.h"
-#include "../../../logging/BaseLogger.h"
-#include "../../../../outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h"
-#include "../../../../data/IBusDevices.h"
-#include "../../../../proto_cpp/PiToPico.h"
+#include <logging/BaseLogger.h>
+#include <ibus/observerRegistry/observers/BaseObserver.h>
+#include <ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h>
+#include <ibus/data/IBusDevices.h>
+#include <proto_cpp/PiToPico.h>
+
 namespace pico {
     namespace ibus {
         namespace observers {

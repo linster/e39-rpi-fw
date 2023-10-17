@@ -5,7 +5,7 @@
 #ifndef PICOTEMPLATE_DEFAULTCONFIGURATIONPROVIDER_H
 #define PICOTEMPLATE_DEFAULTCONFIGURATIONPROVIDER_H
 
-#include "../Configuration.h"
+#include <configuration/Configuration.h>
 
 namespace pico {
     namespace config {

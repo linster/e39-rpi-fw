@@ -3,7 +3,7 @@
 //
 
 #include "MockPi4PowerSwitchManager.h"
-#include "../../libs/fmt/include/fmt/format.h"
+
 
 namespace pico {
     namespace hardware {

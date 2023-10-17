@@ -6,7 +6,7 @@
 #define PICOTEMPLATE_PIDEFAULTCONFIGURATIONPROVIDER_H
 
 #include "DefaultConfigurationProvider.h"
-#include "../../proto_generated/ConfigProto.pb.h"
+#include <proto_generated/ConfigProto.pb.h>
 namespace pico {
     namespace config {
         namespace defaults {

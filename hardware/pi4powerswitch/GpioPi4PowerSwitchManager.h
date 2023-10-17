@@ -6,8 +6,14 @@
 #define PICOTEMPLATE_GPIOPI4POWERSWITCHMANAGER_H
 
 #include <memory>
-#include "../../logging/BaseLogger.h"
+#include <logging/BaseLogger.h>
 #include "IPi4PowerSwitchManager.h"
+#include "libs/fmt/include/fmt/format.h"
+#include "pico.h"
+#include "hardware/pio.h"
+
+
+
 
 namespace pico {
     namespace hardware {

@@ -4,7 +4,6 @@
 
 #include <sstream>
 #include "BaseObserver.h"
-#include "../../../libs/fmt/include/fmt/format.h"
 
 namespace pico {
     namespace ibus {

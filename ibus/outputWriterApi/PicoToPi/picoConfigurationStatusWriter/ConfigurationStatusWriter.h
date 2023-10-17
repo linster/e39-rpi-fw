@@ -5,9 +5,9 @@
 #ifndef PICOTEMPLATE_CONFIGURATIONSTATUSWRITER_H
 #define PICOTEMPLATE_CONFIGURATIONSTATUSWRITER_H
 
-#include "../../BaseOutputWriter.h"
-#include "../../../../proto_cpp/ConfigMessage.h"
-#include "../../../../logging/BaseLogger.h"
+#include <ibus/outputWriterApi/BaseOutputWriter.h>
+#include <proto_cpp/ConfigMessage.h>
+#include <logging/BaseLogger.h>
 namespace pico::ibus::output::writer {
 
                 class ConfigurationStatusWriter : public BaseOutputWriter {

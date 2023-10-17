@@ -5,11 +5,11 @@
 #ifndef PICOTEMPLATE_MENUSCANPROGRAM_H
 #define PICOTEMPLATE_MENUSCANPROGRAM_H
 
-#include "../BaseScanProgram.h"
-#include "../graphicsLib/graphicsLib.h"
-#include "../../../screenManager/Screen.h"
-#include "../../../screenManager/ScreenItem.h"
-#include "../../../screenManager/ScreenManager.h"
+#include <video/scanProgram/scanPrograms/BaseScanProgram.h>
+#include <video/scanProgram/scanPrograms/graphicsLib/graphicsLib.h>
+#include <video/screenManager/Screen.h>
+#include <video/screenManager/ScreenItem.h>
+#include <video/screenManager/ScreenManager.h>
 
 namespace video::scanProgram::scanPrograms::menu {
 

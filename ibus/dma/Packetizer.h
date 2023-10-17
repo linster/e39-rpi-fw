@@ -8,7 +8,7 @@
 #include <vector>
 #include <cstdint>
 #include <memory>
-#include "../../logging/BaseLogger.h"
+#include <logging/BaseLogger.h>
 #include "fmt/format.h"
 namespace pico {
     namespace ibus {

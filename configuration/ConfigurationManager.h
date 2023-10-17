@@ -6,11 +6,11 @@
 #define PICOTEMPLATE_CONFIGURATIONMANAGER_H
 
 #include <memory>
-#include "../logging/BaseLogger.h"
-#include "store/flash/FlashConfigurationStore.h"
-#include "store/ibusConfigMessageStore/IBusConfigMessageStore.h"
-#include "store/memory/MemoryConfigurationStore.h"
-#include "default/DefaultConfigurationProvider.h"
+#include <logging/BaseLogger.h>
+#include <configuration/store/flash/FlashConfigurationStore.h>
+#include <configuration/store/ibusConfigMessageStore/IBusConfigMessageStore.h>
+#include <configuration/store/memory/MemoryConfigurationStore.h>
+#include <configuration/default/DefaultConfigurationProvider.h>
 namespace pico {
     namespace config {
 

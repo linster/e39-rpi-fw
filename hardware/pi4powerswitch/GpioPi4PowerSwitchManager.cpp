@@ -2,12 +2,9 @@
 // Created by stefan on 11/21/22.
 //
 
-#include "pico.h"
-#include "hardware/pio.h"
-
 
 #include "GpioPi4PowerSwitchManager.h"
-#include "../../libs/fmt/include/fmt/format.h"
+
 
 namespace pico::hardware::pi4powerswitch {
 

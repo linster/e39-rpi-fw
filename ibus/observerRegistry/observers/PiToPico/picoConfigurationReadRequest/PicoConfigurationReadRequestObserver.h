@@ -5,12 +5,12 @@
 #ifndef PICOTEMPLATE_PICOCONFIGURATIONREADREQUESTOBSERVER_H
 #define PICOTEMPLATE_PICOCONFIGURATIONREADREQUESTOBSERVER_H
 
-#include "../../BaseObserver.h"
-#include "../../../logging/BaseLogger.h"
-#include "../../../../data/IBusDevices.h"
-#include "../../../../proto_cpp/PiToPico.h"
-#include "../../../../outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h"
-#include "../../../configuration/ConfigurationManager.h"
+#include <ibus/observerRegistry/observers/BaseObserver.h>
+#include <logging/BaseLogger.h>
+#include <ibus/data/IBusDevices.h>
+#include <proto_cpp/PiToPico.h>
+#include <ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h>
+#include <configuration/ConfigurationManager.h>
 
 namespace pico {
     namespace ibus {

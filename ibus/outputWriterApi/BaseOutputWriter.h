@@ -5,9 +5,10 @@
 #ifndef PICOTEMPLATE_BASEOUTPUTWRITER_H
 #define PICOTEMPLATE_BASEOUTPUTWRITER_H
 
-#include "../data/IbusPacket.h"
-#include "../../proto_cpp/PicoToPi.h"
-#include "../../ibus/dma/DmaManager.h"
+#include <ibus/data/IbusPacket.h>
+#include <proto_cpp/PicoToPi.h>
+#include <ibus/dma/DmaManager.h>
+
 namespace pico {
     namespace ibus {
         namespace output {

@@ -5,8 +5,8 @@
 #ifndef PICOTEMPLATE_CLOCKSCANPROGRAM_H
 #define PICOTEMPLATE_CLOCKSCANPROGRAM_H
 
-#include "../BaseScanProgram.h"
-#include "../graphicsLib/graphicsLib.h"
+#include <video/scanProgram/scanPrograms/BaseScanProgram.h>
+#include <video/scanProgram/scanPrograms/graphicsLib/graphicsLib.h>
 
 namespace video::scanProgram::scanPrograms::clock {
 

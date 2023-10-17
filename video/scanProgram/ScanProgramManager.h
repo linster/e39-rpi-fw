@@ -11,14 +11,14 @@
 #include "pico/mutex.h"
 #include "ScanProgram.h"
 
-#include "scanPrograms/BaseScanProgram.h"
-#include "scanPrograms/noop/NoopScanProgram.h"
-#include "scanPrograms/menu/MenuScanProgram.h"
-#include "scanPrograms/demo/DemoScanProgram.h"
-#include "scanPrograms/clock/ClockScanProgram.h"
-#include "scanPrograms/bootsplash/BootsplashScanProgram.h"
+#include <video/scanProgram/scanPrograms/BaseScanProgram.h>
+#include <video/scanProgram/scanPrograms/noop/NoopScanProgram.h>
+#include <video/scanProgram/scanPrograms/menu/MenuScanProgram.h>
+#include <video/scanProgram/scanPrograms/demo/DemoScanProgram.h>
+#include <video/scanProgram/scanPrograms/clock/ClockScanProgram.h>
+#include <video/scanProgram/scanPrograms/bootsplash/BootsplashScanProgram.h>
 
-#include "../../logging/BaseLogger.h"
+#include <logging/BaseLogger.h>
 #include "fmt/format.h"
 
 #include "hardware/pll.h"

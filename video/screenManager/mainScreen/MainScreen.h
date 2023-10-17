@@ -5,11 +5,11 @@
 #ifndef PICOTEMPLATE_MAINSCREEN_H
 #define PICOTEMPLATE_MAINSCREEN_H
 
-#include "../Screen.h"
-#include "../../../hardware/pi4powerswitch/IPi4PowerSwitchManager.h"
-#include "../../../hardware/videoSwitch/VideoSwitch.h"
-#include "../../../ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h"
-#include "../../../ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.h"
+#include <video/screenManager/Screen.h>
+#include <hardware/pi4powerswitch/IPi4PowerSwitchManager.h>
+#include <hardware/videoSwitch/VideoSwitch.h>
+#include <ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h>
+#include <ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.h>
 #include "TurnOnPi4MenuItem.h"
 #include "SafePi4PowerOffMenuItem.h"
 #include "HardPi4PowerOffMenuItem.h"
@@ -17,7 +17,7 @@
 #include "VideoToRvcMenuItem.h"
 #include "VideoToUpstreamMenuItem.h"
 #include "VideoToPiMenuItem.h"
-#include "../../../configuration/ConfigurationManager.h"
+#include <configuration/ConfigurationManager.h>
 #include "ConfigPushMenuItem.h"
 
 namespace video::ScreenManager::MainScreen {

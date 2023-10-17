@@ -3,7 +3,6 @@
 //
 
 #include "ScreenPowerManager.h"
-#include "../../../libs/fmt/include/fmt/format.h"
 namespace pico {
     namespace ibus {
         namespace output {

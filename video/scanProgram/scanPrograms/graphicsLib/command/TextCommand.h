@@ -10,7 +10,7 @@
 #include "PxCoord.h"
 #include "BaseCommand.h"
 
-#include "../fonts/FontProvider.h"
+#include <video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h>
 
 namespace video::scanVideo::graphics::command {
 
