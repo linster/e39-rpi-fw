@@ -54,6 +54,8 @@ namespace pico {
 
                 if (expectedLength > 0 && position > expectedLength) {
                     //The packet can never be right, start over.
+                    //Or, the user is adding data without having called recycle after the packet is ok.
+                    //We may also want to consider recycling instead of resetting here...
                     reset();
                 }
             }
@@ -69,6 +71,10 @@ namespace pico {
             }
 
             std::vector<uint8_t> Packetizer::getPacketBytes() {
+                //TOOO this needs to return a slice of the array from [0..position]
+                //TODO also, check expected length and if packet is complete.
+                //[0..position] while incomplete
+                //[0..expectedLength] when complete
                 return packetBytes;
             }
 

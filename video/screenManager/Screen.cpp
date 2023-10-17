@@ -101,7 +101,7 @@ namespace video::ScreenManager {
         auto item = getScreenItems()[index];
 
         item->setIsFocused(true);
-        item->onItemUnfocused();
+        item->onItemFocused();
 
         if (this->debugPrintAsciiArt) {
             drawToLogger(logger);

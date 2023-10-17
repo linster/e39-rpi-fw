@@ -72,8 +72,9 @@ namespace video::scanProgram::scanPrograms {
         //Tight-loop on CPU0 to ask the scan program to fill the buffer.
         scanvideo_scanline_buffer_t *scanlineBuffer = scanvideo_begin_scanline_generation(true);
         render(scanlineBuffer);
-        scanvideo_end_scanline_generation(scanlineBuffer);
-
+//        if (scanlineBuffer != nullptr) {
+            scanvideo_end_scanline_generation(scanlineBuffer);
+//        }
         //TODO future, we can do non-blocking IO here (cooperative multitasking?) by
         //TODO not blocking here, and instead only calling render if we're not in the vblank
         //TODO or hblank intervals.

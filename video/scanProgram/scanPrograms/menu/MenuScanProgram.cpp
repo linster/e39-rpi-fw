@@ -40,31 +40,21 @@ namespace video::scanProgram::scanPrograms::menu {
 
     void MenuScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
 
-        //TODO use the frame number to re-ask the screen manager the current state
-        //TODO every so many frames (not every frame, because re-drawing the screen
-        //TODO is expensive.
-
-        uint16_t frameNumber = scanvideo_frame_number(scanline_buffer->scanline_id);
-
-        if (previousFrameNumber == 0) {
-            previousFrameNumber = frameNumber;
-        }
-
-
-        if (frameNumber >= previousFrameNumber + (24 * 4)) {
-            screenManager->focusNextItem(1);
-        }
-
-
-        if (frameNumber >= previousFrameNumber + (24 * 4)) {
-//            blankMenuItemArea();
-            graphicsLib->clearFrame();
-            drawScreenBackground();
-            drawScreen(screenManager->getCurrentScreen());
-            previousFrameNumber = frameNumber;
-        }
-
-
+//        if (scanline_buffer == nullptr) {
+//            //We're not ready to generate, so we have some CPU cycles to do calculations.
+//
+//            if (previousFrameNumber % (255) == 0) {
+//                //hack to call on only every 255th invocation of cpuLoop
+//                screenManager->focusNextItem(1);
+//
+//                graphicsLib->clearFrame();
+//                drawScreenBackground();
+//                drawScreen(screenManager->getCurrentScreen());
+//            }
+//
+//            previousFrameNumber = previousFrameNumber + 1;
+//            return;
+//        }
 
         graphicsLib->render_commandProcessed(scanline_buffer);
     }

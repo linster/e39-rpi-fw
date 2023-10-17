@@ -40,13 +40,12 @@ namespace video::scanVideo::graphics::command {
         //TODO need to clear the pointers in the commandsToProcess list, since we OOM.
         //TODO loop through the list and delete each pointer.
 
-        for (const auto &command : commandsToProcess) {
-            //Move the ptr to here, and it will get deleted when we loop lol.
-            //TODO that didn't work.
-            std::move(command);
-        }
+        isFrameComputed = false; //Stop rendering while we're deleting the data structures.
+
+        //
 
         commandsToProcess.clear();
+
 
         rleRunsForLine.clear();
         lineBuffer.fill(baseColour);

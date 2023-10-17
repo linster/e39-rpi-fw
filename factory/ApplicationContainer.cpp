@@ -23,11 +23,11 @@ namespace pico {
 
         pi4PowerSwitchManager->setPower(false);
 
-//        dmaManager->cpu0setup();
+        dmaManager->cpu0setup();
 
         videoSwitch->switchTo(hardware::videoSwitch::VideoSource::RVC);
 
-        scanProgramManager->cpu0setup();
+        //scanProgramManager->cpu0setup();
 
         sleep_ms(1000);
 
@@ -39,7 +39,7 @@ namespace pico {
     }
 
     void ApplicationContainer::onLoop() {
-        scanProgramManager->onCpu0Loop();
+        //scanProgramManager->onCpu0Loop();
 //        logger->d("onLoop", "onLoop");
 //        if (cpu0LoopCount % 1 == 0) {
 //            logger->d("onLoop", fmt::format("Loop count {}", cpu0LoopCount++));
@@ -50,7 +50,6 @@ namespace pico {
 //        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
 //        sleep_ms(4000);
 //
-//        sleep_ms(2000);
 //        pi4PowerSwitchManager->setPower(true);
 //        sleep_ms(2000);
 //        pi4PowerSwitchManager->setPower(false);
