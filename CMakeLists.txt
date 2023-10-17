@@ -61,7 +61,7 @@ pico_sdk_init()
 
 #TODO maybe I need to splitup add_executable?? add_executable, then generate pio header, then target_sources?
 
-add_executable(PicoTemplate video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.cpp video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h)
+add_executable(PicoTemplate)
 
 
 
@@ -249,8 +249,16 @@ target_sources(
         video/scanProgram/scanPrograms/graphicsLib/command/RleRun.h
         video/scanProgram/scanPrograms/graphicsLib/command/RleRunContainerCommand.cpp
         video/scanProgram/scanPrograms/graphicsLib/command/RleRunContainerCommand.h
+        video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h
+        video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.cpp
         video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h)
 
+target_include_directories(
+        PicoTemplate
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
+#        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ibus>
+)
 
 #https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf -- page 36
 #pico_generate_pio_header(PicoTemplate ${CMAKE_SOURCE_DIR}/ibus/dma/pio/FromCarProgram.pio)
