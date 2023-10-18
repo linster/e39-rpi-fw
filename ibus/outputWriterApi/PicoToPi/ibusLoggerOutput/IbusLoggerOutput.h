@@ -20,15 +20,15 @@ namespace pico {
                     //If false, drop the remainder after truncation.
                     bool splitLogMessagesAtTruncationPoint = false;
 
-                    std::shared_ptr<dma::DmaManager> dmaManager;
+                    std::shared_ptr<dma::IDmaManager> dmaManager;
                 public:
                     IbusLoggerOutput(
-                            std::shared_ptr<dma::DmaManager> dmaManager
+                            std::shared_ptr<dma::IDmaManager> dmaManager
                     );
                     void print(std::string message);
                 protected:
                     std::string getTag() override { return "IbusLoggerOutput"; };
-                    std::shared_ptr<dma::DmaManager> getDmaManager() override;
+                    std::shared_ptr<dma::IDmaManager> getDmaManager() override;
                 };
 
             } // pico

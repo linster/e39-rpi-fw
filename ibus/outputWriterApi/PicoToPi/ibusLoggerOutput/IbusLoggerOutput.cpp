@@ -8,12 +8,12 @@ namespace pico {
         namespace output {
             namespace writer {
                 IbusLoggerOutput::IbusLoggerOutput(
-                        std::shared_ptr<dma::DmaManager> dmaManager
+                        std::shared_ptr<dma::IDmaManager> dmaManager
                 ) {
                     this->dmaManager = dmaManager;
                 }
 
-                std::shared_ptr<dma::DmaManager> IbusLoggerOutput::getDmaManager() {
+                std::shared_ptr<dma::IDmaManager> IbusLoggerOutput::getDmaManager() {
                     return dmaManager;
                 }
 

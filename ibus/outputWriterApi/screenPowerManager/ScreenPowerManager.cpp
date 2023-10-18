@@ -11,7 +11,7 @@ namespace pico {
                 ScreenPowerManager::ScreenPowerManager(
                         std::shared_ptr<config::defaults::PimoroniDefaultConfigurationProvider> defaultConfigurationProvider,
                         std::shared_ptr<logger::BaseLogger> baseLogger,
-                        std::shared_ptr<dma::DmaManager> dmaManager) {
+                        std::shared_ptr<dma::IDmaManager> dmaManager) {
 
                     this->logger = baseLogger;
                     this->defaultConfiguration = std::make_shared<config::Configuration>(defaultConfigurationProvider->getDefaultConfiguration());
@@ -30,7 +30,7 @@ namespace pico {
 
                 std::string ScreenPowerManager::getTag() { return "ScreenPowerManager" ; };
 
-                std::shared_ptr<dma::DmaManager> ScreenPowerManager::getDmaManager() {
+                std::shared_ptr<dma::IDmaManager> ScreenPowerManager::getDmaManager() {
                     return dmaManager;
                 }
 

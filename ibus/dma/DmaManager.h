@@ -22,12 +22,13 @@
 #include "Packetizer.h"
 
 #include "fmt/format.h"
+#include "IDmaManager.h"
 
 namespace pico {
     namespace ibus {
         namespace dma {
 
-            class DmaManager {
+            class DmaManager : public IDmaManager {
 
                 //This class is mis-named because we're not actually doing DMA. But someday, I hope to.
                 //https://github.com/rossihwang/pico_dma_uart/blob/main/dma_uart.cpp
@@ -121,15 +122,15 @@ namespace pico {
                 );
 
                 //Called only by ApplicationContainer
-                void cpu0setup();
-                void onCpu0Loop();
-                void cpu1Setup();
-                void onCpu1Loop();
+                void cpu0setup() override;
+                void onCpu0Loop() override;
+                void cpu1Setup() override;
+                void onCpu1Loop() override;
                 //Called only by ApplicationContainer
 
-                void cpu0scheduleOutgoingMessage(data::IbusPacket packet); //Called from the base output writer.
+                void cpu0scheduleOutgoingMessage(data::IbusPacket packet) override; //Called from the base output writer.
 
-                void cpu0scheduleOutgoingProbeOnlyMessage(data::IbusPacket packet);
+                void cpu0scheduleOutgoingProbeOnlyMessage(data::IbusPacket packet) override;
             };
 
         } // pico

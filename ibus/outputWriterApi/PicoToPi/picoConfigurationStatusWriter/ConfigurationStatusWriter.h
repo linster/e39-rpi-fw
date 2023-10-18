@@ -14,17 +14,17 @@ namespace pico::ibus::output::writer {
 
                 private:
                     std::shared_ptr<logger::BaseLogger> logger;
-                    std::shared_ptr<dma::DmaManager> dmaManager;
+                    std::shared_ptr<dma::IDmaManager> dmaManager;
                 public:
                     //TODO add a logger in here.
                     ConfigurationStatusWriter(
                             std::shared_ptr<logger::BaseLogger> logger,
-                            std::shared_ptr<dma::DmaManager> dmaManager
+                            std::shared_ptr<dma::IDmaManager> dmaManager
                         );
                     void scheduleEmit(messages::ConfigMessage configMessage);
                 protected:
                     std::string getTag() override { return "ConfigurationStatusWriter"; };
-                    std::shared_ptr<dma::DmaManager> getDmaManager() override;
+                    std::shared_ptr<dma::IDmaManager> getDmaManager() override;
                 };
 
             } // writer

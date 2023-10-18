@@ -10,12 +10,12 @@ namespace pico {
             namespace writer {
                 HeartbeatResponseWriter::HeartbeatResponseWriter(
                         std::shared_ptr<logger::BaseLogger> logger,
-                        std::shared_ptr<dma::DmaManager> dmaManager) {
+                        std::shared_ptr<dma::IDmaManager> dmaManager) {
                     this->logger = logger;
                     this->dmaManager = dmaManager;
                 }
 
-                std::shared_ptr<dma::DmaManager> HeartbeatResponseWriter::getDmaManager() {
+                std::shared_ptr<dma::IDmaManager> HeartbeatResponseWriter::getDmaManager() {
                     return dmaManager;
                 }
 

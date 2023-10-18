@@ -16,17 +16,17 @@ namespace pico {
                 class HeartbeatResponseWriter : public BaseOutputWriter {
                 private:
                     std::shared_ptr<logger::BaseLogger> logger;
-                    std::shared_ptr<dma::DmaManager> dmaManager;
+                    std::shared_ptr<dma::IDmaManager> dmaManager;
                 public:
                     HeartbeatResponseWriter(
                             std::shared_ptr<logger::BaseLogger> looger,
-                            std::shared_ptr<dma::DmaManager> dmaManager
+                            std::shared_ptr<dma::IDmaManager> dmaManager
                             );
 
                     void sendHeartbeatResponse();
                 protected:
                     std::string getTag() override { return "HeartbeatResponseWriter"; };
-                    std::shared_ptr<dma::DmaManager> getDmaManager() override;
+                    std::shared_ptr<dma::IDmaManager> getDmaManager() override;
                 };
 
             } // pico

@@ -251,7 +251,9 @@ target_sources(
         video/scanProgram/scanPrograms/graphicsLib/command/RleRunContainerCommand.h
         video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h
         video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.cpp
-        video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h)
+        video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h
+        ibus/dma/IDmaManager.h
+        ibus/dma/IDmaManager.cpp)
 
 target_include_directories(
         PicoTemplate

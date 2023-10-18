@@ -11,12 +11,12 @@ namespace pico {
 
                 SoftPowerRequestWriter::SoftPowerRequestWriter(
                         std::shared_ptr<logger::BaseLogger> logger,
-                        std::shared_ptr<dma::DmaManager> dmaManager) {
+                        std::shared_ptr<dma::IDmaManager> dmaManager) {
                     this->logger = logger;
                     this->dmaManager = dmaManager;
                 }
 
-                std::shared_ptr<dma::DmaManager> SoftPowerRequestWriter::getDmaManager() {
+                std::shared_ptr<dma::IDmaManager> SoftPowerRequestWriter::getDmaManager() {
                     return this->dmaManager;
                 }
 
