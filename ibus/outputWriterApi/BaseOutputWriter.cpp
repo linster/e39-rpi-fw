@@ -9,22 +9,19 @@ namespace pico {
             namespace writer {
 
                 void BaseOutputWriter::schedulePicoToPiMessageForWrite(messages::PicoToPiMessage message) {
-                    //LOL NOPE
-                    //TODO
-                    //TODO there should be a way to write this to the Pi
-                    //TODO but not the rest of the car, as this might be really
-                    //TODO chatty.
-
 
                     NanoPb::StringOutputStream outputStream;
                     if (!NanoPb::encode<messages::PicoToPiMessageConverter>(outputStream, message)) {
                         //TODO WTF
+                        //TODO can't log here, sooooo?
                         return;
                     }
 
                     std::unique_ptr<std::basic_string<char>> p = outputStream.release();
 //                    p->c_str();
 //                    p->length();
+
+                    //TODO might have to trim null terminator when looping through the string?
 
                     auto bytes = std::vector<uint8_t>();
                     for (char c: *p) {

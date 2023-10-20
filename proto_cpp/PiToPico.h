@@ -14,6 +14,12 @@ namespace pico {
 
         class PiToPicoMessage {
         public:
+
+            PiToPicoMessage() = default;
+            PiToPicoMessage(const PiToPicoMessage&) = default;
+            PiToPicoMessage(PiToPicoMessage&&) = default;
+
+
             enum MessageType {
                 HeartbeatRequest, HeartbeatResponse,
                 ConfigStatusRequest, ConfigPush,
@@ -84,6 +90,11 @@ namespace pico {
                 };
             };
             static bool decoderApply(const ProtoType& proto, LocalType& local) {
+
+                local.messageType = PiToPicoMessageMessageTypeConverter::decode(proto.messageType);
+                if (proto.has_newConfig) {
+                    ConfigMessageConverter::decoderApply(proto.newConfig, local.newConfig);
+                }
                 return true;
             }
         };

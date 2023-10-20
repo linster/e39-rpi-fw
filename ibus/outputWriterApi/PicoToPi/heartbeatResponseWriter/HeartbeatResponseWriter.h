@@ -23,7 +23,7 @@ namespace pico {
                             std::shared_ptr<dma::IDmaManager> dmaManager
                             );
 
-                    void sendHeartbeatResponse();
+                    virtual void sendHeartbeatResponse();
                 protected:
                     std::string getTag() override { return "HeartbeatResponseWriter"; };
                     std::shared_ptr<dma::IDmaManager> getDmaManager() override;

@@ -40,12 +40,14 @@ namespace pico {
                 //TODO This is some serious bullshit. This is an exercise for me someday to learn
                 //TODO how to take a vector of ints, and convert it into a plain old c_str(), to jam
                 //TODO into NanoPB_CPP's weird input stream type.
-                auto* inputString = new std::string(0, '\0');
-                for (const uint8_t item: *ibusPacket.getData()) {
-                    inputString->append(reinterpret_cast<const char *>(item));
-                }
+                std::string inputString = std::string(0, '\0');
 
-                auto inputStream = NanoPb::StringInputStream(std::make_unique<std::string>(inputString->c_str()));
+                std::vector<uint8_t> data = *ibusPacket.getData();
+
+                for (const uint8_t item: data) {
+                    inputString.push_back(item);
+                }
+                auto inputStream = NanoPb::StringInputStream(std::make_unique<std::string>(inputString.c_str()));
 
                 messages::PiToPicoMessage decoded;
                 if(!NanoPb::decode<messages::PiToPicoMessageConverter>(inputStream, decoded)) {
