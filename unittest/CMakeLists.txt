@@ -11,15 +11,15 @@ enable_testing()
 
 add_executable(
         unit_test
-        ibus/dma/Packetizer_Test.cpp
+        ../../unittests/ibus/dma/Packetizer_Test.cpp
 )
 
 target_sources(
         unit_test
         PUBLIC
-        ibus/dma/Packetizer_Test.cpp
-        ibus/outputWriterApi/IbusLoggerOutputTest.cpp
-        observerRegistry/observers/BaseObserverPiToPicoMessageDecodeTests.cpp
+        ../../unittests/ibus/dma/Packetizer_Test.cpp
+        ../../unittests/ibus/outputWriterApi/IbusLoggerOutputTest.cpp
+        ../../unittests/observerRegistry/observers/BaseObserverPiToPicoMessageDecodeTests.cpp
 )
 
 
