@@ -42,22 +42,31 @@ namespace pico {
 
                 if (position == expectedLength + 1) {
                     //We're at the end of where the packet says we should be.
+
+                    //We need to update the checksum byte
+                    //The last byte is what we're expecting
+                    expectedChecksum = byte;
+
+                    //Don't calculate current checksum
+                    //(the checksum doesn't include the checksum byte)
+
                     if (currentChecksum == expectedChecksum) {
                         packetOk = true;
+                        return;
                     }
                 } else {
                     //Update the checksum.
                     currentChecksum = currentChecksum ^ byte;
                 }
 
-                position++; //Make sure to increment before we're called again.
-
-                if (expectedLength > 0 && position > expectedLength) {
+                if (expectedLength > 0 && position > (expectedLength + 1)) {
                     //The packet can never be right, start over.
                     //Or, the user is adding data without having called recycle after the packet is ok.
                     //We may also want to consider recycling instead of resetting here...
                     reset();
                 }
+
+                position++; //Make sure to increment before we're called again.
             }
 
             void Packetizer::addBytes(std::vector<uint8_t> bytes) {
@@ -73,9 +82,20 @@ namespace pico {
             std::vector<uint8_t> Packetizer::getPacketBytes() {
                 //TOOO this needs to return a slice of the array from [0..position]
                 //TODO also, check expected length and if packet is complete.
-                //[0..position] while incomplete
+                //[0..position) while incomplete
                 //[0..expectedLength] when complete
-                return packetBytes;
+
+                std::vector<uint8_t> slice;
+                if (!packetOk) {
+                    slice = std::vector<uint8_t>(
+                            packetBytes.begin(),
+                            packetBytes.begin() + position);
+                } else {
+                    slice = std::vector<uint8_t>(
+                            packetBytes.begin(),
+                            packetBytes.begin() + position + 1);
+                }
+                return slice;
             }
 
             void Packetizer::recycle() {
@@ -93,6 +113,7 @@ namespace pico {
 
             void Packetizer::reset() {
                 packetBytes.clear();
+                packetBytes.resize(255, 0);
                 position = 0;
                 sourceId = 0;
                 expectedLength = 0;
