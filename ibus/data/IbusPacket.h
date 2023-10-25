@@ -31,6 +31,9 @@ namespace pico {
                 void cloneFrom(IbusPacket other);
 
             public:
+
+                IbusPacket(std::array<uint8_t, 255> raw);
+
                 explicit IbusPacket(std::vector<uint8_t> raw);
 
                 explicit IbusPacket(void * packetStart);

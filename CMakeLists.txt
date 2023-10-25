@@ -253,7 +253,10 @@ target_sources(
         video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.cpp
         video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h
         ibus/dma/IDmaManager.h
-        ibus/dma/IDmaManager.cpp)
+        ibus/dma/IDmaManager.cpp
+        ibus/dma/SingleCoreDmaManager.cpp
+        ibus/dma/SingleCoreDmaManager.h
+)
 
 target_include_directories(
         PicoTemplate
