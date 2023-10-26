@@ -15,6 +15,31 @@ namespace pico::ibus::dma {
         //TODO Initialize all the Q's, staticLogger
 
         //TODO length==255 might actually be too short. Because, the packet length could be 255+1?
+
+        queue_init(
+                &toPiQ,
+                255,
+                10
+                );
+
+        queue_init(
+                &toCarQ,
+                255,
+                10
+                );
+
+        queue_init(
+                &fromCarQ,
+                255,
+                10
+                );
+        queue_init(
+                &fromPiQ,
+                255,
+                10
+                );
+
+        staticLogger = logger;
     }
 
     void SingleCoreDmaManager::cpu0setup() {
@@ -209,7 +234,7 @@ namespace pico::ibus::dma {
         currentLoopIteration = currentLoopIteration + 1;
 
         if (currentLoopIteration >= lastWrittenLoopIteration + writeStatusEvery) {
-            writeStatus();
+            writeStatus(logger);
             lastWrittenLoopIteration = currentLoopIteration;
         }
     }

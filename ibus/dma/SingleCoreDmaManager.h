@@ -42,8 +42,8 @@ namespace pico::ibus::dma {
             inline static queue_t fromPiQ;    //Packets
             inline static queue_t fromCarQ;   //Packets
 
-            inline static std::array<uint8_t, 255> paddedUart0RxPacketBuffer;
-            inline static std::array<uint8_t, 255> paddedUart1RxPacketBuffer;
+//            inline static std::array<uint8_t, 255> paddedUart0RxPacketBuffer;
+//            inline static std::array<uint8_t, 255> paddedUart1RxPacketBuffer;
 
             void setupUarts();
 
@@ -78,7 +78,7 @@ namespace pico::ibus::dma {
             static const bool statusWriteEnabled = true;
             uint32_t lastWrittenLoopIteration = 0;
             uint32_t currentLoopIteration = 0;
-            uint8_t writeStatusEvery = 300;
+            uint16_t writeStatusEvery = 300;
 
             bool shouldWriteStatus(); //Could be some sort of "on x iterations" logic.
             static void writeStatus(std::shared_ptr<logger::BaseLogger> logger);

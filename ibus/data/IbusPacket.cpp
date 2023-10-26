@@ -159,6 +159,11 @@ namespace pico {
                 return completeRawPacket;
             }
 
+            IbusPacket::IbusPacket(std::array<uint8_t, 255> raw) {
+                //return IbusPacket::IbusPacket(raw.data())
+                //TODO WON'T RUN
+            }
+
 
         } // pico
     } // ibus

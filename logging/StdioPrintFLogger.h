@@ -11,7 +11,7 @@ namespace pico {
     namespace logger {
         class StdioPrintFLogger : public BaseLogger {
 
-        protected:
+        public:
             void print(pico::logger::BaseLogger::Level level, std::string tag,
                                           std::string message) override;
         };

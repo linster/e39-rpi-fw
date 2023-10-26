@@ -39,5 +39,11 @@ namespace pico {
                 item->wtf(tag, message);
             }
         }
+
+        void CompositeLogger::print(BaseLogger::Level level, std::string tag, std::string message) {
+            for (const auto &item : loggerList) {
+                item->print(level, tag, message);
+            }
+        }
     } // pico
 } // logger

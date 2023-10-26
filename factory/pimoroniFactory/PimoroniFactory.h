@@ -13,6 +13,8 @@
 #include <hardware/videoSwitch/mock/MockVideoSwitch.h>
 #include <hardware/videoSwitch/max4314/Max4314VideoSwitch.h>
 
+#include <ibus/dma/SingleCoreDmaManager.h>
+
 #include <ibus/observerRegistry/observers/BaseObserver.h>
 #include <ibus/observerRegistry/observers/mockObserver/MockObserver.h>
 #include <ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.h>
@@ -29,8 +31,7 @@
 #include <configuration/default/PimoroniDefaultConfigurationProvider.h>
 #include <video/screenManager/mainScreen/MainScreen.h>
 
-namespace pico {
-    namespace di {
+namespace pico::di {
 
         class PimoroniFactory {
 
@@ -74,7 +75,7 @@ namespace pico {
 
             std::shared_ptr<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>> baseObservers;
 
-            std::shared_ptr<ibus::dma::DmaManager> dmaManager;
+            std::shared_ptr<ibus::dma::IDmaManager> dmaManager;
             std::shared_ptr<ibus::output::writer::HeartbeatResponseWriter> heartbeatResponseWriter;
 
             void initializeAllSmartPointers();
@@ -88,7 +89,6 @@ namespace pico {
             void deallocateApplicationContainer();
         };
 
-    } // pico
-} // di
+    } // di
 
 #endif //PICOTEMPLATE_PIMORONIFACTORY_H

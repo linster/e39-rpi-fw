@@ -10,7 +10,7 @@ namespace pico::di {
             this->logger = std::make_shared<logger::StdioPrintFLogger>();
 //            this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::MockPi4PowerSwitchManager>(this->logger);
 
-            this->dmaManager = std::make_shared<ibus::dma::DmaManager>(logger, observerRegistry);
+            this->dmaManager = std::make_shared<ibus::dma::SingleCoreDmaManager>(logger, observerRegistry);
 
 
             this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::GpioPi4PowerSwitchManager>(this->logger);

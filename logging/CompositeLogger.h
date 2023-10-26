@@ -25,7 +25,7 @@ namespace pico {
             CompositeLogger(
                 std::vector<std::shared_ptr<BaseLogger>> loggerList
             );
-        protected:
+
             void print(Level level, std::string tag, std::string message) override;
         };
 
