@@ -25,6 +25,7 @@
 #include "hardware/clocks.h"
 #include "hardware/structs/pll.h"
 #include "hardware/structs/clocks.h"
+#include "pico/util/queue.h"
 
 namespace video::scanProgram {
 
@@ -54,9 +55,13 @@ namespace video::scanProgram {
             //End Guard: scanProgramStateMutex
 
             std::shared_ptr<scanPrograms::BaseScanProgram> getScanProgramPtr(ScanProgram scanProgram);
-
-
             void measureFreqs();
+
+            /** CPU_0 -> CPU_1 command queue */
+            queue_t cpu1IncomingCommandQ;
+            void cpu0EnqueueSwapTo(ScanProgram scanProgram);
+            void cpu1DequeueSwapTo();
+            void cpu1SwapTo(ScanProgram scanProgram);
 
         public:
 
@@ -75,18 +80,7 @@ namespace video::scanProgram {
             void onCpu0Loop();
             void onCpu1Loop();
 
-            //TODO on what CPU core was I going to run the scan program on?
-            //TODO all the lin logic is on cpu0
-            //TODO all the IRQs and shuffling crap is on cpu1
-            //TODO if I put the scan program on 0 it won't interfere with the bad non-dma?
-
-            //TODO it doesn't matter which CPU. onCpu0Loop gets called, we then delagate to the
-            //TODO currently running scan program. This is all a big game of non-blocking IO. Don't
-            //TODO put in while(true) in the scan program, just let the application container loop
-            //TODO deal with actually looping. Then, if cpu0 is so slow we can't keep a screen
-            //TODO filled, move it to cpu1.
-
-            //These are only called from the ScanProgramSwapper.
+            //These are only called from the ScanProgramSwapper, which is called from CPU0.s
             void swapTo(ScanProgram scanProgram);
             ScanProgram getCurrentScanProgram();
 

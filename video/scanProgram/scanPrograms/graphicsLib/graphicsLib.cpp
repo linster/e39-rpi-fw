@@ -129,5 +129,13 @@ namespace video::scanProgram {
         contributeRleRuns(textCommand.getRleRunsForSpecialCharacter(bitmap));
     }
 
+    void graphicsLib::setBaseColour(uint32_t color) {
+        this->commandProcessor->setBaseColour(color);
+    }
+
+    void graphicsLib::clearScanlines(uint16_t min, uint16_t max) {
+        this->commandProcessor->clearScanlines(min, max);
+    }
+
 
 } // scanProgram

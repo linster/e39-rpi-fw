@@ -87,15 +87,18 @@ namespace video::scanProgram {
              */
             void writeSolidColourScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour);
 
-            //We need a method that draws a solid scanline
 
-            //We can't mutate a scanline by drawing over it again,
-            //since the existing scanline is run-length encoded (RLE)
-            // However, what we can do is do a font routine that RLEs
-            // part of the font onto a solid colour.
+            void setBaseColour(uint32_t color);
 
+            /**
+             * Clear all the RLE runs for a range of scanlines
+             * @param min the start to clear
+             * @param max >= min.
+             */
+            void clearScanlines(uint16_t min, uint16_t max);
 
             void clearFrame();
+
             void drawLine(
                     scanVideo::graphics::command::PxCoord topLeftPx,
                     scanVideo::graphics::command::PxCoord bottomRightPx,
@@ -136,8 +139,7 @@ namespace video::scanProgram {
                     std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs
             );
 
-            uint8_t getUserFrameState();
-            void setUserFrameState(uint8_t state);
+
             void render_commandProcessed(scanvideo_scanline_buffer_t *scanline_buffer);
 
         };

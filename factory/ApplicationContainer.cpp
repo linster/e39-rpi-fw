@@ -39,6 +39,8 @@ namespace pico {
     }
 
     void ApplicationContainer::onLoop() {
+        dmaManager->onCpu0Loop();
+
         //scanProgramManager->onCpu0Loop();
 //        logger->d("onLoop", "onLoop");
 //        if (cpu0LoopCount % 1 == 0) {
@@ -54,7 +56,7 @@ namespace pico {
 //        sleep_ms(2000);
 //        pi4PowerSwitchManager->setPower(false);
 
-//        dmaManager->onCpu0Loop();
+
 
         //sleep_ms(2000);
         //heartbeatResponseWriter->sendHeartbeatResponse();
@@ -64,13 +66,15 @@ namespace pico {
 
     void ApplicationContainer::onCpu1Main() {
         logger->i("onCpu1Main", "onCpu1Main");
-//        dmaManager->cpu1Setup();
-//        scanProgramManager->cpu1setup();
+        dmaManager->cpu1Setup(); //NOOP with SingleCoreDmaManager
         logger->i("onCpu1Main", "dmaManager->cpu1Setup() done");
+
+        //        scanProgramManager->cpu1setup();
+
     }
 
     void ApplicationContainer::onCpu1Loop() {
-//        dmaManager->onCpu1Loop();
+        dmaManager->onCpu1Loop(); //NOOP with SingleCoreDmaManager
 //        scanProgramManager->onCpu1Loop();
     }
 } // pico

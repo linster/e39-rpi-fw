@@ -9,15 +9,10 @@ namespace video::scanVideo::graphics::command {
 
     CommandProcessor::CommandProcessor(std::shared_ptr<pico::logger::BaseLogger> logger) {
         this->logger = logger;
+        baseColour = 0;
+        lineBuffer.fill(baseColour);
     }
 
-    uint8_t CommandProcessor::getUserFrameState() {
-        return userFrameState;
-    }
-
-    void CommandProcessor::setUserFrameState(uint8_t frameState) {
-        this->userFrameState = frameState;
-    }
 
     void CommandProcessor::addCommand(std::unique_ptr<BaseCommand> baseCommand) {
         commandsToProcess.push_back(std::move(baseCommand));
@@ -173,6 +168,23 @@ namespace video::scanVideo::graphics::command {
 
         }
         return retVec;
+    }
+
+    void CommandProcessor::setBaseColour(uint32_t color) {
+        this->baseColour = color;
+        clearFrame();
+    }
+
+    void CommandProcessor::clearScanlines(uint16_t min, uint16_t max) {
+
+        for (int i = min; i <= max; i++) {
+            if (rleRunsForLine.count(i) > 0) {
+                if(rleRunsForLine[i].size() > 0) {
+                    rleRunsForLine[i].clear();
+                }
+            }
+        }
+
     }
 
 

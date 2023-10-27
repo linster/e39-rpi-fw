@@ -12,25 +12,15 @@ namespace video::scanProgram {
         }
 
         void ScanProgramManager::swapTo(ScanProgram scanProgram) {
-//            mutex_enter_blocking(&this->scanProgramStateMutex);
-            logger->d(getTag(), fmt::format("Swap to: {:x}. Previous: {:x}", (int)scanProgram, (int)previousScanProgram));
-            this->previousScanProgram = this->currentScanProgram;
-            this->currentScanProgram = scanProgram;
-
-            if (currentScanProgram != previousScanProgram) {
-                getScanProgramPtr(previousScanProgram)->stopScanProgram();
-                getScanProgramPtr(currentScanProgram)->startScanProgram();
-            }
-
-//            mutex_exit(&this->scanProgramStateMutex);
+            cpu0EnqueueSwapTo(scanProgram);
         }
 
         ScanProgram ScanProgramManager::getCurrentScanProgram() {
             ScanProgram ret;
-//            mutex_enter_blocking(&this->scanProgramStateMutex);
+            mutex_enter_blocking(&this->scanProgramStateMutex);
             ret = this->currentScanProgram;
-//            mutex_exit(&this->scanProgramStateMutex);
-            //logger->d(getTag(), fmt::format("Current: {:x}", (int)ret));
+            mutex_exit(&this->scanProgramStateMutex);
+            logger->d(getTag(), fmt::format("Current: {:x}", (int)ret));
             return ret;
         }
 
@@ -58,7 +48,15 @@ namespace video::scanProgram {
 
         void ScanProgramManager::cpu0setup() {
             if (classIsNoOp) { return; }
+            //Set up all the scan programs...
+            this->noopScanProgram->cpu0setup();
+            this->menuScanProgram->cpu0setup();
+            this->demoScanProgram->cpu0setup();
+            this->clockScanProgram->cpu0setup();
+        }
 
+        void ScanProgramManager::cpu1setup() {
+            if (classIsNoOp) { return; }
 
             measureFreqs();
 
@@ -67,11 +65,8 @@ namespace video::scanProgram {
             //TODO panic("System clock (%d) must be an integer multiple of the requested pixel clock (%d).", sys_clk, timing->clock_freq);
             //TODO Sysclk is 125000000
             //TODO pixel clock is 7867500
-
             //https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#rpipf786bb684fa58b12b349
             //https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#rpipa610f0db2a24674346fd
-
-
 //            //We need to set sys_clk to 118012500 (so that it is 15 times the pixel clock)
 //
 //            clock_configure(
@@ -84,22 +79,10 @@ namespace video::scanProgram {
 //
 //            // Re init uart now that clk_peri has changed
 //            stdio_init_all();
-
             measureFreqs();
-
             scanvideo_setup(&scanPrograms::BaseScanProgram::mode_bmbt);
 
 
-
-            //Set up all the scan programs...
-            this->noopScanProgram->cpu0setup();
-            this->menuScanProgram->cpu0setup();
-            this->demoScanProgram->cpu0setup();
-            this->clockScanProgram->cpu0setup();
-        }
-
-        void ScanProgramManager::cpu1setup() {
-            if (classIsNoOp) { return; }
             this->noopScanProgram->cpu1Setup();
             this->menuScanProgram->cpu1Setup();
             this->demoScanProgram->cpu1Setup();
@@ -113,6 +96,7 @@ namespace video::scanProgram {
 
         void ScanProgramManager::onCpu1Loop() {
             if (classIsNoOp) { return; }
+            cpu1DequeueSwapTo();
             getScanProgramPtr(getCurrentScanProgram())->onCpu1Loop();
         }
 
@@ -130,6 +114,12 @@ namespace video::scanProgram {
             this->demoScanProgram = demoScanProgram;
             this->clockScanProgram = clockScanProgram;
             this->bootsplashScanProgram = bootsplashScanProgram;
+
+            queue_init(
+                    &cpu1IncomingCommandQ,
+                    sizeof(ScanProgram),
+                    1
+                    );
         }
 
     void ScanProgramManager::measureFreqs() {
@@ -155,6 +145,42 @@ namespace video::scanProgram {
 
         // Can't measure clk_ref / xosc as it is the ref
 
+    }
+
+    void ScanProgramManager::cpu0EnqueueSwapTo(ScanProgram scanProgram) {
+        bool added = queue_try_add(&cpu1IncomingCommandQ, &scanProgram);
+        if (!added) {
+            logger->w(getTag(),
+                      fmt::format("Could not add scanProgram {} to queue with size {}",
+                                  (int)scanProgram,
+                                  queue_get_level(&cpu1IncomingCommandQ)
+                                  ));
+        }
+    }
+
+    void ScanProgramManager::cpu1DequeueSwapTo() {
+        ScanProgram incoming;
+        bool haveRequest = queue_try_remove(&cpu1IncomingCommandQ, &incoming);
+
+        if (haveRequest) {
+            //Do the swap
+            cpu1SwapTo(incoming);
+        }
+    }
+
+    void ScanProgramManager::cpu1SwapTo(ScanProgram scanProgram) {
+        mutex_enter_blocking(&this->scanProgramStateMutex);
+        logger->d(getTag(), fmt::format("Swap to: {:x}. Previous: {:x}", (int)scanProgram, (int)previousScanProgram));
+        this->previousScanProgram = this->currentScanProgram;
+        this->currentScanProgram = scanProgram;
+
+        if (currentScanProgram != previousScanProgram) {
+            //these need to be run from CPU1 because they setup scanvideo timing.
+            getScanProgramPtr(previousScanProgram)->stopScanProgram();
+            getScanProgramPtr(currentScanProgram)->startScanProgram();
+        }
+
+        mutex_exit(&this->scanProgramStateMutex);
     }
 
 } // scanProgram

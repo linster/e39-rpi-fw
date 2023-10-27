@@ -34,7 +34,7 @@ namespace video::scanProgram::scanPrograms {
         logger->d(getTag(), "Starting ScanProgram");
 
         mutex_enter_blocking(&this->isScanProgramRunningMutex);
-        scanvideo_timing_enable(true); //TODO make sure this is called from CPU0
+        scanvideo_timing_enable(true); //TODO make sure this isn't called from CPU0
         this->isScanProgramRunning = true;
         mutex_exit(&this->isScanProgramRunningMutex);
 
@@ -48,7 +48,7 @@ namespace video::scanProgram::scanPrograms {
         onScanProgramStop();
         mutex_enter_blocking(&this->isScanProgramRunningMutex);
 
-        scanvideo_timing_enable(false); //TODO make sure this is called from CPU0
+        scanvideo_timing_enable(false); //TODO make sure this isn't called from CPU0
 
 
         this->isScanProgramRunning = false;
@@ -65,29 +65,28 @@ namespace video::scanProgram::scanPrograms {
     }
 
     void BaseScanProgram::cpu0setup() {
-
+        //NOOP
     }
 
     void BaseScanProgram::onCpu0Loop() {
-        //Tight-loop on CPU0 to ask the scan program to fill the buffer.
-        scanvideo_scanline_buffer_t *scanlineBuffer = scanvideo_begin_scanline_generation(true);
-        render(scanlineBuffer);
-//        if (scanlineBuffer != nullptr) {
-            scanvideo_end_scanline_generation(scanlineBuffer);
-//        }
-        //TODO future, we can do non-blocking IO here (cooperative multitasking?) by
-        //TODO not blocking here, and instead only calling render if we're not in the vblank
-        //TODO or hblank intervals.
+        //NOOP
     }
 
     void BaseScanProgram::cpu1Setup() {
         //NOOP
-        //We're doing rendering on cpu0. We have LIN interrupts on cpu1.
     }
 
     void BaseScanProgram::onCpu1Loop() {
-        //NOOP
-        //We're doing rendering on cpu0. We have LIN interrupts on cpu1.
+        //We're doing rendering on cpu1.
+        //Tight-loop on CPU0 to ask the scan program to fill the buffer.
+        scanvideo_scanline_buffer_t *scanlineBuffer = scanvideo_begin_scanline_generation(true);
+        render(scanlineBuffer);
+//        if (scanlineBuffer != nullptr) {
+        scanvideo_end_scanline_generation(scanlineBuffer);
+//        }
+        //TODO future, we can do non-blocking IO here (cooperative multitasking?) by
+        //TODO not blocking here, and instead only calling render if we're not in the vblank
+        //TODO or hblank intervals.
     }
 
     scanvideo_mode_t BaseScanProgram::getScanVideoMode() {

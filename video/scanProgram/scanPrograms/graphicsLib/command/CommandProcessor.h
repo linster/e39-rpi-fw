@@ -21,8 +21,6 @@ namespace video::scanVideo::graphics::command {
         std::shared_ptr<pico::logger::BaseLogger> logger;
 
 
-        uint8_t userFrameState;
-
 
         std::vector<std::unique_ptr<BaseCommand>> commandsToProcess;
 
@@ -38,8 +36,8 @@ namespace video::scanVideo::graphics::command {
         //So it's already better than a frame buffer.
         static constexpr const uint16_t maxDisplayWidth = 400;
 
-        const uint32_t baseColour = 0;
-        std::array<uint32_t, maxDisplayWidth> lineBuffer = {baseColour};
+        uint32_t baseColour = 0;
+        std::array<uint32_t, maxDisplayWidth> lineBuffer;
 
 
         /**
@@ -87,12 +85,10 @@ namespace video::scanVideo::graphics::command {
 
         //TODO render_computed needs to skip scanlines with no runs on them.
 
-        /** The user can use this int to figure out whether they are happy
-         *  with the frame state.
-         * @return An arbitrary int the user can set for frame state.
-         */
-        uint8_t getUserFrameState();
-        void setUserFrameState(uint8_t frameState);
+
+        void setBaseColour(uint32_t color);
+
+        void clearScanlines(uint16_t min, uint16_t max);
     };
 
 } // command

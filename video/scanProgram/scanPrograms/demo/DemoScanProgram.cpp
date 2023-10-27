@@ -161,8 +161,6 @@ namespace video::scanProgram::scanPrograms::demo {
                 graphicsLib->getPalette()[6],
                 1
         );
-
-        graphicsLib->setUserFrameState(1);
     }
 
     void DemoScanProgram::render_computedFrame(scanvideo_scanline_buffer_t *scanline_buffer) {
