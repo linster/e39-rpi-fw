@@ -9,6 +9,7 @@ namespace pico {
     namespace ibus {
         namespace data {
 
+            [[deprecated("Only used in legacy DmaManager")]]
             IbusPacket::IbusPacket(void* packetStart) {
                 //Super dangerous constructor that takes a pointer to a byte
                 //then increments it to get the length, dangerously reads that
@@ -40,6 +41,31 @@ namespace pico {
                     cloneFrom(newPacketByConstructor);
                     return;
                 }
+            }
+
+
+            IbusPacket::IbusPacket(std::array<uint8_t, 255> raw) {
+
+                uint8_t len = raw[1];
+                if (len == 0 || len > 255) { //TODO Can len > 255 happen irl?
+                    //We have a malformed packet. Just return the smallest possible packet.
+                    std::vector<uint8_t> bytes = std::vector<uint8_t>();
+                    bytes.push_back(0x00);
+                    bytes.push_back(00);
+                    bytes.push_back(00);
+                    bytes.push_back(00);
+
+                    auto newPacketByConstructor = IbusPacket((std::vector<uint8_t>)bytes);
+                    cloneFrom(newPacketByConstructor);
+                    return;
+                } else {
+                    std::vector<uint8_t> bytes = std::vector<uint8_t>(raw.begin(), raw.begin() + 2 + len);
+
+                    auto newPacketByConstructor = IbusPacket((std::vector<uint8_t>)bytes);
+                    cloneFrom(newPacketByConstructor);
+                    return;
+                }
+
             }
 
             IbusPacket::IbusPacket(std::vector<uint8_t> raw) {
@@ -159,10 +185,6 @@ namespace pico {
                 return completeRawPacket;
             }
 
-            IbusPacket::IbusPacket(std::array<uint8_t, 255> raw) {
-                //return IbusPacket::IbusPacket(raw.data())
-                //TODO WON'T RUN
-            }
 
 
         } // pico
