@@ -16,27 +16,31 @@ namespace pico::ibus::dma {
 
         //TODO length==255 might actually be too short. Because, the packet length could be 255+1?
 
-        queue_init(
+        queue_init_with_spinlock(
                 &toPiQ,
                 255,
-                10
+                10,
+                1
                 );
 
-        queue_init(
+        queue_init_with_spinlock(
                 &toCarQ,
                 255,
-                10
+                10,
+                2
                 );
 
-        queue_init(
+        queue_init_with_spinlock(
                 &fromCarQ,
                 255,
-                10
+                10,
+                3
                 );
-        queue_init(
+        queue_init_with_spinlock(
                 &fromPiQ,
                 255,
-                10
+                10,
+                4
                 );
 
         staticLogger = logger;
@@ -47,11 +51,11 @@ namespace pico::ibus::dma {
     }
 
     void SingleCoreDmaManager::onCpu0Loop() {
-        flushFromPiQToLogic();
+//        flushFromPiQToLogic();
         flushFromCarQToLogic();
 
-        flushToPiQToUart();
-        flushToCarQToUart();
+//        flushToPiQToUart();
+//        flushToCarQToUart();
 
         if (shouldWriteStatus()) {
             writeStatus(logger);
@@ -104,6 +108,9 @@ namespace pico::ibus::dma {
 
         //Now that we're done the setup, turn on the lin transeiver
         gpio_put(LIN_ChipSelect, true);
+
+
+        stdio_init_all();
     }
 
     void SingleCoreDmaManager::on_uart0_rx() {
@@ -117,13 +124,13 @@ namespace pico::ibus::dma {
     }
 
     void SingleCoreDmaManager::on_uart1_rx() {
-        handleRxInterruptServiceRoutine(
-                uart1,
-                "uart1",
-                &fromPiQ,
-                "fromPiQ",
-                &fromPiQPacketizer
-        );
+//        handleRxInterruptServiceRoutine(
+//                uart1,
+//                "uart1",
+//                &fromPiQ,
+//                "fromPiQ",
+//                &fromPiQPacketizer
+//        );
     }
 
     void SingleCoreDmaManager::handleRxInterruptServiceRoutine(
@@ -135,7 +142,11 @@ namespace pico::ibus::dma {
     ) {
 //        https://github.com/raspberrypi/pico-examples/blob/master/uart/uart_advanced/uart_advanced.c
         while (uart_is_readable(uart)) {
-            uint8_t ch = uart_getc(uart);
+            uint8_t ch;// = uart_getc(uart);
+
+            //uart_getc(uart) in the standard library casts to `char`, which might be signed.
+            uart_read_blocking(uart, &ch, 1);
+
             packetizer->addByte(ch);
             if (packetizer->isPacketComplete()) {
                 writePacketToQ(
@@ -196,7 +207,7 @@ namespace pico::ibus::dma {
 
         incomingPacketBuffer.fill(0);
 
-        bool havePacket = queue_try_remove(queue, (void *) incomingPacketBuffer.data());
+        bool havePacket = queue_try_remove(queue, incomingPacketBuffer.data());
         if (havePacket) {
 
             //A packet came into the pico for processing.
@@ -204,6 +215,8 @@ namespace pico::ibus::dma {
             observerRegistry->dispatchMessageToAllObservers(
                     data::IbusPacket(incomingPacketBuffer)
             );
+        } else {
+            logger->d("SingleCoreDmaManager", "No packet");
         }
 
     }
@@ -234,9 +247,11 @@ namespace pico::ibus::dma {
         currentLoopIteration = currentLoopIteration + 1;
 
         if (currentLoopIteration >= lastWrittenLoopIteration + writeStatusEvery) {
-            writeStatus(logger);
             lastWrittenLoopIteration = currentLoopIteration;
+            return true;
         }
+
+        return false;
     }
 
     void SingleCoreDmaManager::writeStatus(
@@ -258,21 +273,21 @@ namespace pico::ibus::dma {
     }
 
     void SingleCoreDmaManager::cpu0scheduleOutgoingProbeOnlyMessage(data::IbusPacket packet) {
-        writePacketToQ(
-                logger,
-                packet,
-                &toPiQ,
-                "toPiQ"
-        );
+//        writePacketToQ(
+//                logger,
+//                packet,
+//                &toPiQ,
+//                "toPiQ"
+//        );
     }
 
     void SingleCoreDmaManager::cpu0scheduleOutgoingMessage(data::IbusPacket packet) {
-        writePacketToQ(
-                logger,
-                packet,
-                &toCarQ,
-                "toCarQ"
-        );
+//        writePacketToQ(
+//                logger,
+//                packet,
+//                &toCarQ,
+//                "toCarQ"
+//        );
     }
 
     void SingleCoreDmaManager::writePacketToQ(
@@ -281,7 +296,7 @@ namespace pico::ibus::dma {
             queue_t *toQ,
             std::string toQName
     ) {
-        logger->d("SingleCoreDmaManager", fmt::format("Writing packet to q {}", toQName));
+        staticLogger->d("SingleCoreDmaManager", fmt::format("Writing packet to q {}", toQName));
 
         std::vector<uint8_t> rawPacket = packet.getRawPacket();
 
@@ -296,13 +311,13 @@ namespace pico::ibus::dma {
         bool wasAdded = queue_try_add(toQ, outgoingPacketBuffer.data());
 
         if (!wasAdded) {
-            logger->w("SingleCoreDmaManager", fmt::format("Outgoing Q {} was full, clearing", toQName));
+            staticLogger->w("SingleCoreDmaManager", fmt::format("Outgoing Q {} was full, clearing", toQName));
             writeStatus(logger);
             while(!queue_is_empty(toQ)){
                 std::array<uint8_t, 255> temp = std::array<uint8_t , 255>();
                 queue_try_remove(toQ, temp.data());
             }
-            logger->d("SingleCoreDmaManager", fmt::format("Tried emptying Q {}", toQName));
+            staticLogger->d("SingleCoreDmaManager", fmt::format("Tried emptying Q {}", toQName));
             writeStatus(logger);
         }
     }

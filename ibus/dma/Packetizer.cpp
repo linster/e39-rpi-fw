@@ -21,7 +21,7 @@ namespace pico {
 
             void Packetizer::addByte(uint8_t byte) {
 
-                if (position == 255) {
+                if (position >= 255) {
                     reset();
                     return;
                 }

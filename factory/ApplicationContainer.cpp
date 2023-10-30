@@ -25,21 +25,21 @@ namespace pico {
 
         dmaManager->cpu0setup();
 
-        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::RVC);
+//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::RVC);
 
         //scanProgramManager->cpu0setup();
 
-        sleep_ms(1000);
+//        sleep_ms(1000);
 
-        scanProgramSwapper->swapTo(ScanProgram::MENU);
-
-        videoSwitch->switchTo(hardware::videoSwitch::PICO);
+//        scanProgramSwapper->swapTo(ScanProgram::MENU);
+//        videoSwitch->switchTo(hardware::videoSwitch::PICO);
 
         logger->d("onMain", "Finished onMain()");
     }
 
     void ApplicationContainer::onLoop() {
         dmaManager->onCpu0Loop();
+        sleep_ms(1000);
 
         //scanProgramManager->onCpu0Loop();
 //        logger->d("onLoop", "onLoop");
