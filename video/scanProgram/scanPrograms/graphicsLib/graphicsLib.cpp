@@ -95,14 +95,6 @@ namespace video::scanProgram {
         commandProcessor->addCommand(std::move(command));
     }
 
-    uint8_t graphicsLib::getUserFrameState() {
-        return commandProcessor->getUserFrameState();
-    }
-
-    void graphicsLib::setUserFrameState(uint8_t state) {
-        commandProcessor->setUserFrameState(state);
-    }
-
     void graphicsLib::render_commandProcessed(scanvideo_scanline_buffer_t *scanline_buffer) {
         commandProcessor->render_computed(scanline_buffer);
     }
