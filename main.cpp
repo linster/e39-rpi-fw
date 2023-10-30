@@ -61,12 +61,13 @@ int main() {
 
     applicationContainer->onMain(); //Run main one-time setup code.
 
-    multicore_launch_core1(core1_entry); //Launch the coprocessor and have it block.
-    //Push the pointer to the application container to the second core. This unblocks the co-processor.
-    multicore_fifo_push_blocking((uint32_t)applicationContainer);
+//    multicore_reset_core1();
+//    multicore_launch_core1(core1_entry); //Launch the coprocessor and have it block.
+//    Push the pointer to the application container to the second core. This unblocks the co-processor.
+//    multicore_fifo_push_blocking((uint32_t)applicationContainer);
 
     //Wait for the CPU1 setup to complete.
-    sleep_ms(3000);
+//    sleep_ms(3000);
 
     while (true) {
 

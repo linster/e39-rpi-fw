@@ -39,7 +39,7 @@ namespace pico {
 
     void ApplicationContainer::onLoop() {
         dmaManager->onCpu0Loop();
-        sleep_ms(1000);
+//        sleep_ms(1000);
 
         //scanProgramManager->onCpu0Loop();
 //        logger->d("onLoop", "onLoop");

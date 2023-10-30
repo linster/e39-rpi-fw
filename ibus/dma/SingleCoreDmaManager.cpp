@@ -16,31 +16,27 @@ namespace pico::ibus::dma {
 
         //TODO length==255 might actually be too short. Because, the packet length could be 255+1?
 
-        queue_init_with_spinlock(
+        queue_init(
                 &toPiQ,
                 255,
-                10,
-                1
+                10
                 );
 
-        queue_init_with_spinlock(
+        queue_init(
                 &toCarQ,
                 255,
-                10,
-                2
+                10
                 );
 
-        queue_init_with_spinlock(
+        queue_init(
                 &fromCarQ,
                 255,
-                10,
-                3
+                10
                 );
-        queue_init_with_spinlock(
+        queue_init(
                 &fromPiQ,
                 255,
-                10,
-                4
+                10
                 );
 
         staticLogger = logger;
@@ -57,9 +53,9 @@ namespace pico::ibus::dma {
 //        flushToPiQToUart();
 //        flushToCarQToUart();
 
-        if (shouldWriteStatus()) {
-            writeStatus(logger);
-        }
+//        if (shouldWriteStatus()) {
+//            writeStatus(logger);
+//        }
     }
 
     void SingleCoreDmaManager::cpu1Setup() { /* NOOP */ }
@@ -92,7 +88,7 @@ namespace pico::ibus::dma {
         //TODO do we want an IRQ when the fault line on the lin transceiver goes high?
         //TODO what should we do then? Maybe add a method to nuke everything and re-setup DMAManager?
 
-        uart_set_fifo_enabled(uart0, false);
+        uart_set_fifo_enabled(uart0, true);
         uart_set_fifo_enabled(uart1, false);
 
         irq_set_exclusive_handler(UART0_IRQ, on_uart0_rx);
@@ -103,6 +99,7 @@ namespace pico::ibus::dma {
         irq_set_enabled(UART1_IRQ, true);
         uart_set_irq_enables(uart1, true, false);
 
+        gpio_set_function(LIN_ChipSelect, GPIO_FUNC_SIO);
         gpio_set_dir(LIN_Fault, true);
         gpio_put(LIN_Fault, false); //Set TX enable
 
@@ -110,17 +107,18 @@ namespace pico::ibus::dma {
         gpio_put(LIN_ChipSelect, true);
 
 
-        stdio_init_all();
+        //stdio_init_all();
+        stdio_driver
     }
 
     void SingleCoreDmaManager::on_uart0_rx() {
-        handleRxInterruptServiceRoutine(
-                uart0,
-                "uart0",
-                &fromCarQ,
-                "fromCarQ",
-                &fromCarQPacketizer
-        );
+//        handleRxInterruptServiceRoutine(
+//                uart0,
+//                "uart0",
+//                &fromCarQ,
+//                "fromCarQ",
+//                &fromCarQPacketizer
+//        );
     }
 
     void SingleCoreDmaManager::on_uart1_rx() {
@@ -155,7 +153,7 @@ namespace pico::ibus::dma {
                         toQ,
                         toQName
                         );
-                packetizer->reset();
+                packetizer->reset(); //TODO seems we miss the first byte after a reset.
             }
         }
     }
@@ -206,8 +204,9 @@ namespace pico::ibus::dma {
     void SingleCoreDmaManager::readIncomingQ_toLogic(queue_t *queue, std::string queue_name) {
 
         incomingPacketBuffer.fill(0);
+//        std::array<uint8_t, 255> buffer = std::array<uint8_t , 255>();
 
-        bool havePacket = queue_try_remove(queue, incomingPacketBuffer.data());
+        bool havePacket = queue_try_remove(queue, (void*) incomingPacketBuffer.data());
         if (havePacket) {
 
             //A packet came into the pico for processing.
@@ -215,8 +214,6 @@ namespace pico::ibus::dma {
             observerRegistry->dispatchMessageToAllObservers(
                     data::IbusPacket(incomingPacketBuffer)
             );
-        } else {
-            logger->d("SingleCoreDmaManager", "No packet");
         }
 
     }
