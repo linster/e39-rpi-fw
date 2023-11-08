@@ -59,6 +59,8 @@ namespace pico {
 
                 ~IbusPacket();
 
+                static std::string IbusDeviceEnumToString(IbusDeviceEnum value);
+
                 //TODO override the equals to compare the rawPackets.
             };
 

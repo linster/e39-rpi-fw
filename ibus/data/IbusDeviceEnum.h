@@ -16,9 +16,11 @@ namespace pico {
             enum IbusDeviceEnum {
                 BODY_MODULE = BODY_MODULE_VALUE,
                 BROADCAST = BROADCAST_VALUE,
+                BROADCAST_BF = BRAODCAST_BF_VALUE,
                 MFL = MFL_VALUE,
                 RADIO = RADIO_VALUE,
                 MID = MID_VALUE,
+                DSP = DSP_VALUE,
                 TELEPHONE = TELEPHONE_VALUE,
                 IKE = IKE_VALUE,
                 IKE_TEXTBAR = IKE_TEXTBAR_VALUE,

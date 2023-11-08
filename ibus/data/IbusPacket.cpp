@@ -172,19 +172,58 @@ namespace pico {
             }
 
             std::string IbusPacket::toString() {
-                return fmt::format("IbusPacket( "
+
+
+                std::string sourceDeviceString = IbusDeviceEnumToString(sourceDevice);
+                std::string destinationDeviceString = IbusDeviceEnumToString(destinationDevice);
+
+
+                std::string ret = fmt::format("IbusPacket( "
                                    "SourceDevice: {} "
                                    "DestDevice: {}, "
+                                   "Len field: {}",
                                    "Data: {})",
-                                   sourceDevice,
-                                   destinationDevice,
-                                   fmt::join(data, ","));
+                                   sourceDeviceString,
+                                   destinationDeviceString,
+                                   packetLength,
+                                   fmt::format("{0:#x}", fmt::join(data, ","))
+                                   );
+
+                return ret;
             }
 
             std::vector<uint8_t> IbusPacket::getRawPacket() {
                 return completeRawPacket;
             }
 
+            std::string IbusPacket::IbusDeviceEnumToString(IbusDeviceEnum value) {
+
+                std::string ret;
+                switch (value) {
+                    case BODY_MODULE: ret = BODY_MODULE_STRING; break;
+                    case BROADCAST: ret = BROADCAST_STRING; break;
+                    case BROADCAST_BF: ret = BROADCAST_BF_STRING; break;
+                    case MFL: ret = MFL_STRING; break;
+                    case RADIO: ret = RADIO_STRING; break;
+                    case MID: ret = MID_STRING; break;
+                    case DSP: ret = DSP_STRING; break;
+                    case TELEPHONE: ret = TELEPHONE_STRING; break;
+                    case IKE: ret = IKE_STRING; break;
+                    case IKE_TEXTBAR: ret = IKE_TEXTBAR_STRING; break;
+                    case TV_MODULE: ret = TV_MODULE_STRING; break;
+                    case NAV_VIDEOMODULE: ret = NAV_VIDEOMODULE_STRING; break;
+                    case NAV_MENUSCREEN: ret = NAV_MENUSCREEN_STRING; break;
+                    case NAV_LOCATION: ret = NAV_LOCATION_STRING; break;
+                    case BOARDMONITOR_BUTTONS: ret = BOARDMONITOR_BUTTONS_STRING; break;
+                    case DIS: ret = DIS_STRING; break;
+                    case NAVJ: ret = NAVJ_STRING; break;
+                    case PICO: ret = PICO_STRING; break;
+                    case RPI: ret = RPI_STRING; break;
+                    default:
+                        ret = fmt::format("{0:#x}", (int)value);
+                }
+                return ret;
+            }
 
 
         } // pico

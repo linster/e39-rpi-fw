@@ -52,11 +52,21 @@ namespace pico::ibus::dma {
 
             inline static void handleRxInterruptServiceRoutine(
                     uart_inst_t* uart,
-                    std::string uartName,
+                    queue_t* toQ
+            );
+
+            inline static queue_t uart0rxByteQ;
+            inline static queue_t uart1rxByteQ;
+
+            void flushUart0ByteBufferToPacketizer();
+            void flushUart1ByteBufferToPacketizer();
+            void flushUartByteBufferToPacketizer(
+                    queue_t* fromByteQ,
+                    std::string fromByteQName,
                     queue_t* toQ,
                     std::string toQName,
                     Packetizer* packetizer
-            );
+                    );
 
             void flushFromPiQToLogic();
             void flushFromCarQToLogic();
@@ -84,8 +94,7 @@ namespace pico::ibus::dma {
             static void writeStatus(std::shared_ptr<logger::BaseLogger> logger);
 
 
-            static void writePacketToQ(
-                    std::shared_ptr<logger::BaseLogger> logger,
+            void writePacketToQ(
                     data::IbusPacket packet,
                     queue_t* toQ,
                     std::string toQName

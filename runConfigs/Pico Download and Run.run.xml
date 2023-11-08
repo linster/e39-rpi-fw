@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Pico Download and Run" type="com.jetbrains.cidr.embedded.openocd.conf.type" factoryName="com.jetbrains.cidr.embedded.openocd.conf.factory" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="PicoTemplate" TARGET_NAME="ELF2UF2Build" CONFIG_NAME="Debug" version="1" RUN_TARGET_PROJECT_NAME="PicoTemplate" RUN_TARGET_NAME="PicoTemplate">
-    <openocd version="1" gdb-port="3333" telnet-port="4444" board-config="$PROJECT_DIR$/../pico/openocd/tcl/target/rp2040.cfg" reset-type="INIT" download-type="UPDATED_ONLY">
+    <openocd version="1" gdb-port="3333" telnet-port="4444" board-config="$PROJECT_DIR$/../pico/openocd/tcl/target/rp2040.cfg" reset-type="INIT" download-type="ALWAYS">
       <debugger kind="GDB" isBundled="true" />
     </openocd>
     <method v="2">
