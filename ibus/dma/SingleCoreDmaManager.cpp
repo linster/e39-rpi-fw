@@ -197,7 +197,7 @@ namespace pico::ibus::dma {
 
         bool haveByte = queue_try_remove(fromByteQ, &byte);
         if (haveByte) {
-//            critical_section_enter_blocking(&packetizerCs);
+            critical_section_enter_blocking(&packetizerCs);
                 packetizer->addByte(byte);
                 if (packetizer->isPacketComplete()) {
                     writePacketToQ(
@@ -207,7 +207,7 @@ namespace pico::ibus::dma {
                     );
                     packetizer->reset();
                 }
-//            critical_section_exit(&packetizerCs);
+            critical_section_exit(&packetizerCs);
         }
     }
 
