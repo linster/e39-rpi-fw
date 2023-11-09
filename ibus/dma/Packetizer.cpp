@@ -4,12 +4,11 @@
 
 #include "Packetizer.h"
 
-namespace pico {
-    namespace ibus {
-        namespace dma {
+namespace pico::ibus::dma {
 
             Packetizer::Packetizer() {
                 packetBytes = std::vector<uint8_t>(255);
+                packetBytes.clear();
                 position = 0;
                 sourceId = 0;
                 expectedLength = 0;
@@ -147,6 +146,4 @@ namespace pico {
                           );
             }
 
-        } // pico
-    } // ibus
-} // dma
+        } // dma

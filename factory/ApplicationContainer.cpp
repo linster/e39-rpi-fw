@@ -21,9 +21,12 @@ namespace pico {
 
         sleep_ms(1000);
 
-        pi4PowerSwitchManager->setPower(false);
 
         dmaManager->cpu0setup();
+
+        logger->i("onMain", "Starting Linster OS Automotive");
+
+        pi4PowerSwitchManager->setPower(false);
 
 //        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::RVC);
 
@@ -39,7 +42,6 @@ namespace pico {
 
     void ApplicationContainer::onLoop() {
         dmaManager->onCpu0Loop();
-//        sleep_ms(1000);
 
         //scanProgramManager->onCpu0Loop();
 //        logger->d("onLoop", "onLoop");

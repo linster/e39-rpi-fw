@@ -21,6 +21,7 @@
 
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
+#include "pico/sync.h"
 
 
 namespace pico::ibus::dma {
@@ -33,8 +34,8 @@ namespace pico::ibus::dma {
             inline static std::shared_ptr<logger::BaseLogger> staticLogger;
             std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry;
 
-            inline static Packetizer fromPiQPacketizer;
-            inline static Packetizer fromCarQPacketizer;
+            inline static Packetizer fromPiQPacketizer = Packetizer();
+            inline static Packetizer fromCarQPacketizer = Packetizer();
 
             inline static queue_t toPiQ;      //Packets
             inline static queue_t toCarQ;     //Packets
@@ -44,6 +45,11 @@ namespace pico::ibus::dma {
 
 //            inline static std::array<uint8_t, 255> paddedUart0RxPacketBuffer;
 //            inline static std::array<uint8_t, 255> paddedUart1RxPacketBuffer;
+
+            //It doesn't matter which IRQ/ISR is running,
+            //we must protect a packetizer's state (it is non-reentrant)
+            critical_section_t packetizerCs;
+
 
             void setupUarts();
 

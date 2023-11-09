@@ -39,8 +39,7 @@ void core1_entry() {
 
 int main() {
 
-    printf("main() start");
-    stdio_init_all();
+    //stdio_init_all();
 
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
@@ -49,11 +48,6 @@ int main() {
 //    adc_gpio_init(26);
 //    adc_set_temp_sensor_enabled(true);
 //    adc_select_input(TEMP_ADC);
-
-    auto* logger = new pico::logger::StdioPrintFLogger();
-
-    logger->d("Wat", "Foo");
-
 
     auto* factory = new pico::di::PimoroniFactory();
 
@@ -69,10 +63,11 @@ int main() {
     //Wait for the CPU1 setup to complete.
 //    sleep_ms(3000);
 
+
     while (true) {
 
         applicationContainer->onLoop();
-
+        sleep_ms(10);
 
 //        const float voltage = adc_read() * conversion_factor;
 //        const float temperature = 27 - (voltage - 0.706) / 0.001721;
