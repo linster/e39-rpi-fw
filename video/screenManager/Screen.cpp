@@ -124,20 +124,20 @@ namespace video::ScreenManager {
     void Screen::drawToLogger(std::shared_ptr<pico::logger::BaseLogger> logger) {
         std::string debugTag = fmt::format("ASCII_SCREEN" , getTitle());
 
-        logger->d(debugTag, fmt::format("=== %s ===", getTitle()));
+        logger->d(debugTag, fmt::format("=== {} ===", getTitle()));
 
         for (int i = 0; i < getScreenItems().size() -1 ; i++) {
 
             auto item = getScreenItems()[i];
 
             if (focusedIndex == i) {
-                logger->d(debugTag, fmt::format("> %s", item->getLabel()));
+                logger->d(debugTag, fmt::format("> {}", item->getLabel()));
             } else {
-                logger->d(debugTag, fmt::format("- %s", item->getLabel()));
+                logger->d(debugTag, fmt::format("- {}", item->getLabel()));
             }
         }
 
-        logger->d(debugTag, fmt::format("^^^ %s ^^^", getTitle()));
+        logger->d(debugTag, fmt::format("^^^ {} ^^^", getTitle()));
     }
 
 

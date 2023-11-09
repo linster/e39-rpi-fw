@@ -29,7 +29,7 @@ namespace pico::ibus::observers {
                             onKnobPressed();
                         }
 
-                        if (*(iBusPacket.getData()->data()) == 0x49) {
+                        if ((*iBusPacket.getData())[0] == 0x49) {
                             uint8_t rotation = (*iBusPacket.getData())[1];
 
                             if (rotation - 0x0 >= 1 && rotation - 0x80 <= 9) {

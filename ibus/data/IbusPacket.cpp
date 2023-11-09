@@ -88,6 +88,10 @@ namespace pico {
                     auto begin = raw.begin() + 3;
                     auto end = raw.end() - 1;
                     data.insert(data.begin(), begin, end);
+                    //TODO resize data to size so we don't have a gigantic vector mostly full of zeros.
+                    data.resize(packetLength - 2);
+
+                    completeRawPacket.resize(packetLength + 2);
                 }
 
                 givenCrc = raw.back();

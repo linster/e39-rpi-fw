@@ -67,7 +67,7 @@ int main() {
     while (true) {
 
         applicationContainer->onLoop();
-        sleep_ms(10);
+        sleep_ms(1);
 
 //        const float voltage = adc_read() * conversion_factor;
 //        const float temperature = 27 - (voltage - 0.706) / 0.001721;

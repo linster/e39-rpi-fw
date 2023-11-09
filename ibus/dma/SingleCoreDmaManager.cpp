@@ -68,7 +68,7 @@ namespace pico::ibus::dma {
 //        flushToCarQToUart();
 
 //        if (shouldWriteStatus()) {
-            writeStatus(logger);
+//            writeStatus(logger);
 //        }
     }
 
@@ -286,6 +286,8 @@ namespace pico::ibus::dma {
 
 //            observerRegistry->dispatchMessageToAllObservers(packetFromArray);
             observerRegistry->dispatchMessageToAllObservers(packetFromVector);
+
+            logger->d("SingleCoreDmaManager", fmt::format("Finished dispatching packet from Q {} to cpu0 observers", queue_name));
         }
 
     }
