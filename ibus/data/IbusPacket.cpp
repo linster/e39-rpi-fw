@@ -191,15 +191,15 @@ namespace pico {
                 //TODO do this with a join as it was.
                 std::string dataString = std::string();
 
-                for (auto byte : data) {
+                for (auto byte : completeRawPacket) {
                     dataString += fmt::format(" {0:#x}", byte);
                 }
 
                 std::string ret = fmt::format("IbusPacket( "
                                    "SourceDevice: {} "
-                                   "DestDevice: {}, "
-                                   "Len field: {}"
-                                   "Data: {}"
+                                   "DestDevice: {} ,"
+                                   "Len field: {} ,"
+                                   "Data: {} ,"
                                    "RawPacket: {})",
                                    sourceDeviceString,
                                    destinationDeviceString,
