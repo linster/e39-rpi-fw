@@ -34,6 +34,14 @@ namespace pico::ibus::observers {
                 void onKnobPressed();
 
                 bool debugDraw = true;
+
+                /**
+                 * If true, update the current state in the screenManager when
+                 * items are focused and selected, whether or not the video source
+                 * or scan program are correct. Use this to develop the menu business
+                 * logic before the scan program totally works.
+                 */
+                bool mock_knob_state_preConditions = true;
             protected:
                 std::string getTag() override { return "KnobListenerObserver"; };
                 void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) override;

@@ -34,7 +34,7 @@ namespace pico::ibus::observers {
                         if ((*iBusPacket.getData())[0] == 0x49) {
                             uint8_t rotation = (*iBusPacket.getData())[1];
 
-                            if (rotation - 0x0 >= 1 && rotation - 0x80 <= 9) {
+                            if (rotation - 0x0 >= 1 && rotation - 0x00 <= 9) {
                                 onKnobTurnedLeft(rotation);
                                 return;
                             }
@@ -51,8 +51,9 @@ namespace pico::ibus::observers {
             void KnobListenerObserver::onKnobTurnedLeft(int clicks) {
                 logger->d(getTag(), fmt::format("onKnobTurnedLeft, clicks {:d}", clicks));
 
-                if (videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
-                    scanProgramSwapper->getCurrentScanProgram() == ScanProgram::MENU) {
+                if ((videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
+                     scanProgramSwapper->getCurrentScanProgram() == ScanProgram::MENU
+                    ) || mock_knob_state_preConditions) {
 
                     logger->d(getTag(), "Dispatching to ScreenManager");
 
@@ -66,8 +67,9 @@ namespace pico::ibus::observers {
             void KnobListenerObserver::onKnobTurnedRight(int clicks) {
                 logger->d(getTag(), fmt::format("onKnobTurnedRight, clicks {:d}", clicks));
 
-                if (videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
-                    scanProgramSwapper->getCurrentScanProgram() == ScanProgram::MENU) {
+                if ((videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
+                     scanProgramSwapper->getCurrentScanProgram() == ScanProgram::MENU
+                    ) || mock_knob_state_preConditions) {
 
                     logger->d(getTag(), "Dispatching to ScreenManager");
 
@@ -81,8 +83,9 @@ namespace pico::ibus::observers {
             void KnobListenerObserver::onKnobPressed() {
                 logger->d(getTag(), "onKnobPressed");
 
-                if (videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
-                    scanProgramSwapper->getCurrentScanProgram() == ScanProgram::MENU) {
+                if ((videoSwitch->getPreviousVideoSource() == hardware::videoSwitch::VideoSource::PICO &&
+                    scanProgramSwapper->getCurrentScanProgram() == ScanProgram::MENU
+                    ) || mock_knob_state_preConditions) {
 
                     logger->d(getTag(), "Dispatching to ScreenManager");
 
