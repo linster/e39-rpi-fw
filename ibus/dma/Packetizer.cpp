@@ -7,6 +7,7 @@
 namespace pico::ibus::dma {
 
             Packetizer::Packetizer() {
+                //TODO we can change this to an array since we never resize it.
                 packetBytes = std::vector<uint8_t>(255);
                 packetBytes.clear();
                 position = 0;
@@ -20,8 +21,23 @@ namespace pico::ibus::dma {
 
             void Packetizer::addByte(uint8_t byte) {
 
-                if (position >= 255) {
+//                if (position >= 255) {
+//                    reset();
+//                    return;
+//                }
+
+                if (expectedLength > 0 && position > (expectedLength + 2)) {
+                    //The packet can never be right, start over.
+                    //Or, the user is adding data without having called recycle after the packet is ok.
+                    //We may also want to consider recycling instead of resetting here...
+                    //TODO we might have to move this below the first if-statement. Because,
+                    //TODO if the packet is invalid, we mutate state along the away?
                     reset();
+                    //TODO we need to early-return here because if we don't, we increment position
+                    //TODO anyways. WOOPS. That's probably why we always miss the first byte
+                    //TODO on every packet that isn't the very first one we ever get.
+                    //TODO 11:37am, now what we get is an expected length of BF a lot, so what
+                    //TODO we need to do is really figure out our loop invariants.
                     return;
                 }
 
@@ -56,21 +72,6 @@ namespace pico::ibus::dma {
                 } else {
                     //Update the checksum.
                     currentChecksum = currentChecksum ^ byte;
-                }
-
-                if (expectedLength > 0 && position > (expectedLength + 1)) {
-                    //The packet can never be right, start over.
-                    //Or, the user is adding data without having called recycle after the packet is ok.
-                    //We may also want to consider recycling instead of resetting here...
-                    //TODO we might have to move this below the first if-statement. Because,
-                    //TODO if the packet is invalid, we mutate state along the away?
-                    reset();
-                    //TODO we need to early-return here because if we don't, we increment position
-                    //TODO anyways. WOOPS. That's probably why we always miss the first byte
-                    //TODO on every packet that isn't the very first one we ever get.
-                    //TODO 11:37am, now what we get is an expected length of BF a lot, so what
-                    //TODO we need to do is really figure out our loop invariants.
-                    return;
                 }
 
                 position++; //Make sure to increment before we're called again.
@@ -126,14 +127,31 @@ namespace pico::ibus::dma {
                 expectedLength = 0;
                 destinationId = 0;
                 expectedChecksum = 0;
+
+                currentChecksum = 0; //TODO I forgot to clear this field.
+
                 packetOk = false;
             }
 
             void Packetizer::writeState(
                     std::string tag,
                     std::shared_ptr<logger::BaseLogger> logger) {
+
+                std::string bytesString = std::string();
+
+                bool isEmpty = true;
+                for (auto byte : packetBytes) {
+                    if (byte != 0) { isEmpty = false; }
+                    bytesString += fmt::format(" {0:#x}", byte);
+                }
+
+                if (isEmpty) {
+                    bytesString = "<empty>";
+                }
+
                 logger->d(tag,
                           fmt::format("Packetizer[ "
+                                      "packetBytes: {} ,"
                                       "packetBytes (len): {} ,"
                                       "position: {}, "
                                       "sourceId: {:#x}, "
@@ -143,6 +161,7 @@ namespace pico::ibus::dma {
                                       "expectedChecksum: {:#x}, "
                                       "currentChecksum: {:#x} ,"
                                       "packetOk: {} ]",
+                                      bytesString,
                                       packetBytes.size(),
                                       position,
                                       sourceId,
