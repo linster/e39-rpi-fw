@@ -5,17 +5,21 @@
 #include <sstream>
 #include "BaseObserver.h"
 
-namespace pico {
-    namespace ibus {
-        namespace observers {
+namespace pico::ibus::observers {
 
             void BaseObserver::dispatchPacket(
                     std::shared_ptr<pico::logger::BaseLogger> logger,
                     pico::ibus::data::IbusPacket iBusPacket) {
 
-                logger->d(this->getTag(), fmt::format("Dispatching Packet"));
+                if (log_packetDispatchTrace) {
+                    logger->d(this->getTag(), fmt::format("Dispatching Packet"));
+                }
+                
                 this->onNewPacket(iBusPacket);
-                logger->d(this->getTag(), fmt::format("Dispatched Packet"));
+
+                if (log_packetDispatchTrace) {
+                    logger->d(this->getTag(), fmt::format("Dispatched Packet"));
+                }
             }
 
             messages::PiToPicoMessage BaseObserver::decodePiToPicoMessage(
@@ -56,6 +60,4 @@ namespace pico {
 
                 return decoded;
             }
-        } // pico
-    } // ibus
-} // observers
+        } // observers

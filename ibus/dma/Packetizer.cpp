@@ -139,14 +139,20 @@ namespace pico::ibus::dma {
 
                 std::string bytesString = std::string();
 
-                bool isEmpty = true;
-                for (auto byte : packetBytes) {
-                    if (byte != 0) { isEmpty = false; }
-                    bytesString += fmt::format(" {0:#x}", byte);
-                }
+                bool writeBufferContents = false;
 
-                if (isEmpty) {
-                    bytesString = "<empty>";
+                if (writeBufferContents) {
+                    bool isEmpty = true;
+                    for (auto byte: packetBytes) {
+                        if (byte != 0) { isEmpty = false; }
+                        bytesString += fmt::format(" {0:#x}", byte);
+                    }
+
+                    if (isEmpty) {
+                        bytesString = "<empty>";
+                    }
+                } else {
+                    bytesString = "<disabled>";
                 }
 
                 logger->d(tag,

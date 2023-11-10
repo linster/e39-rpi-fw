@@ -10,9 +10,7 @@
 #include <proto_cpp/PiToPico.h>
 #include <libs/fmt/include/fmt/format.h>
 
-namespace pico {
-    namespace ibus {
-        namespace observers {
+namespace pico::ibus::observers {
 
             class BaseObserver {
 
@@ -29,10 +27,18 @@ namespace pico {
                 messages::PiToPicoMessage decodePiToPicoMessage(
                         std::shared_ptr<pico::logger::BaseLogger> logger,
                         pico::ibus::data::IbusPacket ibusPacket);
+
+            private:
+                /**
+                 *  Whether to log "Dispatching Packet" and "Dispatched Packet"
+                 *  before the observer does the match. To keep logs from being
+                 *  spammy, and observer should only enable this if it is at risk
+                 *  of being hung.
+                 */
+                bool log_packetDispatchTrace = false;
+
             };
 
-        } // pico
-    } // ibus
-} // observers
+        } // observers
 
 #endif //PICOTEMPLATE_BASEOBSERVER_H
