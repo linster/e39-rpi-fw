@@ -3,10 +3,7 @@
 //
 
 #include "BaseOutputWriter.h"
-namespace pico {
-    namespace ibus {
-        namespace output {
-            namespace writer {
+namespace pico::ibus::output::writer {
 
                 void BaseOutputWriter::schedulePicoToPiMessageForWrite(messages::PicoToPiMessage message) {
 
@@ -40,7 +37,4 @@ namespace pico {
                 void BaseOutputWriter::schedulePacketForWrite(pico::ibus::data::IbusPacket ibusPacket) {
                     getDmaManager()->cpu0scheduleOutgoingMessage(ibusPacket);
                 }
-            } // pico
-        } // ibus
-    } // output
-} // writer
+            } // writer

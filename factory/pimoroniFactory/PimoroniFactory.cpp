@@ -15,6 +15,15 @@ namespace pico::di {
 
             this->videoSwitch = std::make_shared<hardware::videoSwitch::max4314::Max4314VideoSwitch>(this->logger);
 
+
+            this->observerRegistry = std::make_shared<ibus::observerRegistry::ObserverRegistry>(this->logger);
+            this->baseObservers = std::make_shared<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>>(
+                    std::vector<std::shared_ptr<ibus::observers::BaseObserver>>()
+            );
+
+            //This has to be before any outputWriters are made.
+            this->dmaManager = std::make_shared<ibus::dma::SingleCoreDmaManager>(logger, observerRegistry);
+
             std::shared_ptr<config::FlashConfigurationStore> flashConfigurationStore = std::make_shared<config::FlashConfigurationStore>(this->logger);
             std::shared_ptr<ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter =
                     std::make_shared<ibus::output::writer::ConfigurationStatusWriter>(
@@ -35,6 +44,11 @@ namespace pico::di {
                     logger,
                     defaultConfigurationProvider);
 
+            //All the outputWriters need to be initialized before any observers that depend on them.
+            this->heartbeatResponseWriter = std::make_shared<ibus::output::writer::HeartbeatResponseWriter>(
+                    logger,
+                    dmaManager
+            );
 
             this->screenPowerManager = std::make_shared<ibus::output::writer::ScreenPowerManager>(
                     defaultConfigurationProvider,
@@ -45,7 +59,9 @@ namespace pico::di {
             this->softPowerRequestWriter = std::make_shared<ibus::output::writer::SoftPowerRequestWriter>(
                     logger,
                     dmaManager
-                    );
+            );
+
+
             this->mainScreen = std::make_shared<video::ScreenManager::MainScreen::MainScreen>(
                     logger,
                     configurationManager,
@@ -120,12 +136,10 @@ namespace pico::di {
                      screenPowerManager
                      );
 
-            this->observerRegistry = std::make_shared<ibus::observerRegistry::ObserverRegistry>(this->logger);
-            this->baseObservers = std::make_shared<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>>(
-                    std::vector<std::shared_ptr<ibus::observers::BaseObserver>>()
-                    );
 
             //Populate the list of observers in the ObserverRegistry and up-cast them.
+            //We have an observer registry that is populated here because we need to avoid the circular dependency
+            //on dmaManager. This is poor-man's Dagger Provider<T>.
             baseObservers->push_back(
                     std::static_pointer_cast<ibus::observers::BaseObserver>(mockIncomingIBusObserver));
             baseObservers->push_back(
@@ -143,14 +157,6 @@ namespace pico::di {
             baseObservers->push_back(
                     std::static_pointer_cast<ibus::observers::BaseObserver>(telephoneLongPressObserver));
 
-            this->heartbeatResponseWriter = std::make_shared<ibus::output::writer::HeartbeatResponseWriter>(
-                    logger,
-                    dmaManager
-                    );
-
-
-
-            this->dmaManager = std::make_shared<ibus::dma::SingleCoreDmaManager>(logger, observerRegistry);
         }
 
         PimoroniFactory::PimoroniFactory() {
