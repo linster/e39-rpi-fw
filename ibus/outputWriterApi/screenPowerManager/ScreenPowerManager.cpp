@@ -95,6 +95,8 @@ namespace pico {
 
                     this->isPowerOn = true;
 
+                    //TODO STEFAN this function crashes the app.
+
                     auto data = std::vector<uint8_t>(2);
                     data.push_back(0x4F);
 
