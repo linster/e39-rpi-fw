@@ -17,13 +17,13 @@ namespace pico::ibus::dma {
         queue_init(
                 &uart0rxByteQ,
                 sizeof(uint8_t),
-                576
+                2048
                 );
 
         queue_init(
                 &uart1rxByteQ,
                 sizeof(uint8_t),
-                576
+                2048
                 );
 
         queue_init(
@@ -68,7 +68,7 @@ namespace pico::ibus::dma {
 //        flushToCarQToUart();
 
 //        if (shouldWriteStatus()) {
-//            writeStatus(logger);
+            writeStatus(logger);
 //        }
     }
 
@@ -200,6 +200,12 @@ namespace pico::ibus::dma {
             critical_section_enter_blocking(&packetizerCs);
                 packetizer->addByte(byte);
                 if (packetizer->isPacketComplete()) {
+                    //TODO what's happening is after we reset() we're always dropping the
+                    //TODO first byte. This means that the only packets that can ever succeed
+                    //TODO have the sourceDevice = 0x00, which is the BODY_MODULE.
+                    //TODO this indicates a framing error too, because we don't have a body_moddule
+                    //TODO on the bench.
+                    fromCarQPacketizer.writeState("SingleCoreDmaManagerISR_fromCarQ", logger);
                     writePacketToQ(
                             data::IbusPacket(packetizer->getPacketBytes()),
                             toQ,
@@ -336,7 +342,6 @@ namespace pico::ibus::dma {
 
         uint uart0rxByteQ_level = queue_get_level(&uart0rxByteQ);
         uint uart1rxByteQ_level = queue_get_level(&uart1rxByteQ);
-        //TODO add the byte buffers in here too.
 
         if (toPiQ_level == 0 && toCarQ_level == 0 &&
                 fromPiQ_level == 0 && fromCarQ_level == 0 &&
@@ -344,6 +349,9 @@ namespace pico::ibus::dma {
             //Don't print zeroes since it's slow to do stdout with no news.
             //return;
         }
+
+        fromCarQPacketizer.writeState("SingleCoreDmaManagerWriteStatus_fromCarQ", logger);
+//        fromPiQPacketizer.writeState("SingleCoreDmaManagerWriteStatus_fromPiQ", logger);
 
         logger->d(
                 "SingleCoreDmaManager",

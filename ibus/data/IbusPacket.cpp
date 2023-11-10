@@ -205,7 +205,8 @@ namespace pico {
                                    destinationDeviceString,
                                    packetLength,
                                    dataString,
-                                   fmt::join(completeRawPacket, ",")
+//                                   fmt::join(completeRawPacket, ",")
+                                   dataString
                                    );
 
                 return ret;

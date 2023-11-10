@@ -62,7 +62,15 @@ namespace pico::ibus::dma {
                     //The packet can never be right, start over.
                     //Or, the user is adding data without having called recycle after the packet is ok.
                     //We may also want to consider recycling instead of resetting here...
+                    //TODO we might have to move this below the first if-statement. Because,
+                    //TODO if the packet is invalid, we mutate state along the away?
                     reset();
+                    //TODO we need to early-return here because if we don't, we increment position
+                    //TODO anyways. WOOPS. That's probably why we always miss the first byte
+                    //TODO on every packet that isn't the very first one we ever get.
+                    //TODO 11:37am, now what we get is an expected length of BF a lot, so what
+                    //TODO we need to do is really figure out our loop invariants.
+                    return;
                 }
 
                 position++; //Make sure to increment before we're called again.
@@ -128,16 +136,18 @@ namespace pico::ibus::dma {
                           fmt::format("Packetizer[ "
                                       "packetBytes (len): {} ,"
                                       "position: {}, "
-                                      "sourceId: {}, "
-                                      "destinationId: {}, "
-                                      "expectedLength: {}, "
-                                      "expectedChecksum: {}, "
-                                      "currentChecksum: {} ,"
+                                      "sourceId: {:#x}, "
+                                      "destinationId: {:#x}, "
+                                      "expectedLength (dec): {}, "
+                                      "expectedLength (hex): {:#x}, "
+                                      "expectedChecksum: {:#x}, "
+                                      "currentChecksum: {:#x} ,"
                                       "packetOk: {} ]",
                                       packetBytes.size(),
                                       position,
                                       sourceId,
                                       destinationId,
+                                      expectedLength,
                                       expectedLength,
                                       expectedChecksum,
                                       currentChecksum,
