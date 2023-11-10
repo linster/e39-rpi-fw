@@ -20,13 +20,31 @@ namespace pico {
             }
 
             void TelephoneLongPressObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
-                if (iBusPacket.getSourceDevice() == data::IbusDeviceEnum::BOARDMONITOR_BUTTONS &&
-                        iBusPacket.getDestinationDevice() == data::IbusDeviceEnum::BROADCAST) {
+                if (iBusPacket.getSourceDevice() == data::IbusDeviceEnum::BOARDMONITOR_BUTTONS
+                    && iBusPacket.getDestinationDevice() == data::IbusDeviceEnum::BROADCAST) {
 
-                    if (iBusPacket.getData()->size() == 2) {
-                        auto matchingData = std::vector<uint8_t>(0x48, 0x08);
-                        if (*(iBusPacket.getData()) == matchingData) {
-                            onTelephoneLongPressed();
+                    if (iBusPacket.getData()->size() >= 2) {
+                        logger->d(getTag(), "wat3");
+                        logger->d(getTag(), iBusPacket.toString());
+
+                        if ((*iBusPacket.getData())[0] == 0x48) {
+                            uint8_t command = (*iBusPacket.getData())[1];
+
+                            if (command == 0x08) {
+                                logger->d(getTag(), "Telephone pressed");
+                                return;
+                            }
+
+
+                            if (command == 0x88) {
+                                logger->d(getTag(), "Telephone released");
+                                return;
+                            }
+
+                            if (command == 0x48) {
+                                onTelephoneLongPressed();
+                                return;
+                            }
                         }
                     }
                 }

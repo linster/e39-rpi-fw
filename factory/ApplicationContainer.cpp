@@ -26,6 +26,9 @@ namespace pico {
 
         logger->i("onMain", "Starting Linster OS Automotive");
 
+        observerRegistry->printRegisteredObserverTags();
+
+
         pi4PowerSwitchManager->setPower(false);
 
 //        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::RVC);

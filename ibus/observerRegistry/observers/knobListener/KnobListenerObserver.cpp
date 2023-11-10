@@ -24,9 +24,11 @@ namespace pico::ibus::observers {
 
                     if (iBusPacket.getData()->size() >= 2) {
                         //PushData = 0x48, 0x05
-                        auto pushData = std::vector<uint8_t>(0x48, 0x05);
-                        if (*(iBusPacket.getData()) == pushData) {
-                            onKnobPressed();
+                        if ((*iBusPacket.getData())[0] == 0x48) {
+                            if ((*iBusPacket.getData())[1] == 0x05) {
+                                onKnobPressed();
+                                return;
+                            }
                         }
 
                         if ((*iBusPacket.getData())[0] == 0x49) {
@@ -34,10 +36,12 @@ namespace pico::ibus::observers {
 
                             if (rotation - 0x0 >= 1 && rotation - 0x80 <= 9) {
                                 onKnobTurnedLeft(rotation);
+                                return;
                             }
 
                             if (rotation - 0x80 >= 1 && rotation - 0x80 <= 9) {
                                 onKnobTurnedRight(rotation - 0x80);
+                                return;
                             }
                         }
                     }

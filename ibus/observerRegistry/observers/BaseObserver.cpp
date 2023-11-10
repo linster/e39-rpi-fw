@@ -14,7 +14,7 @@ namespace pico::ibus::observers {
                 if (log_packetDispatchTrace) {
                     logger->d(this->getTag(), fmt::format("Dispatching Packet"));
                 }
-                
+
                 this->onNewPacket(iBusPacket);
 
                 if (log_packetDispatchTrace) {

@@ -14,7 +14,6 @@ namespace pico {
             }
 
             void MockObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
-                logger->d("MockObserver", "New Ibus packet");
                 logger->d("MockObserver", iBusPacket.toString());
             }
         } // pico

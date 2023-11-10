@@ -268,13 +268,18 @@ namespace pico::ibus::dma {
 
     void SingleCoreDmaManager::readIncomingQ_toLogic(queue_t *queue, std::string queue_name) {
 
+        bool log_dispatch_trace = false;
+
         std::array<uint8_t, 255> buffer = std::array<uint8_t , 255>();
         buffer.fill(0); //Fill the buffer with zeros so the .data() below dereferences validly.
 
         bool havePacket = queue_try_remove(queue, (void*) buffer.data());
         if (havePacket) {
             //A packet came into the pico for processing.
-            logger->d("SingleCoreDmaManager", fmt::format("Dispatching packet from Q {} to cpu0 observers", queue_name));
+            if (log_dispatch_trace) {
+                logger->d("SingleCoreDmaManager",
+                          fmt::format("Dispatching packet from Q {} to cpu0 observers", queue_name));
+            }
 
             //TODO dumb hack, convert the array to a vector so that we can call a different constructor.
             data::IbusPacket packetFromArray = data::IbusPacket(buffer);
@@ -288,7 +293,10 @@ namespace pico::ibus::dma {
 //            observerRegistry->dispatchMessageToAllObservers(packetFromArray);
             observerRegistry->dispatchMessageToAllObservers(packetFromVector);
 
-            logger->d("SingleCoreDmaManager", fmt::format("Finished dispatching packet from Q {} to cpu0 observers", queue_name));
+            if (log_dispatch_trace) {
+                logger->d("SingleCoreDmaManager",
+                          fmt::format("Finished dispatching packet from Q {} to cpu0 observers", queue_name));
+            }
         }
 
     }
@@ -338,9 +346,15 @@ namespace pico::ibus::dma {
         uint uart0rxByteQ_level = queue_get_level(&uart0rxByteQ);
         uint uart1rxByteQ_level = queue_get_level(&uart1rxByteQ);
 
-        if (toPiQ_level == 0 && toCarQ_level == 0 &&
-                fromPiQ_level == 0 && fromCarQ_level == 0 &&
-                uart0rxByteQ_level == 0 && uart1rxByteQ_level == 0) {
+        // If true, don't log out when we have bytes.
+        bool ignoreByteQs = true;
+
+        if (toPiQ_level == 0 &&
+            toCarQ_level == 0 &&
+            fromPiQ_level == 0 &&
+            fromCarQ_level == 0 &&
+                (ignoreByteQs || (uart0rxByteQ_level == 0 && uart1rxByteQ_level == 0))
+        ) {
             //Don't print zeroes since it's slow to do stdout with no news.
             return;
         }
@@ -390,7 +404,12 @@ namespace pico::ibus::dma {
             queue_t *toQ,
             std::string toQName
     ) {
-        staticLogger->d("SingleCoreDmaManager", fmt::format("Writing packet to q {}", toQName));
+
+        bool log_writePacketToQ = false;
+
+        if (log_writePacketToQ) {
+            staticLogger->d("SingleCoreDmaManager", fmt::format("Writing packet to q {}", toQName));
+        }
 
         std::vector<uint8_t> rawPacket = packet.getRawPacket();
 

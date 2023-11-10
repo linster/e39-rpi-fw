@@ -30,6 +30,15 @@ namespace pico {
                     item->dispatchPacket(logger, packet);
                 }
             }
+
+            void ObserverRegistry::printRegisteredObserverTags() {
+                for (const auto &item: observerList) {
+                    logger->d(
+                            "Observer registry",
+                            fmt::format("Registered observer: {}", item->getTag())
+                            );
+                }
+            }
         } // pico
     } // ibus
 } // observerRegistry

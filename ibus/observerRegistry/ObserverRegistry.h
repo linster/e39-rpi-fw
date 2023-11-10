@@ -25,6 +25,8 @@ namespace pico {
                 void unregisterObserver(std::shared_ptr<pico::ibus::observers::BaseObserver> observer);
 
                 void dispatchMessageToAllObservers(data::IbusPacket packet);
+
+                void printRegisteredObserverTags();
             };
         } // pico
     } // ibus
