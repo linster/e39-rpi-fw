@@ -63,6 +63,7 @@ namespace pico::ibus::dma {
         flushUart1ByteBufferToPacketizer();
         flushFromPiQToLogic();
         flushFromCarQToLogic();
+        //TODO build a pass-through observer that takes all uart1 RX packets and sends them to uart0
 
         flushToPiQToUart();
         flushToCarQToUart();
@@ -82,12 +83,15 @@ namespace pico::ibus::dma {
         //Give us the ability to turn off the upstream source from "the car" while we're setting up uarts.
         gpio_set_function(LIN_ChipSelect, GPIO_FUNC_SIO);
         gpio_set_dir(LIN_ChipSelect, true);
-        gpio_set_function(LIN_Fault, GPIO_FUNC_SIO); //when low, TX to car is off.
-        gpio_set_dir(LIN_Fault, true); //Output
-        gpio_put(LIN_ChipSelect, false); //Turn off TX to car while we set up.
 
-        //Turn off the LIN transceiver while we're setting up.
-        gpio_put(LIN_ChipSelect, false);
+        gpio_set_function(LIN_Fault, GPIO_FUNC_SIO); //when low, TX to car is off.
+
+
+
+
+        gpio_put(LIN_ChipSelect, true); //Turn off TX to car while we set up.
+
+        gpio_set_dir(LIN_Fault, true); //TX to car is on.
 
         //Set the pin functions before we do stuff with the UART.
         gpio_set_function(UART0_LIN_TRANS_RX, GPIO_FUNC_UART);
@@ -101,9 +105,6 @@ namespace pico::ibus::dma {
         uart_init(uart0, 9600);
         uart_set_hw_flow(uart0, false, false);
         uart_set_format(uart0, 8, 1, UART_PARITY_EVEN); //8E1
-
-//
-
 
 //        //Always use the Adafruit 954 to go from Pico -> PC.
 //        uart_init(uart1, 9600);
@@ -122,9 +123,6 @@ namespace pico::ibus::dma {
             uart_set_format(uart1, 8, 1, UART_PARITY_EVEN); //8E1
         }
 
-
-
-
         //TODO do we want an IRQ when the fault line on the lin transceiver goes high?
         //TODO what should we do then? Maybe add a method to nuke everything and re-setup DMAManager?
 
@@ -141,10 +139,10 @@ namespace pico::ibus::dma {
 //        uart_set_irq_enables(uart1, true, false);
 
 
-        gpio_put(LIN_Fault, false); //Set TX enable
+        //gpio_put(LIN_Fault, false); //TX to car enabled.
 
         //Now that we're done the setup, turn on the lin transeiver
-        gpio_put(LIN_ChipSelect, true);
+        //gpio_put(LIN_ChipSelect, true);
 
 
         stdio_uart_init_full(uart1, 115200, UART1_PICOPROBE_TX, UART1_PICOPROBE_RX);
@@ -235,6 +233,8 @@ namespace pico::ibus::dma {
             std::string fromName,
             std::string uartName) {
 
+        bool log_outgoingPacket = false;
+
         //take the 255-byte buffer and parse it into a packet
         //then, if it's valid,
         //then do a uart send_blocking for len == packet.rawBytes().length
@@ -247,6 +247,13 @@ namespace pico::ibus::dma {
             logger->d("DmaManager", fmt::format("We have a packet from {} to write to uart {}", fromName, uartName));
             auto* packet = new data::IbusPacket(outgoingPacketBuffer);
             if (packet->isPacketValid()) {
+                //TODO is is right to write out getRawPacket().size? What if it's really big?
+                //TODO what if we accidentally skip the checksum byte at the end?
+                if (log_outgoingPacket) {
+                    logger->d("SingleCoreDmaManager_outgoing", packet->toString());
+                    logger->d("SingleCoreDmaManager_outgoing", fmt::format("RawPacket Size: {}", packet->getRawPacket().size()));
+                }
+
                 uart_write_blocking(uart, packet->getRawPacket().data(), packet->getRawPacket().size());
                 logger->d("DmaManager",
                           fmt::format("Wrote packet from {} to write to uart {}", fromName, uartName));
