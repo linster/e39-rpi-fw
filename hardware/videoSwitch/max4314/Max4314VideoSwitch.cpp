@@ -27,21 +27,24 @@ namespace pico {
                 }
 
                 void Max4314VideoSwitch::switchTo(pico::hardware::videoSwitch::VideoSource source) {
-                    logger->d("Max4314VideoSwitch", fmt::format("Setting video source to {:x}", (int)source));
                     switch (source) {
                         case VideoSource::RVC:
+                            logger->d("Max4314VideoSwitch", "Setting video source to RVC");
                             gpio_put(gpio_pin_msb, false);
                             gpio_put(gpio_pin_lsb, false);
                             break;
                         case VideoSource::UPSTREAM:
+                            logger->d("Max4314VideoSwitch", "Setting video source to UPSTREAM");
                             gpio_put(gpio_pin_msb, false);
                             gpio_put(gpio_pin_lsb, true);
                             break;
                         case VideoSource::PICO:
+                            logger->d("Max4314VideoSwitch", "Setting video source to PICO");
                             gpio_put(gpio_pin_msb, true);
                             gpio_put(gpio_pin_lsb, false);
                             break;
                         case VideoSource::PI:
+                            logger->d("Max4314VideoSwitch", "Setting video source to PI");
                             gpio_put(gpio_pin_msb, true);
                             gpio_put(gpio_pin_lsb, true);
                             break;

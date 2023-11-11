@@ -4,8 +4,7 @@
 
 #include "ScanProgramSwapper.h"
 
-namespace video {
-    namespace scanProgram {
+namespace video::scanProgram {
         ScanProgramSwapper::ScanProgramSwapper(
                 std::shared_ptr <pico::logger::BaseLogger> logger,
                 std::shared_ptr <ScanProgramManager> scanProgramManager) {
@@ -15,7 +14,17 @@ namespace video {
         }
 
         void ScanProgramSwapper::swapTo(ScanProgram scanProgram) {
-            logger->d("ScanProgramSwapper", "Swapping to scan program");
+
+            std::string scanProgramName;
+            switch (scanProgram) {
+                case BOOT_SPLASH: scanProgramName = "BOOT_SPLASH"; break;
+                case CLOCK: scanProgramName = "CLOCK"; break;
+                case DEMO: scanProgramName = "DEMO"; break;
+                case MENU: scanProgramName = "MENU"; break;
+                case NOOP: scanProgramName = "NOOP"; break;
+            }
+
+            logger->d("ScanProgramSwapper", fmt::format("Swapping to scan program {}", scanProgramName));
             scanProgramManager->swapTo(scanProgram);
         }
 
@@ -24,5 +33,4 @@ namespace video {
         }
 
 
-    } // video
-} // scanProgram
+    } // scanProgram

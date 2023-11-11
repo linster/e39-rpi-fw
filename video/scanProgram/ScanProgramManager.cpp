@@ -115,6 +115,7 @@ namespace video::scanProgram {
             this->clockScanProgram = clockScanProgram;
             this->bootsplashScanProgram = bootsplashScanProgram;
 
+            mutex_init(&scanProgramStateMutex);
             queue_init(
                     &cpu1IncomingCommandQ,
                     sizeof(ScanProgram),
@@ -155,6 +156,8 @@ namespace video::scanProgram {
                                   (int)scanProgram,
                                   queue_get_level(&cpu1IncomingCommandQ)
                                   ));
+        } else {
+            logger->d(getTag(), "Enqueued request to swap scan program");
         }
     }
 
