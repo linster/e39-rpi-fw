@@ -15,6 +15,7 @@
 #include <ibus/observerRegistry/ObserverRegistry.h>
 #include <ibus/dma/IDmaManager.h>
 #include <ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h>
+#include <ibus/outputWriterApi/radioControl/AudioFocusOutputWriter.h>
 
 namespace pico {
 
@@ -31,6 +32,7 @@ namespace pico {
 
         std::shared_ptr<ibus::dma::IDmaManager> dmaManager;
 
+        std::shared_ptr<ibus::output::writer::radio::AudioFocusOutputWriter> audioFocusOutputWriter;
         std::shared_ptr<ibus::output::writer::HeartbeatResponseWriter> heartbeatResponseWriter;
 
         std::shared_ptr<video::scanProgram::ScanProgramManager> scanProgramManager;
@@ -49,7 +51,8 @@ namespace pico {
                 std::shared_ptr<ibus::observerRegistry::ObserverRegistry> observerRegistry,
                 std::shared_ptr<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>> baseObservers,
                 std::shared_ptr<ibus::dma::IDmaManager> dmaManager,
-                std::shared_ptr<ibus::output::writer::HeartbeatResponseWriter> heartbeatResponseWriter
+                std::shared_ptr<ibus::output::writer::HeartbeatResponseWriter> heartbeatResponseWriter,
+                std::shared_ptr<ibus::output::writer::radio::AudioFocusOutputWriter> audioFocusOutputWriter
                 ) {
             this->logger = logger;
             this->pi4PowerSwitchManager = pi4PowerSwitchManager;
@@ -61,6 +64,7 @@ namespace pico {
             this->baseObservers = baseObservers;
             this->dmaManager = dmaManager;
             this->heartbeatResponseWriter = heartbeatResponseWriter;
+            this->audioFocusOutputWriter = audioFocusOutputWriter;
         };
 
         //Run once on main CPU main()

@@ -256,6 +256,10 @@ target_sources(
         ibus/dma/IDmaManager.cpp
         ibus/dma/SingleCoreDmaManager.cpp
         ibus/dma/SingleCoreDmaManager.h
+        ibus/outputWriterApi/TestingOutputWriter.h
+        ibus/outputWriterApi/TestingOutputWriter.cpp
+        ibus/outputWriterApi/radioControl/AudioFocusOutputWriter.h
+        ibus/outputWriterApi/radioControl/AudioFocusOutputWriter.cpp
 )
 
 target_include_directories(

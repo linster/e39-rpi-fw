@@ -131,6 +131,7 @@ namespace pico {
                 }
 
                 //Now calculate the actual CRC.
+                //TODO STEFAN make sure this works because this constructor won't make valid packets on outgoing (pico origin)
                 actualCrc = 0;
                 for (auto iterator = completeRawPacket.begin(); iterator != (completeRawPacket.end() - 1); ++iterator) {
                     //Skip the CRC byte at the end

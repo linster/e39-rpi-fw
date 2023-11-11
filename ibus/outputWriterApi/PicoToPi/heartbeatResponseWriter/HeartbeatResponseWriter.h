@@ -8,10 +8,7 @@
 #include <ibus/outputWriterApi/BaseOutputWriter.h>
 #include <logging/BaseLogger.h>
 
-namespace pico {
-    namespace ibus {
-        namespace output {
-            namespace writer {
+namespace pico::ibus::output::writer {
 
                 class HeartbeatResponseWriter : public BaseOutputWriter {
                 private:
@@ -29,9 +26,6 @@ namespace pico {
                     std::shared_ptr<dma::IDmaManager> getDmaManager() override;
                 };
 
-            } // pico
-        } // ibus
-    } // output
-} // writer
+            } // writer
 
 #endif //PICOTEMPLATE_HEARTBEATRESPONSEWRITER_H

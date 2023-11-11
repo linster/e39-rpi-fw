@@ -25,6 +25,8 @@
 #include <ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h>
 #include <ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h>
 
+#include <ibus/outputWriterApi/TestingOutputWriter.h>
+#include <ibus/outputWriterApi/radioControl/AudioFocusOutputWriter.h>
 
 #include <ibus/observerRegistry/ObserverRegistry.h>
 #include <configuration/default/DefaultConfigurationProvider.h>
@@ -44,6 +46,9 @@ namespace pico::di {
 
             std::shared_ptr<ibus::output::writer::ScreenPowerManager> screenPowerManager;
             std::shared_ptr<ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter;
+
+            std::shared_ptr<pico::ibus::output::writer::TestingOutputWriter> testingOutputWriter;
+            std::shared_ptr<pico::ibus::output::writer::radio::AudioFocusOutputWriter> audioFocusOutputWriter;
 
             std::shared_ptr<video::ScreenManager::MainScreen::MainScreen> mainScreen;
             std::shared_ptr<video::ScreenManager::ScreenManager> screenManager;

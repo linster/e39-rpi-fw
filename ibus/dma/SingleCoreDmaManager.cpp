@@ -64,8 +64,8 @@ namespace pico::ibus::dma {
         flushFromPiQToLogic();
         flushFromCarQToLogic();
 
-//        flushToPiQToUart();
-//        flushToCarQToUart();
+        flushToPiQToUart();
+        flushToCarQToUart();
 
 //        if (shouldWriteStatus()) {
             writeStatus(logger);
@@ -382,21 +382,19 @@ namespace pico::ibus::dma {
     }
 
     void SingleCoreDmaManager::cpu0scheduleOutgoingProbeOnlyMessage(data::IbusPacket packet) {
-//        writePacketToQ(
-//                logger,
-//                packet,
-//                &toPiQ,
-//                "toPiQ"
-//        );
+        writePacketToQ(
+                packet,
+                &toPiQ,
+                "toPiQ"
+        );
     }
 
     void SingleCoreDmaManager::cpu0scheduleOutgoingMessage(data::IbusPacket packet) {
-//        writePacketToQ(
-//                logger,
-//                packet,
-//                &toCarQ,
-//                "toCarQ"
-//        );
+        writePacketToQ(
+                packet,
+                &toCarQ,
+                "toCarQ"
+        );
     }
 
     void SingleCoreDmaManager::writePacketToQ(

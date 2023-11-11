@@ -4,10 +4,7 @@
 
 #include "HeartbeatResponseWriter.h"
 
-namespace pico {
-    namespace ibus {
-        namespace output {
-            namespace writer {
+namespace pico::ibus::output::writer {
                 HeartbeatResponseWriter::HeartbeatResponseWriter(
                         std::shared_ptr<logger::BaseLogger> logger,
                         std::shared_ptr<dma::IDmaManager> dmaManager) {
@@ -25,7 +22,4 @@ namespace pico {
                         .messageType = messages::PicoToPiMessage::MessageType::HeartbeatResponse
                     });
                 }
-            } // pico
-        } // ibus
-    } // output
-} // writer
+            } // writer

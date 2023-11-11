@@ -129,11 +129,21 @@ namespace pico::di {
                      logger,
                      videoSwitch
                      );
+             this->audioFocusOutputWriter = std::make_shared<pico::ibus::output::writer::radio::AudioFocusOutputWriter>(
+                     logger,
+                     dmaManager
+                     );
+             this->testingOutputWriter = std::make_shared<pico::ibus::output::writer::TestingOutputWriter>(
+                     logger,
+                     dmaManager,
+                     audioFocusOutputWriter
+                     );
              this->telephoneLongPressObserver = std::make_shared<ibus::observers::TelephoneLongPressObserver>(
                      logger,
                      videoSwitch,
                      scanProgramSwapper,
-                     screenPowerManager
+                     screenPowerManager,
+                     testingOutputWriter
                      );
 
 
@@ -174,7 +184,8 @@ namespace pico::di {
                     observerRegistry,
                     baseObservers,
                     dmaManager,
-                    heartbeatResponseWriter
+                    heartbeatResponseWriter,
+                    audioFocusOutputWriter
             );
         }
 

@@ -12,11 +12,13 @@ namespace pico {
                     std::shared_ptr<logger::BaseLogger> baseLogger,
                     std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch,
                     std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper,
-                    std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager) {
+                    std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager,
+                    std::shared_ptr<pico::ibus::output::writer::TestingOutputWriter> testingOutputWriter) {
                 this->logger = baseLogger;
                 this->videoSwitch = videoSwitch;
                 this->scanProgramSwapper = scanProgramSwapper;
                 this->screenPowerManager = screenPowerManager;
+                this->testingOutputWriter = testingOutputWriter;
             }
 
             void TelephoneLongPressObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
@@ -24,14 +26,13 @@ namespace pico {
                     && iBusPacket.getDestinationDevice() == data::IbusDeviceEnum::BROADCAST) {
 
                     if (iBusPacket.getData()->size() >= 2) {
-                        logger->d(getTag(), "wat3");
-                        logger->d(getTag(), iBusPacket.toString());
 
                         if ((*iBusPacket.getData())[0] == 0x48) {
                             uint8_t command = (*iBusPacket.getData())[1];
 
                             if (command == 0x08) {
                                 logger->d(getTag(), "Telephone pressed");
+                                testingOutputWriter->sendDummyPacket();
                                 return;
                             }
 

@@ -9,10 +9,9 @@
 #include <hardware/videoSwitch/VideoSwitch.h>
 #include <video/scanProgram/ScanProgramSwapper.h>
 #include <ibus/outputWriterApi/screenPowerManager/ScreenPowerManager.h>
+#include <ibus/outputWriterApi/TestingOutputWriter.h>
 
-namespace pico {
-    namespace ibus {
-        namespace observers {
+namespace pico::ibus::observers {
 
             class TelephoneLongPressObserver : public BaseObserver{
 
@@ -21,21 +20,22 @@ namespace pico {
                         std::shared_ptr<logger::BaseLogger> baseLogger,
                         std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch,
                         std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper,
-                        std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager
+                        std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager,
+                        std::shared_ptr<pico::ibus::output::writer::TestingOutputWriter> testingOutputWriter
                 );
             private:
                 std::shared_ptr<logger::BaseLogger> logger;
                 std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch;
                 std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;
                 std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager;
+                std::shared_ptr<pico::ibus::output::writer::TestingOutputWriter> testingOutputWriter;
+
                 void onTelephoneLongPressed();
             protected:
                 std::string getTag() override { return "TelephoneLongPressObserver"; };
                 void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) override;
             };
 
-        } // pico
-    } // ibus
-} // observers
+        } // observers
 
 #endif //PICOTEMPLATE_TELEPHONELONGPRESSOBSERVER_H
