@@ -84,14 +84,14 @@ namespace pico::ibus::dma {
         gpio_set_function(LIN_ChipSelect, GPIO_FUNC_SIO);
         gpio_set_dir(LIN_ChipSelect, true);
 
+
+        //TODO STEFAN I don't think we reliably enter the TX Enable state with this setup code.
+
         gpio_set_function(LIN_Fault, GPIO_FUNC_SIO); //when low, TX to car is off.
+        gpio_set_dir(LIN_Fault, true); //TXe/LFAULT is an output pin.
 
-
-
-
+        gpio_put(LIN_Fault, true);//TX to car is on.
         gpio_put(LIN_ChipSelect, true); //Turn off TX to car while we set up.
-
-        gpio_set_dir(LIN_Fault, true); //TX to car is on.
 
         //Set the pin functions before we do stuff with the UART.
         gpio_set_function(UART0_LIN_TRANS_RX, GPIO_FUNC_UART);
