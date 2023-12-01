@@ -22,7 +22,7 @@ namespace video::scanVideo::graphics::command {
         std::shared_ptr<pico::logger::BaseLogger> logger;
 
         std::vector<std::unique_ptr<BaseCommand>> commandsToProcess;
-        
+
         /**
          * Key is scanline number.
          * Value is a vector<RleRun> where no runs overlap, all runs sorted in ascending order

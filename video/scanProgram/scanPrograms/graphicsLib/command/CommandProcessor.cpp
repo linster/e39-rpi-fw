@@ -126,11 +126,6 @@ namespace video::scanVideo::graphics::command {
     //Called from CPU0
     void CommandProcessor::computeFrame() {
 
-        //Mark the frame as not computed while we are computing it. (CPU1 will daw
-        mutex_enter_blocking(&isFrameComputedMutex);
-        isFrameComputed = false;
-        mutex_exit(&isFrameComputedMutex);
-
         std::map<uint16_t, std::vector<RleRun>> unsortedRleRuns = std::map<uint16_t, std::vector<RleRun>>();
         for (const auto &command: commandsToProcess) {
 
@@ -145,6 +140,11 @@ namespace video::scanVideo::graphics::command {
                 }
             }
         }
+        
+        //Mark the frame as not computed while we are computing it. (CPU1 will daw
+        mutex_enter_blocking(&isFrameComputedMutex);
+        isFrameComputed = false;
+        mutex_exit(&isFrameComputedMutex);
 
         mutex_enter_blocking(&isFrameComputedMutex);
         for (const auto &g : unsortedRleRuns) {
