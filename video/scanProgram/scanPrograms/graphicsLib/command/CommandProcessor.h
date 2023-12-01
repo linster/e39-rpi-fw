@@ -12,6 +12,7 @@
 #include "RleRunContainerCommand.h"
 #include "pico/scanvideo/composable_scanline.h"
 #include "pico/scanvideo/scanvideo_base.h"
+#include "pico/mutex.h"
 #include <cstdint>
 namespace video::scanVideo::graphics::command {
 
@@ -20,16 +21,21 @@ namespace video::scanVideo::graphics::command {
     private:
         std::shared_ptr<pico::logger::BaseLogger> logger;
 
-
-
         std::vector<std::unique_ptr<BaseCommand>> commandsToProcess;
-
-        //Key is scanline
-        //Value is a vector of RleRuns
+        
+        /**
+         * Key is scanline number.
+         * Value is a vector<RleRun> where no runs overlap, all runs sorted in ascending order
+         * of startX. Can be looped over in drawScanline
+         */
         std::map<uint16_t, std::vector<RleRun>> rleRunsForLine;
 
-        bool isFrameComputed = false;
 
+        //Guards: isFrameComputedMutex, rleRunsForLine
+        mutex_t isFrameComputedMutex;
+        //End Guard: isFrameComputedMutex, rleRunsForLine
+
+        bool isFrameComputed = false;
 
         //We only need a 400*234 display max, so we'll just use a line buffer.
         //Someday I'll clean this function up, but is should consumer only ~2kb of ram,
@@ -44,16 +50,19 @@ namespace video::scanVideo::graphics::command {
          *
          * @param runs
          * @return returns a vector of RleRun where no runs overlap, and the runs are sorted in
-         *         ascending order of startX.
+         *         ascending order of startX. The returned vector can be looped over in drawScanline.
          */
         std::vector<RleRun> mergeRuns(std::unique_ptr<std::vector<RleRun>> runs);
 
 
         void drawScanline(scanvideo_scanline_buffer_t *scanline_buffer, std::vector<RleRun> merged);
         void skipScanline(scanvideo_scanline_buffer_t *scanline_buffer);
+
+        //Finish this (without depending on display metrics) to fill the screen with baseColour.
+        //void drawSolidColorScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour);
     public:
 
-        CommandProcessor(
+        explicit CommandProcessor(
                 std::shared_ptr<pico::logger::BaseLogger> logger
                 );
 
