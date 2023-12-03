@@ -6,7 +6,11 @@
 
 namespace video::scanProgram {
     uint32_t *graphicsLib::getPalette() {
-        return (uint32_t *) &pallet;
+        if (IS_TWO_BPP) {
+            return (uint32_t *) &pallet2bpp;
+        } else {
+            return (uint32_t *) &pallet;
+        }
     }
 
 

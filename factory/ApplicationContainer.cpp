@@ -32,7 +32,20 @@ namespace pico {
         pi4PowerSwitchManager->setPower(false);
 
         videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PICO);
+
+        logger->d("onMain",
+                  fmt::format("ScanProgramManager not setup. Current Scan Program is {:x} ",
+                              (int)scanProgramManager->getCurrentScanProgram()));
+
         scanProgramManager->cpu0setup();
+
+        scanProgramManager->swapTo(ScanProgram::MENU);
+
+        logger->d("onMain",
+                  fmt::format("ScanProgramManager is setup. Current Scan Program is {:x} ",
+                              (int)scanProgramManager->getCurrentScanProgram()));
+
+
 
 //        sleep_ms(1000);
 
@@ -76,6 +89,8 @@ namespace pico {
         logger->i("onCpu1Main", "scanProgramManager->cpu1setup()");
         scanProgramManager->cpu1setup();
         logger->i("onCpu1Main", "scanProgramManager->cpu1setup() done");
+
+
     }
 
     void ApplicationContainer::onCpu1Loop() {

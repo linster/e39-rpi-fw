@@ -291,3 +291,40 @@ pico_add_extra_outputs(PicoTemplate)
 # Enable USB serial
 pico_enable_stdio_usb(PicoTemplate 0)
 pico_enable_stdio_uart(PicoTemplate 1)
+
+#Set PicoVGA Params
+
+target_compile_definitions(PicoTemplate PUBLIC IS_TWO_BPP=false)
+
+set(E39_RPI_VGA_SMALL_COLOR_DEPTH ON)
+if (E39_RPI_VGA_SMALL_COLOR_DEPTH)
+
+target_compile_definitions(PicoTemplate PUBLIC IS_TWO_BPP=true)
+
+#Try to set the vga pins to 2 bits per channel, and relocate the HSync, VSync pins.
+#scanvideo.h sets these.
+#not sure about wither I want to set any of the _dpi_ values?
+#Assuming DPI == display parallel interface
+target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_DPI_PIXEL_RCOUNT=2)
+target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_DPI_PIXEL_GCOUNT=2)
+target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_DPI_PIXEL_BCOUNT=2)
+
+#When RCount = 5, Rshift = 0
+target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_DPI_PIXEL_RSHIFT=0u)
+#When GCount = 5, GShift = 6 -- Rcount + 1
+target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_DPI_PIXEL_GSHIFT=3u)
+#When BCount = 5, Bshift = 11 -- RCount + GCount + 1. So, set to
+target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_DPI_PIXEL_BSHIFT=5u)
+
+#wtf, scanvideo_base.h sets a bunch of stuff too?
+
+#when we had RGB555, this value was set to 16. So, let's set it to (2 + 2 + 2) -1 == 5
+target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_COLOR_PIN_COUNT=7)
+#PICO_SCANVIDEO_COLOR_PIN_BASE is still 0, so our base pin is still GP0
+#Before the above change, we had PICO_SCANVIDEO_COLOR_PIN_COUNT == 16, which meant
+#that PICO_SCANVIDEO_SYNC_PIN_BASE == 0 + 16 = 16. According to the schematic, this
+#meant that HSYNC/VSYNC started on GP16. Now, they will start on GP7??
+#I don't fully understand all the off-by-one errors that are built into these macros.
+#I'm just matching up what I see.
+
+endif()

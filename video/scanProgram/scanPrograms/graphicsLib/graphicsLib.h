@@ -32,8 +32,29 @@ namespace video::scanProgram {
             DisplayMetrics displayMetrics = DisplayMetrics(0,0);
             void requireDisplayMetrics();
 
-            //https://github.com/dquadros/pico-vgatext40/blob/master/textvideo.c
-            // 16 color pallet
+        /** Two bits per pixel (RGB222) palette */
+        #define PICO_COLOR_FROM_RGB2(r, g, b)  ((r & 0x03) | ((g & 0x03) << 3) | ((b & 0x03) << 5))
+        static constexpr uint32_t pallet2bpp[] {
+                PICO_COLOR_FROM_RGB2(0, 0, 0),
+                PICO_COLOR_FROM_RGB2(0, 0, 2),
+                PICO_COLOR_FROM_RGB2(0, 2, 0),
+                PICO_COLOR_FROM_RGB2(0, 2, 2),
+                PICO_COLOR_FROM_RGB2(2, 0, 0),
+                PICO_COLOR_FROM_RGB2(2, 0, 2),
+                PICO_COLOR_FROM_RGB2(2, 2, 0),
+                PICO_COLOR_FROM_RGB2(2, 2, 2),   // 7, Lighter Grey
+                PICO_COLOR_FROM_RGB2(1, 1, 1),      // 8, Light Grey
+                PICO_COLOR_FROM_RGB2(0, 0, 3),     // 9, Bright Blue
+                PICO_COLOR_FROM_RGB2(0, 3, 0),    //10, Bright Green
+                PICO_COLOR_FROM_RGB2(0, 3, 3),   //11, Bright Light Blue
+                PICO_COLOR_FROM_RGB2(3, 0, 0),    //12, Bright red
+                PICO_COLOR_FROM_RGB2(3, 0, 3),   //13, Bright purple
+                PICO_COLOR_FROM_RGB2(3, 3, 0),   //14, Bright Yellow
+                PICO_COLOR_FROM_RGB2(3, 3, 3)   //15, Bright White
+        };
+
+        //https://github.com/dquadros/pico-vgatext40/blob/master/textvideo.c
+        // 16 color pallet
         #define PICO_COLOR_FROM_RGB5(r, g, b)  ((r & 0x1F) | ((g & 0x1F) << 6) | ((b & 0x1F) << 11))
         static constexpr uint32_t pallet[] = {
                 PICO_COLOR_FROM_RGB5(0, 0, 0),

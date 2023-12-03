@@ -20,7 +20,8 @@ namespace video::scanProgram {
             mutex_enter_blocking(&this->scanProgramStateMutex);
             ret = this->currentScanProgram;
             mutex_exit(&this->scanProgramStateMutex);
-            logger->d(getTag(), fmt::format("Current: {:x}", (int)ret));
+            //This runs on every CPU0 and CPU1 loop
+            //logger->d(getTag(), fmt::format("Current: {:x}", (int)ret));
             return ret;
         }
 
@@ -167,6 +168,7 @@ namespace video::scanProgram {
 
         if (haveRequest) {
             //Do the swap
+            logger->d(getTag(), "Have request to cpu1SwapTo");
             cpu1SwapTo(incoming);
         }
     }
