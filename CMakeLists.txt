@@ -314,7 +314,7 @@ target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_PIXEL_RSHIFT=0)
 #When GCount = 5, GShift = 6 -- Rcount + 1
 target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_PIXEL_GSHIFT=2)
 #When BCount = 5, Bshift = 11 -- RCount + GCount + 1. So, set to
-target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_PIXEL_BSHIFT=2)
+target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_PIXEL_BSHIFT=4)
 
 #wtf, scanvideo_base.h sets a bunch of stuff too?
 

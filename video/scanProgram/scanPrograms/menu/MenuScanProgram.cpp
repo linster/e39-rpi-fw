@@ -29,6 +29,7 @@ namespace video::scanProgram::scanPrograms::menu {
 
         drawScreenBackground();
 
+        //TODO STEFAN I think there's a panic here, because this is now called from CPU1.
         drawScreen(screenManager->getCurrentScreen());
     }
 
@@ -64,7 +65,7 @@ namespace video::scanProgram::scanPrograms::menu {
         graphicsLib->drawFilledRectangle(
                 scanVideo::graphics::command::PxCoord(1,1),
                 scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 2,getDisplayHeightPx() - topColourHeight),
-                PICO_COLOR_FROM_RGB5(0, 0, 8)
+                graphicsLib::LINOS_BACKGROUND
         );
 
         uint8_t linOs_x = 5;
@@ -101,7 +102,7 @@ namespace video::scanProgram::scanPrograms::menu {
                 graphicsLib->getPalette()[14]
         );
 
-        uint32_t copyrightColour = PICO_COLOR_FROM_RGB5(0, 0, 8);
+        uint32_t copyrightColour = graphicsLib::LINOS_BACKGROUND;
         graphicsLib->drawText(
                 "e39-Rpi",
                 scanVideo::graphics::command::PxCoord(10, getDisplayHeightPx() - topColourHeight + 8),
@@ -177,7 +178,7 @@ namespace video::scanProgram::scanPrograms::menu {
         graphicsLib->drawFilledRectangle(
                 scanVideo::graphics::command::PxCoord(30,58),
                 scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, getDisplayHeightPx() - 40 - 2),
-                PICO_COLOR_FROM_RGB5(0, 0, 8)
+                graphicsLib::LINOS_BACKGROUND
                 );
     }
 

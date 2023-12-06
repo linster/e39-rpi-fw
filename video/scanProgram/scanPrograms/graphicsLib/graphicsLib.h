@@ -33,7 +33,7 @@ namespace video::scanProgram {
             void requireDisplayMetrics();
 
         /** Two bits per pixel (RGB222) palette */
-        #define PICO_COLOR_FROM_RGB2(r, g, b)  ((r & 0x03) | ((g & 0x03) << 3) | ((b & 0x03) << 5))
+        #define PICO_COLOR_FROM_RGB2(r, g, b)  ((r & 0x03) | ((g & 0x03) << 3) | ((b & 0x03) << 4))
         static constexpr uint32_t pallet2bpp[] {
                 PICO_COLOR_FROM_RGB2(0, 0, 0),
                 PICO_COLOR_FROM_RGB2(0, 0, 2),
@@ -78,6 +78,11 @@ namespace video::scanProgram {
         public:
 
             constexpr static uint8_t* SPECIAL_CHARACTER_COPYRIGHT = const_cast<uint8_t *>(fonts::FontProvider::font8x8_ext_latin[9]);
+
+
+            constexpr static uint32_t LINOS_BACKGROUND_2bpp = PICO_COLOR_FROM_RGB2(0, 0, 1);
+            constexpr static uint32_t LINOS_BACKGROUND_5bpp = PICO_COLOR_FROM_RGB5(0, 0, 8);
+            constexpr static uint32_t LINOS_BACKGROUND = LINOS_BACKGROUND_2bpp;
 
             graphicsLib(
                     std::shared_ptr<scanVideo::graphics::command::CommandProcessor> commandProcessor
