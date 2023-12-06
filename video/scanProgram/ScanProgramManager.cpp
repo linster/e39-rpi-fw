@@ -175,7 +175,7 @@ namespace video::scanProgram {
 
     void ScanProgramManager::cpu1SwapTo(ScanProgram scanProgram) {
         mutex_enter_blocking(&this->scanProgramStateMutex);
-        logger->d(getTag(), fmt::format("Swap to: {:x}. Previous: {:x}", (int)scanProgram, (int)previousScanProgram));
+        logger->d(getTag(), fmt::format("cpu1SwapTo Swap to: {:x}. Previous: {:x}", (int)scanProgram, (int)previousScanProgram));
         this->previousScanProgram = this->currentScanProgram;
         this->currentScanProgram = scanProgram;
 

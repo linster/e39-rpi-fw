@@ -29,9 +29,9 @@ void core1_entry() {
     sleep_ms(4000); //Don't start looping until the main cpu0 loop starts.
 
     while(true) {
-        gpio_put(LED_PIN, true);
+//        gpio_put(LED_PIN, true);
         applicationContainer->onCpu1Loop();
-        gpio_put(LED_PIN, false);
+//        gpio_put(LED_PIN, false);
     }
 }
 
@@ -55,19 +55,19 @@ int main() {
 
     applicationContainer->onMain(); //Run main one-time setup code.
 
-//    multicore_reset_core1();
-//    multicore_launch_core1(core1_entry); //Launch the coprocessor and have it block.
+    multicore_reset_core1();
+    multicore_launch_core1(core1_entry); //Launch the coprocessor and have it block.
 //    Push the pointer to the application container to the second core. This unblocks the co-processor.
-//    multicore_fifo_push_blocking((uint32_t)applicationContainer);
+    multicore_fifo_push_blocking((uint32_t)applicationContainer);
 
     //Wait for the CPU1 setup to complete.
-//    sleep_ms(3000);
+    sleep_ms(3000);
 
 
     while (true) {
 
         applicationContainer->onLoop();
-        sleep_ms(50);
+//        sleep_ms(50);
 
 //        const float voltage = adc_read() * conversion_factor;
 //        const float temperature = 27 - (voltage - 0.706) / 0.001721;

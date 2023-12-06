@@ -50,8 +50,8 @@ namespace video::scanProgram {
             /** Guard the currently running scan program */
             mutex_t scanProgramStateMutex;
             //Guard: scanProgramStateMutex
-            ScanProgram previousScanProgram = MENU;
-            ScanProgram currentScanProgram = MENU;
+            ScanProgram previousScanProgram = NOOP;
+            ScanProgram currentScanProgram = NOOP;
             //End Guard: scanProgramStateMutex
 
             std::shared_ptr<scanPrograms::BaseScanProgram> getScanProgramPtr(ScanProgram scanProgram);

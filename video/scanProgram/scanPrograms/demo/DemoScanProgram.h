@@ -23,6 +23,9 @@ namespace video::scanProgram::scanPrograms::demo {
 
         void render_flag_ua(scanvideo_scanline_buffer_t *scanline_buffer);
 
+        void render_solid_screen(scanvideo_scanline_buffer_t *scanline_buffer);
+
+
         void render_text(scanvideo_scanline_buffer_t *scanline_buffer);
 
 

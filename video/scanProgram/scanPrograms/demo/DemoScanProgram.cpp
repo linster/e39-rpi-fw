@@ -32,9 +32,10 @@ namespace video::scanProgram::scanPrograms::demo {
 
     void DemoScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
         //render_flag_ua(scanline_buffer);
-        render_text(scanline_buffer);
+//        render_text(scanline_buffer);
 
-        render_computedFrame(scanline_buffer);
+        render_solid_screen(scanline_buffer);
+//        render_computedFrame(scanline_buffer);
     }
 
     void DemoScanProgram::render_text(scanvideo_scanline_buffer_t *scanline_buffer) {
@@ -169,6 +170,10 @@ namespace video::scanProgram::scanPrograms::demo {
         //to change the graphics on screen.
 
         graphicsLib->render_commandProcessed(scanline_buffer);
+    }
+
+    void DemoScanProgram::render_solid_screen(scanvideo_scanline_buffer_t *scanline_buffer) {
+        graphicsLib->writeSolidColourScanline(scanline_buffer, graphicsLib->getPalette()[3]);
     }
 
 } // demo
