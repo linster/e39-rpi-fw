@@ -174,8 +174,8 @@ namespace video::scanProgram::scanPrograms::demo {
 
     void DemoScanProgram::render_solid_screen(scanvideo_scanline_buffer_t *scanline_buffer) {
 //        graphicsLib->writeSolidColourScanline(scanline_buffer, graphicsLib->getPalette()[15]);
-        graphicsLib->writeSolidColourScanline(scanline_buffer, PICO_COLOR_FROM_RGB2(0, 0, 3));
-//        graphicsLib->writeSolidColourScanline(scanline_buffer, 0x30);
+        graphicsLib->writeSolidColourScanline(scanline_buffer, PICO_COLOR_FROM_RGB2(1, 1, 0));
+//        graphicsLib->writeSolidColourScanline(scanline_buffer, 0x0);
     }
 
 } // demo

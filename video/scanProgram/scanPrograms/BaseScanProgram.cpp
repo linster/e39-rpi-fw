@@ -41,6 +41,8 @@ namespace video::scanProgram::scanPrograms {
         logger->d(getTag(), "Started ScanProgram");
 
         onScanProgramStart();
+
+        logger->d(getTag(), "Completed onScanProgramStart()");
     }
 
     void BaseScanProgram::stopScanProgram() {

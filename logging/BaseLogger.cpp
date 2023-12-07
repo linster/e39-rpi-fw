@@ -4,8 +4,7 @@
 
 #include "BaseLogger.h"
 
-namespace pico {
-    namespace logger {
+namespace pico::logger {
         void BaseLogger::d(std::string tag, std::string message) {
             print(BaseLogger::Level::DEBUG, tag, message);
         }
@@ -25,5 +24,4 @@ namespace pico {
         void BaseLogger::wtf(std::string tag, std::string message) {
             print(BaseLogger::Level::WTF, tag, message);
         }
-    } // pico
-} // logger
+    } // logger
