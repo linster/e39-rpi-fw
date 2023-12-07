@@ -134,9 +134,9 @@ namespace pico::ibus::dma {
         irq_set_enabled(UART0_IRQ, true);
         uart_set_irq_enables(uart0, true, false);
 
-//        irq_set_exclusive_handler(UART1_IRQ, on_uart1_rx);
-//        irq_set_enabled(UART1_IRQ, true);
-//        uart_set_irq_enables(uart1, true, false);
+        irq_set_exclusive_handler(UART1_IRQ, on_uart1_rx);
+        irq_set_enabled(UART1_IRQ, true);
+        uart_set_irq_enables(uart1, true, false);
 
 
         //gpio_put(LIN_Fault, false); //TX to car enabled.
@@ -146,6 +146,8 @@ namespace pico::ibus::dma {
 
 
         stdio_uart_init_full(uart1, 115200, UART1_PICOPROBE_TX, UART1_PICOPROBE_RX);
+        //Not sure if this helps.
+        //sleep_ms(200);
 
         //fromCarQPacketizer.writeState("SingleCoreDmaManagerConstructor_fromCarQ", logger);
         //fromPiQPacketizer.writeState("SingleCoreDmaManagerConstructor_fromPiQ", logger);

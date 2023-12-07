@@ -39,7 +39,7 @@ namespace pico {
 
         scanProgramManager->cpu0setup();
 
-        scanProgramManager->swapTo(ScanProgram::DEMO);
+        scanProgramManager->swapTo(ScanProgram::MENU);
 
         logger->d("onMain",
                   fmt::format("ScanProgramManager is setup. Current Scan Program is {:x} ",
@@ -56,7 +56,7 @@ namespace pico {
     }
 
     void ApplicationContainer::onLoop() {
-        dmaManager->onCpu0Loop();
+        //dmaManager->onCpu0Loop();
         scanProgramManager->onCpu0Loop();
 
 //        logger->d("onLoop", "onLoop");

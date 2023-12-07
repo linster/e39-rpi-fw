@@ -36,8 +36,8 @@ namespace pico {
 
                 void ScreenPowerManager::setScreenPowerStateFromObservedIbusMessage(bool isOn) {
                     //TODO this needs to be hooked up to the ObserverRegistry... maybe need a separate observer for this?
-                    logger->d(getTag(), fmt::format("setScreenPowerStateFromObservedIbusMessage. Current state is: {:b}", this->isPowerOn));
-                    logger->d(getTag(), fmt::format("setScreenPowerStateFromObservedIbusMessage, new state is: {:b}", isOn));
+                    logCurrentState("setScreenPowerStateFromObservedIbusMessage");
+                    logNewState("setScreenPowerStateFromObservedIbusMessage", isOn);
 
                     this->isPowerOn = isOn;
                 }
@@ -90,8 +90,9 @@ namespace pico {
                 }
 
                 void ScreenPowerManager::sendScreenPowerMessage(bool isOn) {
-                    logger->d(getTag(), fmt::format("sendScreenPowerMessage, current state is: {:b}", this->isPowerOn));
-                    logger->d(getTag(), fmt::format("sendScreenPowerMessage, new state is: {:b}", isOn));
+                    logCurrentState("sendScreenPowerMessage");
+                    logNewState("sendScreenPowerMessage", isOn);
+
 
                     this->isPowerOn = true;
 
@@ -113,6 +114,22 @@ namespace pico {
                             );
 
                     this->schedulePacketForWrite(iBusPacket);
+                }
+
+                void ScreenPowerManager::logCurrentState(std::string subTag) {
+                    if (this->isPowerOn) {
+                        logger->d(getTag(), fmt::format("{}. Current state is: true", subTag));
+                    } else {
+                        logger->d(getTag(), fmt::format("{}. Current state is: false", subTag));
+                    }
+                }
+
+                void ScreenPowerManager::logNewState(std::string subTag, bool newState) {
+                    if (newState) {
+                        logger->d(getTag(), fmt::format("{}, new state is: true", subTag));
+                    } else {
+                        logger->d(getTag(), fmt::format("{}, new state is: false", subTag));
+                    }
                 }
 
 

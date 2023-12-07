@@ -58,7 +58,9 @@ namespace video::scanProgram {
             void measureFreqs();
 
             /** CPU_0 -> CPU_1 command queue */
-            queue_t cpu1IncomingCommandQ;
+            //TODO this might need to be static
+            inline static queue_t cpu1IncomingCommandQ;
+
             void cpu0EnqueueSwapTo(ScanProgram scanProgram);
             void cpu1DequeueSwapTo();
             void cpu1SwapTo(ScanProgram scanProgram);

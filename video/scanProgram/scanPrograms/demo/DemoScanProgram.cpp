@@ -23,7 +23,7 @@ namespace video::scanProgram::scanPrograms::demo {
 
     void DemoScanProgram::onScanProgramStart() {
         logger->d(getTag(), "onScanProgramStart()");
-        setupComputedFrame();
+        //setupComputedFrame();
     }
 
     void DemoScanProgram::onScanProgramStop() {

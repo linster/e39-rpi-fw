@@ -49,11 +49,14 @@ namespace video::scanProgram {
 
         void ScanProgramManager::cpu0setup() {
             if (classIsNoOp) { return; }
+
+
             //Set up all the scan programs...
             this->noopScanProgram->cpu0setup();
             this->menuScanProgram->cpu0setup();
             this->demoScanProgram->cpu0setup();
             this->clockScanProgram->cpu0setup();
+
         }
 
         void ScanProgramManager::cpu1setup() {
@@ -81,12 +84,13 @@ namespace video::scanProgram {
 //            // Re init uart now that clk_peri has changed
 //            stdio_init_all();
 //            measureFreqs();
-            scanvideo_setup(&scanPrograms::BaseScanProgram::mode_bmbt);
 
+            scanvideo_setup(&scanPrograms::BaseScanProgram::mode_bmbt);
             //We are never going to disable the scanvideo timing, even when in noop,
             //we'll just keep the state machine running.
             scanvideo_timing_enable(true);
 
+            //sleep_ms(500);
 
             this->noopScanProgram->cpu1Setup();
             this->menuScanProgram->cpu1Setup();

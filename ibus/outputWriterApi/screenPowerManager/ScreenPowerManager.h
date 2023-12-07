@@ -33,6 +33,8 @@ namespace pico {
                     //TODO other device sets this to off so that we can remember to turn
                     //TODO the screen off after we're done backing up, if it was off before that.
                     bool isPowerOn;
+                    void logCurrentState(std::string subTag);
+                    void logNewState(std::string subTag, bool newState);
                 public:
                     ScreenPowerManager(
                             std::shared_ptr<config::defaults::PimoroniDefaultConfigurationProvider> defaultConfigurationProvider,

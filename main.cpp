@@ -16,9 +16,6 @@
 #define TEMP_ADC 4
 
 
-const float conversion_factor = 3.3f / (1 << 12);
-
-
 void core1_entry() {
     //The very first thing we get on startup wait and block for a pointer to the application container.
     auto* applicationContainer = (pico::ApplicationContainer*) multicore_fifo_pop_blocking();
@@ -26,7 +23,7 @@ void core1_entry() {
     //One-time setup on the second core.
     applicationContainer->onCpu1Main();
 
-    sleep_ms(4000); //Don't start looping until the main cpu0 loop starts.
+    sleep_ms(2000); //Don't start looping until the main cpu0 loop starts.
 
     while(true) {
 //        gpio_put(LED_PIN, true);
