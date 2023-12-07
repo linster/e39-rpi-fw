@@ -22,48 +22,19 @@ namespace video::scanProgram::scanPrograms {
             ) {
 
         this->logger = logger;
-
-
-        mutex_init(&this->isScanProgramRunningMutex);
-
-
-        logger->d(getTag(), "Completed init()");
+        this->logger->d(getTag(), "Completed init()");
     }
 
     void BaseScanProgram::startScanProgram() {
         logger->d(getTag(), "Starting ScanProgram");
-
-        mutex_enter_blocking(&this->isScanProgramRunningMutex);
-        scanvideo_timing_enable(true); //TODO make sure this isn't called from CPU0
-        this->isScanProgramRunning = true;
-        mutex_exit(&this->isScanProgramRunningMutex);
-
-        logger->d(getTag(), "Started ScanProgram");
-
         onScanProgramStart();
-
         logger->d(getTag(), "Completed onScanProgramStart()");
     }
 
     void BaseScanProgram::stopScanProgram() {
         logger->d(getTag(), "Stopping ScanProgram");
         onScanProgramStop();
-        mutex_enter_blocking(&this->isScanProgramRunningMutex);
-
-        scanvideo_timing_enable(false); //TODO make sure this isn't called from CPU0
-
-
-        this->isScanProgramRunning = false;
-        mutex_exit(&this->isScanProgramRunningMutex);
         logger->d(getTag(), "Stopped ScanProgram");
-    }
-
-    bool BaseScanProgram::shouldKeepRunning() {
-        bool ret;
-        mutex_enter_blocking(&this->isScanProgramRunningMutex);
-        ret = this->isScanProgramRunning;
-        mutex_exit(&this->isScanProgramRunningMutex);
-        return ret;
     }
 
     void BaseScanProgram::cpu0setup() {

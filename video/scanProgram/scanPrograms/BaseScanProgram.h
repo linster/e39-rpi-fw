@@ -50,8 +50,6 @@ namespace video::scanProgram::scanPrograms {
                 void onCpu0Loop();
                 void cpu1Setup();
 
-                //todo, call the render method in here. without blocking
-                //todo nope, we're doing rendering on cpu0. We have LIN interrupts on cpu1.
                 void onCpu1Loop();
 
                 #ifdef TEST_VGA_MONITOR
@@ -201,26 +199,15 @@ namespace video::scanProgram::scanPrograms {
 
                 std::shared_ptr<pico::logger::BaseLogger> logger;
 
-                //Guard isScanProgramRunningMutex
-                mutex_t isScanProgramRunningMutex;
-                bool isScanProgramRunning;
-                //End Guard: isScanProgramRunningMutex
-
                 scanvideo_timing_t getScanProgramTiming();
                 scanvideo_mode_t getScanVideoMode();
 
-
             protected:
-
-
-                bool shouldKeepRunning();
 
                 /* The method subclasses use to draw scanlines, wrapped
                  * by the base class with all the necessary mutex setup
                  * and teardown code */
                 virtual void render(scanvideo_scanline_buffer_t *scanline_buffer) = 0;
-
-
 
                 /** Called when the ScanProgramSwapper stops and starts our scan programs */
                 virtual void onScanProgramStart() = 0;

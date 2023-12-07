@@ -59,7 +59,7 @@ namespace video::scanProgram {
         void ScanProgramManager::cpu1setup() {
             if (classIsNoOp) { return; }
 
-            measureFreqs();
+//            measureFreqs();
 
 
             //TODO fix panic:
@@ -80,8 +80,12 @@ namespace video::scanProgram {
 //
 //            // Re init uart now that clk_peri has changed
 //            stdio_init_all();
-            measureFreqs();
+//            measureFreqs();
             scanvideo_setup(&scanPrograms::BaseScanProgram::mode_bmbt);
+
+            //We are never going to disable the scanvideo timing, even when in noop,
+            //we'll just keep the state machine running.
+            scanvideo_timing_enable(true);
 
 
             this->noopScanProgram->cpu1Setup();
@@ -91,8 +95,9 @@ namespace video::scanProgram {
         }
 
         void ScanProgramManager::onCpu0Loop() {
-            if (classIsNoOp) { return; }
-            getScanProgramPtr(getCurrentScanProgram())->onCpu0Loop();
+            //No scan program should be doing anything on cpu0Loop.
+//            if (classIsNoOp) { return; }
+//            //getScanProgramPtr(getCurrentScanProgram())->onCpu0Loop();
         }
 
         void ScanProgramManager::onCpu1Loop() {
@@ -136,14 +141,14 @@ namespace video::scanProgram {
         uint f_clk_adc = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_CLK_ADC);
         uint f_clk_rtc = frequency_count_khz(CLOCKS_FC0_SRC_VALUE_CLK_RTC);
 
-        logger->d(getTag(), fmt::format("pll_sys  = %d kHz\n", f_pll_sys));
-        logger->d(getTag(), fmt::format("pll_usb  = %dkHz\n", f_pll_usb));
-        logger->d(getTag(), fmt::format("rosc     = %dkHz\n", f_rosc));
-        logger->d(getTag(), fmt::format("clk_sys  = %dkHz\n", f_clk_sys));
-        logger->d(getTag(), fmt::format("clk_peri = %dkHz\n", f_clk_peri));
-        logger->d(getTag(), fmt::format("clk_usb  = %dkHz\n", f_clk_usb));
-        logger->d(getTag(), fmt::format("clk_adc  = %dkHz\n", f_clk_adc));
-        logger->d(getTag(), fmt::format("clk_rtc  = %dkHz\n", f_clk_rtc));
+        logger->d(getTag(), fmt::format("pll_sys  = {:d} kHz", f_pll_sys));
+        logger->d(getTag(), fmt::format("pll_usb  = {:d} kHz", f_pll_usb));
+        logger->d(getTag(), fmt::format("rosc     = {:d} kHz", f_rosc));
+        logger->d(getTag(), fmt::format("clk_sys  = {:d} kHz", f_clk_sys));
+        logger->d(getTag(), fmt::format("clk_peri = {:d} kHz", f_clk_peri));
+        logger->d(getTag(), fmt::format("clk_usb  = {:d} kHz", f_clk_usb));
+        logger->d(getTag(), fmt::format("clk_adc  = {:d} kHz", f_clk_adc));
+        logger->d(getTag(), fmt::format("clk_rtc  = {:d} kHz", f_clk_rtc));
 
         // Can't measure clk_ref / xosc as it is the ref
 
@@ -178,14 +183,16 @@ namespace video::scanProgram {
         logger->d(getTag(), fmt::format("cpu1SwapTo Swap to: {:x}. Previous: {:x}", (int)scanProgram, (int)previousScanProgram));
         this->previousScanProgram = this->currentScanProgram;
         this->currentScanProgram = scanProgram;
+        bool shouldSwap = (currentScanProgram != previousScanProgram);
 
-        if (currentScanProgram != previousScanProgram) {
+        if (shouldSwap) {
             //these need to be run from CPU1 because they setup scanvideo timing.
             getScanProgramPtr(previousScanProgram)->stopScanProgram();
             getScanProgramPtr(currentScanProgram)->startScanProgram();
         }
 
         mutex_exit(&this->scanProgramStateMutex);
+
     }
 
 } // scanProgram
