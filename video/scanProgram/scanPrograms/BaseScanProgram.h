@@ -20,7 +20,7 @@
 //Un-comment this if you want to test on a VGA monitor
 //and not on the real BMBT screen. Remove the VGA-RGsB board
 //from the video path when using this.
-#define TEST_VGA_MONITOR
+//#define TEST_VGA_MONITOR
 
 #ifdef TEST_VGA_MONITOR
 #include "pico/scanvideo/scanvideo_base.h"
@@ -141,21 +141,22 @@ namespace video::scanProgram::scanPrograms {
                     // v_sync_pulse = 3
                     // v_back_porch = 20
                     // 0 0 0 50 1 15625000 3
-                    constexpr static const uint16_t h_active = 800;
-                    constexpr static const uint16_t h_front_porch = 40;
-                    constexpr static const uint16_t h_pulse = 58;
-                    constexpr static const uint16_t h_back = 118;
+
+        //hdmi_timings=400 0 20 29 59 234 0 7 3 19 0 0 0 50 1 7867500 3
+                    constexpr static const uint16_t h_active = 400;
+                    constexpr static const uint16_t h_front_porch = 20;
+                    constexpr static const uint16_t h_pulse = 29;
+                    constexpr static const uint16_t h_back = 59;
 
                     constexpr static const uint16_t v_active = 234;
                     constexpr static const uint16_t v_front = 7;
-                    constexpr static const uint16_t v_back = 19;
                     constexpr static const uint16_t v_sync = 3;
-
+                    constexpr static const uint16_t v_back = 19;
 
 
             constexpr static const scanvideo_timing_t vga_timing_bmbt = {
-    //                        .clock_freq = 7867500, //Original.
-                            .clock_freq = 15625000, //CPU needs to go up to 126MHz.
+                            .clock_freq = 7867500, //Original.
+//                            .clock_freq = 15625000, //CPU needs to go up to 126MHz.
 
                             //TODO Almost works. We can make the same active width as
                             //TODO before by compensating on h_active. Need to make sure
@@ -175,7 +176,7 @@ namespace video::scanProgram::scanPrograms {
                             .v_front_porch = v_front, /* OK */
                             .v_pulse = v_sync, /* OK */
                             .v_total = v_active + v_front + v_back + v_sync, /* Active + front + back + sync = 234 + 7 + 19 + 3 = 263 */
-                            .v_sync_polarity = 0,
+                            .v_sync_polarity = 1,
 
                             .enable_clock = 0,
                             .clock_polarity = 0,

@@ -39,7 +39,7 @@ namespace pico {
 
         scanProgramManager->cpu0setup();
 
-        scanProgramManager->swapTo(ScanProgram::MENU);
+        scanProgramManager->swapTo(ScanProgram::BOOT_SPLASH);
 
         logger->d("onMain",
                   fmt::format("ScanProgramManager is setup. Current Scan Program is {:x} ",
