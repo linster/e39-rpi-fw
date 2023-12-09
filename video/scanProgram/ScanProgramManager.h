@@ -64,6 +64,8 @@ namespace video::scanProgram {
             void cpu0EnqueueSwapTo(ScanProgram scanProgram);
             void cpu1DequeueSwapTo();
             void cpu1SwapTo(ScanProgram scanProgram);
+            void cpu0SwapTo(ScanProgram scanProgram);
+            void swapTo(uint8_t cpuNum, ScanProgram scanProgram);
 
         public:
 

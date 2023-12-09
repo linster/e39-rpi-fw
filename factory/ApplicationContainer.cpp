@@ -19,7 +19,7 @@ namespace pico {
         logger->d("onMain", "Registered all observers to ObserverRegistry");
 
 
-        sleep_ms(1000);
+        sleep_ms(100);
 
 
         dmaManager->cpu0setup();
@@ -39,46 +39,18 @@ namespace pico {
 
         scanProgramManager->cpu0setup();
 
-        scanProgramManager->swapTo(ScanProgram::BOOT_SPLASH);
+        scanProgramManager->swapTo(ScanProgram::DEMO);
 
         logger->d("onMain",
                   fmt::format("ScanProgramManager is setup. Current Scan Program is {:x} ",
                               (int)scanProgramManager->getCurrentScanProgram()));
 
-
-
-//        sleep_ms(1000);
-
-//        scanProgramSwapper->swapTo(ScanProgram::MENU);
-//        videoSwitch->switchTo(hardware::videoSwitch::PICO);
-
         logger->d("onMain", "Finished onMain()");
     }
 
     void ApplicationContainer::onLoop() {
-        //dmaManager->onCpu0Loop();
+        dmaManager->onCpu0Loop();
         scanProgramManager->onCpu0Loop();
-
-//        logger->d("onLoop", "onLoop");
-//        if (cpu0LoopCount % 1 == 0) {
-//            logger->d("onLoop", fmt::format("Loop count {}", cpu0LoopCount++));
-//        }
-        //
-//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::RVC);
-//        sleep_ms(4000);
-//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
-//        sleep_ms(4000);
-//
-//        pi4PowerSwitchManager->setPower(true);
-//        sleep_ms(2000);
-//        pi4PowerSwitchManager->setPower(false);
-
-
-
-        //sleep_ms(2000);
-        //heartbeatResponseWriter->sendHeartbeatResponse();
-
-
     }
 
     void ApplicationContainer::onCpu1Main() {
@@ -89,8 +61,6 @@ namespace pico {
         logger->i("onCpu1Main", "scanProgramManager->cpu1setup()");
         scanProgramManager->cpu1setup();
         logger->i("onCpu1Main", "scanProgramManager->cpu1setup() done");
-
-
     }
 
     void ApplicationContainer::onCpu1Loop() {

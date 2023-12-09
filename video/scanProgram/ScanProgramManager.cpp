@@ -12,7 +12,8 @@ namespace video::scanProgram {
         }
 
         void ScanProgramManager::swapTo(ScanProgram scanProgram) {
-            cpu0EnqueueSwapTo(scanProgram);
+//            cpu0EnqueueSwapTo(scanProgram);
+            cpu1SwapTo(scanProgram);
         }
 
         ScanProgram ScanProgramManager::getCurrentScanProgram() {
@@ -50,7 +51,6 @@ namespace video::scanProgram {
         void ScanProgramManager::cpu0setup() {
             if (classIsNoOp) { return; }
 
-
             //Set up all the scan programs...
             this->noopScanProgram->cpu0setup();
             this->menuScanProgram->cpu0setup();
@@ -61,29 +61,6 @@ namespace video::scanProgram {
 
         void ScanProgramManager::cpu1setup() {
             if (classIsNoOp) { return; }
-
-//            measureFreqs();
-
-
-            //TODO fix panic:
-            //TODO panic("System clock (%d) must be an integer multiple of the requested pixel clock (%d).", sys_clk, timing->clock_freq);
-            //TODO Sysclk is 125000000
-            //TODO pixel clock is 7867500
-            //https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#rpipf786bb684fa58b12b349
-            //https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#rpipa610f0db2a24674346fd
-//            //We need to set sys_clk to 118012500 (so that it is 15 times the pixel clock)
-//
-//            clock_configure(
-//                    clk_sys,
-//                    0,
-//                    0,
-//                    125 * MHZ,
-//                    125 * MHZ
-//            );
-//
-//            // Re init uart now that clk_peri has changed
-//            stdio_init_all();
-//            measureFreqs();
 
             scanvideo_setup(&scanPrograms::BaseScanProgram::mode_bmbt);
             //We are never going to disable the scanvideo timing, even when in noop,
@@ -100,8 +77,8 @@ namespace video::scanProgram {
 
         void ScanProgramManager::onCpu0Loop() {
             //No scan program should be doing anything on cpu0Loop.
-//            if (classIsNoOp) { return; }
-//            //getScanProgramPtr(getCurrentScanProgram())->onCpu0Loop();
+            if (classIsNoOp) { return; }
+            getScanProgramPtr(getCurrentScanProgram())->onCpu0Loop();
         }
 
         void ScanProgramManager::onCpu1Loop() {
@@ -183,8 +160,16 @@ namespace video::scanProgram {
     }
 
     void ScanProgramManager::cpu1SwapTo(ScanProgram scanProgram) {
+        swapTo(1, scanProgram);
+    }
+
+    void ScanProgramManager::cpu0SwapTo(ScanProgram scanProgram) {
+        swapTo(0, scanProgram);
+    }
+
+    void ScanProgramManager::swapTo(uint8_t cpuNum, ScanProgram scanProgram) {
         mutex_enter_blocking(&this->scanProgramStateMutex);
-        logger->d(getTag(), fmt::format("cpu1SwapTo Swap to: {:x}. Previous: {:x}", (int)scanProgram, (int)previousScanProgram));
+        logger->d(getTag(), fmt::format("cpu{:x}SwapTo Swap to: {:x}. Previous: {:x}", cpuNum, (int)scanProgram, (int)previousScanProgram));
         this->previousScanProgram = this->currentScanProgram;
         this->currentScanProgram = scanProgram;
         bool shouldSwap = (currentScanProgram != previousScanProgram);
@@ -196,7 +181,6 @@ namespace video::scanProgram {
         }
 
         mutex_exit(&this->scanProgramStateMutex);
-
     }
 
 } // scanProgram

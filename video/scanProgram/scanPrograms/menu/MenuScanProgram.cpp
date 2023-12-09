@@ -32,7 +32,7 @@ namespace video::scanProgram::scanPrograms::menu {
         logger->d(getTag(), "onScanProgramStart() drew screen background");
 
         //TODO STEFAN I think there's a panic here, because this is now called from CPU1.
-//        drawScreen(screenManager->getCurrentScreen());
+        drawScreen(screenManager->getCurrentScreen());
     }
 
     void MenuScanProgram::onScanProgramStop() {
