@@ -24,6 +24,7 @@ namespace video::scanProgram::scanPrograms::bootsplash {
 
     void BootsplashScanProgram::onScanProgramStart() {
         logger->d(getTag(), "onScanProgramStart()");
+        scanvideo_timing_enable(true);
         switch (bootSplashType) {
             case LINSTER_OS:
                 onScanProgramStart_drawLinsterOS();

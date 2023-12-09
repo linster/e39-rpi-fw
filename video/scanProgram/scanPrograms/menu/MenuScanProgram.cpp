@@ -27,6 +27,7 @@ namespace video::scanProgram::scanPrograms::menu {
     void MenuScanProgram::onScanProgramStart() {
         logger->d(getTag(), "onScanProgramStart()");
 
+        scanvideo_timing_enable(true);
         drawScreenBackground();
 
         logger->d(getTag(), "onScanProgramStart() drew screen background");

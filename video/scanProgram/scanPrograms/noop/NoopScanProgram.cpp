@@ -17,11 +17,11 @@ namespace video::scanProgram::scanPrograms::noop {
 
     void NoopScanProgram::onScanProgramStart() {
         logger->d(getTag(), "onScanProgramStart()");
+        scanvideo_timing_enable(false);
     }
 
     void NoopScanProgram::onScanProgramStop() {
         logger->d(getTag(), "onScanProgramStop()");
-        scanvideo_timing_enable(false);
     }
 
     void NoopScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
