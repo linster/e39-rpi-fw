@@ -51,7 +51,7 @@ namespace video::ScreenManager {
         if (clicks > 1) {
             int toClick = clicks;
             while (toClick > 0) {
-                focusNextItem(toClick--);
+                focusNextItem(--toClick);
             }
         }
     }
@@ -79,7 +79,7 @@ namespace video::ScreenManager {
         if (clicks > 1) {
             int toClick = clicks;
             while (toClick > 0) {
-                focusPreviousItem(toClick--);
+                focusPreviousItem(--toClick);
             }
         }
     }
