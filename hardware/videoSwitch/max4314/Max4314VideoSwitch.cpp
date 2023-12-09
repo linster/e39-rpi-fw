@@ -55,7 +55,20 @@ namespace pico {
                 }
 
                 VideoSource Max4314VideoSwitch::getPreviousVideoSource() {
-                    logger->d("Max4314VideoSwitch", fmt::format("Returning previous video source: {:x}", (int)previousVideoSource));
+                    switch (previousVideoSource) {
+                        case RVC:
+                            logger->d("Max4314VideoSwitch", "Returning previous video source: RVC");
+                            break;
+                        case UPSTREAM:
+                            logger->d("Max4314VideoSwitch", "Returning previous video source: UPSTREAM");
+                            break;
+                        case PICO:
+                            logger->d("Max4314VideoSwitch", "Returning previous video source: PICO");
+                            break;
+                        case PI:
+                            logger->d("Max4314VideoSwitch", "Returning previous video source: PI");
+                            break;
+                    }
                     return previousVideoSource;
                 }
 

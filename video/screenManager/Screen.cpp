@@ -19,19 +19,19 @@ namespace video::ScreenManager {
     }
 
     void Screen::focusFirstItem() {
-        logger->d(getTag(), "Focus first item");
+//        logger->d(getTag(), "Focus first item");
         if (!getScreenItems().empty()) {
             focusedIndex = 0;
         }
-        logger->d(getTag(), fmt::format("Current focusedIndex: {}", focusedIndex));
+//        logger->d(getTag(), fmt::format("Current focusedIndex: {}", focusedIndex));
 
         getScreenItems()[focusedIndex]->setIsFocused(true);
     }
 
     void Screen::focusNextItem(int clicks) {
-        logger->d(getTag(), fmt::format("focusNextItem: Current focusedIndex: {}", focusedIndex));
+//        logger->d(getTag(), fmt::format("focusNextItem: Current focusedIndex: {}", focusedIndex));
         if (clicks < 0 ) {
-            logger->w(getTag(), "Asked for a negative number for forward clicks");
+//            logger->w(getTag(), "Asked for a negative number for forward clicks");
             return;
         }
         if (clicks == 0) {
@@ -45,7 +45,7 @@ namespace video::ScreenManager {
                 focusedIndex = 0;
             }
             callOnFocusItem(focusedIndex);
-            logger->d(getTag(), fmt::format("focusNextItem: New focusedIndex: {}", focusedIndex));
+//            logger->d(getTag(), fmt::format("focusNextItem: New focusedIndex: {}", focusedIndex));
         }
 
         if (clicks > 1) {
@@ -57,9 +57,9 @@ namespace video::ScreenManager {
     }
 
     void Screen::focusPreviousItem(int clicks) {
-        logger->d(getTag(), fmt::format("focusPreviousItem: Current focusedIndex: {}", focusedIndex));
+//        logger->d(getTag(), fmt::format("focusPreviousItem: Current focusedIndex: {}", focusedIndex));
         if (clicks < 0 ) {
-            logger->w(getTag(), "Asked for a negative number for backward clicks");
+//            logger->w(getTag(), "Asked for a negative number for backward clicks");
             return;
         }
         if (clicks == 0) {
@@ -73,7 +73,7 @@ namespace video::ScreenManager {
                 focusedIndex = this->getScreenItems().size() - 1;
             }
             callOnFocusItem(focusedIndex);
-            logger->d(getTag(), fmt::format("focusPreviousItem: New focusedIndex: {}", focusedIndex));
+//            logger->d(getTag(), fmt::format("focusPreviousItem: New focusedIndex: {}", focusedIndex));
         }
 
         if (clicks > 1) {
@@ -85,18 +85,18 @@ namespace video::ScreenManager {
     }
 
     void Screen::clickOnItem() {
-        logger->d(getTag(), "Click on item");
-        logger->d(getTag(), fmt::format("Current focusedIndex: {}", focusedIndex));
+//        logger->d(getTag(), "Click on item");
+//        logger->d(getTag(), fmt::format("Current focusedIndex: {}", focusedIndex));
 
         auto item = getScreenItems()[focusedIndex];
 
-        logger->d(getTag(), fmt::format("Dispatching click to item with label: {}", item->getLabel()));
+//        logger->d(getTag(), fmt::format("Dispatching click to item with label: {}", item->getLabel()));
         item->onItemClicked();
-        logger->d(getTag(), fmt::format("Dispatched click to item with label: {}", item->getLabel()));
+//        logger->d(getTag(), fmt::format("Dispatched click to item with label: {}", item->getLabel()));
     }
 
     void Screen::callOnFocusItem(int index) {
-        logger->d(getTag(), fmt::format("Focusing item with index: {}", index));
+//        logger->d(getTag(), fmt::format("Focusing item with index: {}", index));
 
         auto item = getScreenItems()[index];
 
@@ -107,37 +107,35 @@ namespace video::ScreenManager {
             drawToLogger(logger);
         }
 
-        logger->d(getTag(), fmt::format("Focused item with index: {}", index));
+//        logger->d(getTag(), fmt::format("Focused item with index: {}", index));
     }
 
     void Screen::callOnUnFocusItem(int index) {
-        logger->d(getTag(), fmt::format("UnFocusing item with index: {}", index));
+//        logger->d(getTag(), fmt::format("UnFocusing item with index: {}", index));
 
         auto item = getScreenItems()[index];
 
         item->setIsFocused(false);
         item->onItemUnfocused();
 
-        logger->d(getTag(), fmt::format("UnFocused item with index: {}", index));
+//        logger->d(getTag(), fmt::format("UnFocused item with index: {}", index));
     }
 
     void Screen::drawToLogger(std::shared_ptr<pico::logger::BaseLogger> logger) {
-        std::string debugTag = fmt::format("ASCII_SCREEN" , getTitle());
-
-        logger->d(debugTag, fmt::format("=== {} ===", getTitle()));
+        //logger->d("ASCII_SCREEN", fmt::format("=== {} ===", getTitle()));
 
         for (int i = 0; i < getScreenItems().size() -1 ; i++) {
 
             auto item = getScreenItems()[i];
 
             if (focusedIndex == i) {
-                logger->d(debugTag, fmt::format("> {}", item->getLabel()));
+                logger->d("ASCII_SCREEN", fmt::format("> {}", item->getLabel()));
             } else {
-                logger->d(debugTag, fmt::format("- {}", item->getLabel()));
+                logger->d("ASCII_SCREEN", fmt::format("- {}", item->getLabel()));
             }
         }
 
-        logger->d(debugTag, fmt::format("^^^ {} ^^^", getTitle()));
+        logger->d("ASCII_SCREEN", fmt::format("^^^ {} ^^^", getTitle()));
     }
 
 

@@ -26,9 +26,9 @@ void core1_entry() {
     sleep_ms(2000); //Don't start looping until the main cpu0 loop starts.
 
     while(true) {
-//        gpio_put(LED_PIN, true);
+        gpio_put(LED_PIN, true);
         applicationContainer->onCpu1Loop();
-//        gpio_put(LED_PIN, false);
+        gpio_put(LED_PIN, false);
     }
 }
 

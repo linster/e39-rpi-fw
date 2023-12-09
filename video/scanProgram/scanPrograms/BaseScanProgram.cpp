@@ -38,28 +38,18 @@ namespace video::scanProgram::scanPrograms {
     }
 
     void BaseScanProgram::cpu0setup() {
-        //NOOP
     }
 
     void BaseScanProgram::onCpu0Loop() {
-        //NOOP
+
     }
 
     void BaseScanProgram::cpu1Setup() {
-        //NOOP
+
     }
 
     void BaseScanProgram::onCpu1Loop() {
-        //We're doing rendering on cpu1.
-        //Tight-loop on CPU0 to ask the scan program to fill the buffer.
-        scanvideo_scanline_buffer_t *scanlineBuffer = scanvideo_begin_scanline_generation(true);
-        render(scanlineBuffer);
-//        if (scanlineBuffer != nullptr) {
-        scanvideo_end_scanline_generation(scanlineBuffer);
-//        }
-        //TODO future, we can do non-blocking IO here (cooperative multitasking?) by
-        //TODO not blocking here, and instead only calling render if we're not in the vblank
-        //TODO or hblank intervals.
+        callRender();
     }
 
     scanvideo_mode_t BaseScanProgram::getScanVideoMode() {
@@ -76,6 +66,12 @@ namespace video::scanProgram::scanPrograms {
 
     uint16_t BaseScanProgram::getDisplayWidthPx() {
         return getScanVideoMode().width; //Horizontal is width
+    }
+
+    void BaseScanProgram::callRender() {
+        scanvideo_scanline_buffer_t *scanlineBuffer = scanvideo_begin_scanline_generation(true);
+        render(scanlineBuffer);
+        scanvideo_end_scanline_generation(scanlineBuffer);
     }
 
 

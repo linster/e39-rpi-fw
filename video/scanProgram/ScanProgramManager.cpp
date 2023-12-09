@@ -12,21 +12,23 @@ namespace video::scanProgram {
         }
 
         void ScanProgramManager::swapTo(ScanProgram scanProgram) {
-//            cpu0EnqueueSwapTo(scanProgram);
-            cpu1SwapTo(scanProgram);
+            cpu0EnqueueSwapTo(scanProgram);
+//            cpu1SwapTo(scanProgram);
+//            cpu0SwapTo(scanProgram);
         }
 
         ScanProgram ScanProgramManager::getCurrentScanProgram() {
             ScanProgram ret;
-            mutex_enter_blocking(&this->scanProgramStateMutex);
+//            mutex_enter_blocking(&this->scanProgramStateMutex);
             ret = this->currentScanProgram;
-            mutex_exit(&this->scanProgramStateMutex);
+//            mutex_exit(&this->scanProgramStateMutex);
             //This runs on every CPU0 and CPU1 loop
             //logger->d(getTag(), fmt::format("Current: {:x}", (int)ret));
             return ret;
         }
 
         std::shared_ptr<scanPrograms::BaseScanProgram> ScanProgramManager::getScanProgramPtr(ScanProgram scanProgram) {
+            //return std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->demoScanProgram);
             std::shared_ptr<scanPrograms::BaseScanProgram> retPtr;
             switch (scanProgram) {
                 case BOOT_SPLASH:
@@ -62,12 +64,62 @@ namespace video::scanProgram {
         void ScanProgramManager::cpu1setup() {
             if (classIsNoOp) { return; }
 
+            measureFreqs();
+
+
+            //TODO fix panic:
+            //TODO panic("System clock (%d) must be an integer multiple of the requested pixel clock (%d).", sys_clk, timing->clock_freq);
+            //TODO Sysclk is 125000000
+            //TODO pixel clock is 7867500
+            //https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#rpipf786bb684fa58b12b349
+            //https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#rpipa610f0db2a24674346fd
+//            //We need to set sys_clk to 118012500 (so that it is 15 times the pixel clock)
+//
+
+// TODO STEFAN need to fiddle with the timing so we keep clk_sys at 125001000 so USB works,
+// TODO but then set the pixel clock to 8333400, 15 times slower, which is 1.059218303
+// 125000000÷(7867500×0.3)
+//what if we 1/3rd the pixel clock and then multiply all the times by 3?
+//that'll get us from 99.3% right timing to 99.9254% timing which might work long enough before we lose signal?
+//
+//
+//            [21:52:29:494] *** PANIC ***␍␊
+//            [21:52:29:494] ␍␊
+//            [21:52:29:494] System clock (125000000) must be an integer multiple of the requested pixel clock (7867500).␍␊
+
+//
+//            [21:59:41:080] [INFO]    [onCpu1Main]:[scanProgramManager->cpu1setup()] ␍␊
+//            [21:59:41:095] [DEBUG]    [ScanProgramManager]:[pll_sys  = 125001 kHz] ␍␊
+//            [21:59:41:095] [DEBUG]    [ScanProgramManager]:[pll_usb  = 48000 kHz] ␍␊
+//            [21:59:41:095] [DEBUG]    [ScanProgramManager]:[rosc     = 5490 kHz] ␍␊
+//            [21:59:41:117] [DEBUG]    [ScanProgramManager]:[clk_sys  = 125001 kHz] ␍␊
+//            [21:59:41:117] [DEBUG]    [ScanProgramManager]:[clk_peri = 125000 kHz] ␍␊
+//            [21:59:41:117] [DEBUG]    [ScanProgramManager]:[clk_usb  = 48000 kHz] ␍␊
+//            [21:59:41:117] [DEBUG]    [ScanProgramManager]:[clk_adc  = 48000 kHz] ␍␊
+//            [21:59:41:133] [DEBUG]    [ScanProgramManager]:[clk_rtc  = 46 kHz] ␍␊
+//            [21:59:41:133] [DEBUG]    [ScanProgramManager]:[pll_sys  = 125000 kHz] ␍␊
+//            [21:59:41:144] [DEBUG]    [ScanProgramManager]:[pll_usb  = 48000 kHz] ␍␊
+//            [21:59:41:144] [DEBUG]    [ScanProgramManager]:[rosc     = 5485 kHz] ␍␊
+//            [21:59:41:144] [DEBUG]    [ScanProgramManager]:[clk_sys  = 125000 kHz] ␍␊
+//            [21:59:41:156] [DEBUG]    [ScanProgramManager]:[clk_peri = 125000 kHz] ␍␊
+//            [21:59:41:156] [DEBUG]    [ScanProgramManager]:[clk_usb  = 48000 kHz] ␍␊
+//            [21:59:41:166] [DEBUG]    [ScanProgramManager]:[clk_adc  = 48000 kHz] ␍␊
+//            [21:59:41:166] [DEBUG]    [ScanProgramManager]:[clk_rtc  = 47 kHz] ␍␊
+//            [21:59:41:175] ␍␊
+//TODO we might actually have to change this.
+
+
+            measureFreqs();
+
+
+
             scanvideo_setup(&scanPrograms::BaseScanProgram::mode_bmbt);
             //We are never going to disable the scanvideo timing, even when in noop,
             //we'll just keep the state machine running.
+            sleep_ms(40);
             scanvideo_timing_enable(true);
 
-            //sleep_ms(500);
+            sleep_ms(500);
 
             this->noopScanProgram->cpu1Setup();
             this->menuScanProgram->cpu1Setup();
@@ -168,7 +220,7 @@ namespace video::scanProgram {
     }
 
     void ScanProgramManager::swapTo(uint8_t cpuNum, ScanProgram scanProgram) {
-        mutex_enter_blocking(&this->scanProgramStateMutex);
+//        mutex_enter_blocking(&this->scanProgramStateMutex);
         logger->d(getTag(), fmt::format("cpu{:x}SwapTo Swap to: {:x}. Previous: {:x}", cpuNum, (int)scanProgram, (int)previousScanProgram));
         this->previousScanProgram = this->currentScanProgram;
         this->currentScanProgram = scanProgram;
@@ -180,7 +232,7 @@ namespace video::scanProgram {
             getScanProgramPtr(currentScanProgram)->startScanProgram();
         }
 
-        mutex_exit(&this->scanProgramStateMutex);
+//        mutex_exit(&this->scanProgramStateMutex);
     }
 
 } // scanProgram

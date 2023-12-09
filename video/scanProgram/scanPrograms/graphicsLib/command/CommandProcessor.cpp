@@ -38,34 +38,35 @@ namespace video::scanVideo::graphics::command {
         //TODO need to clear the pointers in the commandsToProcess list, since we OOM.
         //TODO loop through the list and delete each pointer.
 
-        mutex_enter_blocking(&isFrameComputedMutex);
+//        mutex_enter_blocking(&isFrameComputedMutex);
         isFrameComputed = false; //Stop rendering while we're deleting the data structures.
-        mutex_exit(&isFrameComputedMutex);
+//        mutex_exit(&isFrameComputedMutex);
 
         commandsToProcess.clear();
 
-        mutex_enter_blocking(&isFrameComputedMutex);
+//        mutex_enter_blocking(&isFrameComputedMutex);
         rleRunsForLine.clear();
         lineBuffer.fill(baseColour);
         computeFrame();
-        isFrameComputed = false; //Optimization to quick-skip frames until an object is added.
-        mutex_exit(&isFrameComputedMutex);
+        //isFrameComputed = false; //Optimization to quick-skip frames until an object is added.
+//        mutex_exit(&isFrameComputedMutex);
     }
 
     //Called from CPU1
     void CommandProcessor::render_computed(scanvideo_scanline_buffer_t *scanline_buffer) {
+//
+//        mutex_enter_blocking(&isFrameComputedMutex);
+//        bool safe_isFrameComputed = this->isFrameComputed;
+//        mutex_exit(&isFrameComputedMutex);
 
-        mutex_enter_blocking(&isFrameComputedMutex);
-        bool safe_isFrameComputed = this->isFrameComputed;
-        mutex_exit(&isFrameComputedMutex);
-
-        if (!safe_isFrameComputed) {
+        //I don't think this needs to be a safe-read, if we're not computed, let's just bail rfn.
+        if (!this->isFrameComputed) {
             skipScanline(scanline_buffer);
             return;
         }
         uint16_t line_num = scanvideo_scanline_number(scanline_buffer->scanline_id);
 
-        mutex_enter_blocking(&isFrameComputedMutex);
+        //mutex_enter_blocking(&isFrameComputedMutex);
         if (rleRunsForLine.count(line_num) == 0) {
             //No command has artifacts for the line, so skip it
             //TODO do we want to draw the fillColour here?
@@ -74,7 +75,7 @@ namespace video::scanVideo::graphics::command {
             //We have a scanline to draw
             drawScanline(scanline_buffer, rleRunsForLine[line_num]);
         }
-        mutex_exit(&isFrameComputedMutex);
+        //mutex_exit(&isFrameComputedMutex);
     }
 
     //Called from CPU1
@@ -142,20 +143,20 @@ namespace video::scanVideo::graphics::command {
         }
         
         //Mark the frame as not computed while we are computing it. (CPU1 will daw
-        mutex_enter_blocking(&isFrameComputedMutex);
+//        mutex_enter_blocking(&isFrameComputedMutex);
         isFrameComputed = false;
-        mutex_exit(&isFrameComputedMutex);
+//        mutex_exit(&isFrameComputedMutex);
 
-        mutex_enter_blocking(&isFrameComputedMutex);
+//        mutex_enter_blocking(&isFrameComputedMutex);
         for (const auto &g : unsortedRleRuns) {
             std::unique_ptr<std::vector<RleRun>> runs = std::make_unique<std::vector<RleRun>>(g.second);
             rleRunsForLine[g.first] = mergeRuns(std::move(runs));
         }
-        mutex_exit(&isFrameComputedMutex);
+//        mutex_exit(&isFrameComputedMutex);
 
-        mutex_enter_blocking(&isFrameComputedMutex);
+//        mutex_enter_blocking(&isFrameComputedMutex);
         isFrameComputed = true;
-        mutex_exit(&isFrameComputedMutex);
+//        mutex_exit(&isFrameComputedMutex);
     }
 
     //Called from CPU0
@@ -205,7 +206,7 @@ namespace video::scanVideo::graphics::command {
     //Called from CPU0
     void CommandProcessor::clearScanlines(uint16_t min, uint16_t max) {
 
-        mutex_enter_blocking(&isFrameComputedMutex);
+//        mutex_enter_blocking(&isFrameComputedMutex);
         for (int i = min; i <= max; i++) {
             if (rleRunsForLine.count(i) > 0) {
                 if(rleRunsForLine[i].size() > 0) {
@@ -213,7 +214,7 @@ namespace video::scanVideo::graphics::command {
                 }
             }
         }
-        mutex_exit(&isFrameComputedMutex);
+//        mutex_exit(&isFrameComputedMutex);
 
     }
 

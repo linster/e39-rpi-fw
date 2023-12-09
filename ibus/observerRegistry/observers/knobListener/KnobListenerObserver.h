@@ -33,7 +33,7 @@ namespace pico::ibus::observers {
                 void onKnobTurnedLeft(int clicks);
                 void onKnobPressed();
 
-                bool debugDraw = true;
+                bool debugDraw = false;
 
                 /**
                  * If true, update the current state in the screenManager when

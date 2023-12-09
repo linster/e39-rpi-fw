@@ -22,6 +22,7 @@
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "pico/sync.h"
+#include "pico/scanvideo.h"
 
 
 namespace pico::ibus::dma {

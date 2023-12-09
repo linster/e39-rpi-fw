@@ -59,6 +59,7 @@ namespace pico::ibus::dma {
     }
 
     void SingleCoreDmaManager::onCpu0Loop() {
+        scanvideo_wait_for_vblank();
         flushUart0ByteBufferToPacketizer();
         flushUart1ByteBufferToPacketizer();
         flushFromPiQToLogic();

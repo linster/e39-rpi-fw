@@ -25,12 +25,10 @@ namespace pico {
         dmaManager->cpu0setup();
 
         logger->i("onMain", "Starting Linster OS Automotive");
-
         observerRegistry->printRegisteredObserverTags();
 
 
         pi4PowerSwitchManager->setPower(false);
-
         videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PICO);
 
         logger->d("onMain",
@@ -38,7 +36,6 @@ namespace pico {
                               (int)scanProgramManager->getCurrentScanProgram()));
 
         scanProgramManager->cpu0setup();
-
         scanProgramManager->swapTo(ScanProgram::DEMO);
 
         logger->d("onMain",
@@ -66,5 +63,7 @@ namespace pico {
     void ApplicationContainer::onCpu1Loop() {
         dmaManager->onCpu1Loop(); //NOOP with SingleCoreDmaManager
         scanProgramManager->onCpu1Loop();
+        //Let's make the LED blink while we're running this loop
+
     }
 } // pico

@@ -49,8 +49,9 @@ namespace video::scanProgram::scanPrograms {
                 void cpu0setup();
                 void onCpu0Loop();
                 void cpu1Setup();
-
                 void onCpu1Loop();
+
+                void callRender();
 
                 #ifdef TEST_VGA_MONITOR
                     //This is a copy of vga_timing_640x480_60_default but as constexpr.
