@@ -15,9 +15,9 @@ namespace pico {
                 this->heartbeatResponseWriter = heartbeatResponseWriter;
             }
 
-            void HeatbeatRequestObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
-                if (iBusPacket.getSourceDevice() == PI_VALUE && iBusPacket.getDestinationDevice() == PICO_VALUE) {
-                    messages::PiToPicoMessage decoded = decodePiToPicoMessage(logger, iBusPacket);
+            void HeatbeatRequestObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {
+                if (iBusPacket->getSourceDevice() == PI_VALUE && iBusPacket->getDestinationDevice() == PICO_VALUE) {
+                    messages::PiToPicoMessage decoded = decodePiToPicoMessage(logger, *iBusPacket);
                     onNewPiToPicoPacket(decoded);
                 }
             }
