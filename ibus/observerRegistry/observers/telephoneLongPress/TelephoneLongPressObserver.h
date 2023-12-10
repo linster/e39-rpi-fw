@@ -33,7 +33,7 @@ namespace pico::ibus::observers {
                 void onTelephoneLongPressed();
             protected:
                 std::string getTag() override { return "TelephoneLongPressObserver"; };
-                void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) override;
+                void onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) override;
             };
 
         } // observers

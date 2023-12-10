@@ -4,9 +4,7 @@
 
 #include "TelephoneLongPressObserver.h"
 
-namespace pico {
-    namespace ibus {
-        namespace observers {
+namespace pico::ibus::observers {
 
             TelephoneLongPressObserver::TelephoneLongPressObserver(
                     std::shared_ptr<logger::BaseLogger> baseLogger,
@@ -21,14 +19,14 @@ namespace pico {
                 this->testingOutputWriter = testingOutputWriter;
             }
 
-            void TelephoneLongPressObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
-                if (iBusPacket.getSourceDevice() == data::IbusDeviceEnum::BOARDMONITOR_BUTTONS
-                    && iBusPacket.getDestinationDevice() == data::IbusDeviceEnum::BROADCAST) {
+            void TelephoneLongPressObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {
+                if (iBusPacket->getSourceDevice() == data::IbusDeviceEnum::BOARDMONITOR_BUTTONS
+                    && iBusPacket->getDestinationDevice() == data::IbusDeviceEnum::BROADCAST) {
 
-                    if (iBusPacket.getData()->size() >= 2) {
+                    if (iBusPacket->getData()->size() >= 2) {
 
-                        if ((*iBusPacket.getData())[0] == 0x48) {
-                            uint8_t command = (*iBusPacket.getData())[1];
+                        if ((*iBusPacket->getData())[0] == 0x48) {
+                            uint8_t command = (*iBusPacket->getData())[1];
 
                             if (command == 0x08) {
                                 logger->d(getTag(), "Telephone pressed");
@@ -58,6 +56,4 @@ namespace pico {
                 videoSwitch->switchTo(hardware::videoSwitch::PICO);
                 screenPowerManager->sendScreenPowerMessage(true);
             }
-        } // pico
-    } // ibus
-} // observers
+        } // observers
