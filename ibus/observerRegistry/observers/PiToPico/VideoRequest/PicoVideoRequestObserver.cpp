@@ -4,9 +4,7 @@
 
 #include "PicoVideoRequestObserver.h"
 
-namespace pico {
-    namespace ibus {
-        namespace observers {
+namespace pico::ibus::observers {
 
             PicoVideoRequestObserver::PicoVideoRequestObserver(
                     std::shared_ptr<logger::BaseLogger> logger,
@@ -15,9 +13,9 @@ namespace pico {
                 this->videoSwitch = videoSwitch;
             }
 
-            void PicoVideoRequestObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
-                if (iBusPacket.getSourceDevice() == PI_VALUE && iBusPacket.getDestinationDevice() == PICO_VALUE) {
-                    messages::PiToPicoMessage decoded = decodePiToPicoMessage(logger, iBusPacket);
+            void PicoVideoRequestObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {
+                if (iBusPacket->getSourceDevice() == PI_VALUE && iBusPacket->getDestinationDevice() == PICO_VALUE) {
+                    messages::PiToPicoMessage decoded = decodePiToPicoMessage(logger, *iBusPacket);
                     onNewPiToPicoPacket(decoded);
                 }
             }
@@ -49,6 +47,4 @@ namespace pico {
                     default: break;
                 }
             }
-        } // pico
-    } // ibus
-} // observers
+        } // observers

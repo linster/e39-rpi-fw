@@ -27,7 +27,7 @@ namespace pico {
                         );
             protected:
                 std::string getTag() override { return "PicoVideoRequestObserver"; };
-                void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) override;
+                void onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) override;
             };
 
         } // pico
