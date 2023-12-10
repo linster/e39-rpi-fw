@@ -17,13 +17,13 @@ namespace pico::ibus::observers {
             public:
                 void dispatchPacket(
                         std::shared_ptr<pico::logger::BaseLogger> logger,
-                        pico::ibus::data::IbusPacket iBusPacket
+                        std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket
                         );
 
                 virtual std::string getTag() = 0;
 
             protected:
-                virtual void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) = 0;
+                virtual void onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) = 0;
                 messages::PiToPicoMessage decodePiToPicoMessage(
                         std::shared_ptr<pico::logger::BaseLogger> logger,
                         pico::ibus::data::IbusPacket ibusPacket);

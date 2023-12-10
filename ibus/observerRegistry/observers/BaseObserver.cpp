@@ -9,7 +9,7 @@ namespace pico::ibus::observers {
 
             void BaseObserver::dispatchPacket(
                     std::shared_ptr<pico::logger::BaseLogger> logger,
-                    pico::ibus::data::IbusPacket iBusPacket) {
+                    std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {
 
                 if (log_packetDispatchTrace) {
                     logger->d(this->getTag(), fmt::format("Dispatching Packet"));
