@@ -21,9 +21,6 @@ namespace video::scanProgram::scanPrograms::menu {
 
         std::shared_ptr<ScreenManager::ScreenManager> screenManager;
 
-        uint8_t framesPerSecond = 24;
-        uint16_t previousFrameNumber = 0;
-
         void drawScreen(std::shared_ptr<ScreenManager::Screen> screen);
 
         void drawScreenBackground();
@@ -32,12 +29,17 @@ namespace video::scanProgram::scanPrograms::menu {
         uint16_t drawScreenMenuItem(uint16_t tl, std::shared_ptr<video::ScreenManager::ScreenItem> item);
 
         void blankMenuItemArea();
+
+        void registerOnFocusChangeCallback();
+        void unRegisterOnFocusChangeCallback();
     public:
         MenuScanProgram(
                 std::shared_ptr<pico::logger::BaseLogger> logger,
                 std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib,
                 std::shared_ptr<ScreenManager::ScreenManager> screenManager
         );
+
+        void refreshUi();
 
     protected:
         std::string getTag() override;

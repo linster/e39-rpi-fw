@@ -60,6 +60,7 @@ namespace video::ScreenManager::MainScreen {
 
                 std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>> getScreenItems() override;
 
+                int getScreenId() override { return 1;}
                 std::string getTitle() override;
                 std::string getTag() override;
             };

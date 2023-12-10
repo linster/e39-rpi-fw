@@ -17,11 +17,12 @@ namespace video::ScreenManager {
             //hard-code in the one screen.
             std::shared_ptr<Screen> currentScreen;
 
+            std::function<void()> onFocusedChangedCallback = std::function<void()> {};
+
+            void callOnFocusChangeCallback();
         public:
 
-            ScreenManager(
-                    std::shared_ptr<Screen> initialScreen
-                    );
+            explicit ScreenManager(std::shared_ptr<Screen> initialScreen);
 
             std::shared_ptr<Screen> getCurrentScreen();
 
@@ -32,6 +33,9 @@ namespace video::ScreenManager {
             void focusNextItem(int clicks);
             void focusPreviousItem(int clicks);
             void clickOnItem();
+
+            void registerOnFocusChangeListener(std::function<void()> onFocusChange);
+            void unregisterOnFocusChangeListener();
 
         };
 

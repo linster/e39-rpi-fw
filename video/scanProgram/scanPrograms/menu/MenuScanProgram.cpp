@@ -17,7 +17,7 @@ namespace video::scanProgram::scanPrograms::menu {
                 DisplayMetrics(getDisplayHeightPx(), getDisplayWidthPx())
         );
         this->screenManager = screenManager;
-        init(logger);
+        init(this->logger);
     }
 
     std::string MenuScanProgram::getTag() {
@@ -28,11 +28,13 @@ namespace video::scanProgram::scanPrograms::menu {
         logger->d(getTag(), "onScanProgramStart()");
 
         scanvideo_timing_enable(true);
+
+        registerOnFocusChangeCallback();
+
         drawScreenBackground();
 
         logger->d(getTag(), "onScanProgramStart() drew screen background");
 
-        //TODO STEFAN I think there's a panic here, because this is now called from CPU1.
         drawScreen(screenManager->getCurrentScreen());
     }
 
@@ -40,26 +42,11 @@ namespace video::scanProgram::scanPrograms::menu {
         logger->d(getTag(), "onScanProgramStop()");
 
         graphicsLib->clearFrame(); //Free up some memory
+
+        unRegisterOnFocusChangeCallback();
     }
 
     void MenuScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
-
-//        if (scanline_buffer == nullptr) {
-//            //We're not ready to generate, so we have some CPU cycles to do calculations.
-//
-//            if (previousFrameNumber % (255) == 0) {
-//                //hack to call on only every 255th invocation of cpuLoop
-//                screenManager->focusNextItem(1);
-//
-//                graphicsLib->clearFrame();
-//                drawScreenBackground();
-//                drawScreen(screenManager->getCurrentScreen());
-//            }
-//
-//            previousFrameNumber = previousFrameNumber + 1;
-//            return;
-//        }
-
         graphicsLib->render_commandProcessed(scanline_buffer);
     }
 
@@ -183,6 +170,22 @@ namespace video::scanProgram::scanPrograms::menu {
                 scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, getDisplayHeightPx() - 40 - 2),
                 graphicsLib::LINOS_BACKGROUND
                 );
+    }
+
+    void MenuScanProgram::refreshUi() {
+        blankMenuItemArea();
+        drawScreen(screenManager->getCurrentScreen());
+    }
+
+    void MenuScanProgram::registerOnFocusChangeCallback() {
+        std::function<void()> listener = [this]() {
+            refreshUi();
+        };
+        screenManager->registerOnFocusChangeListener(listener);
+    }
+
+    void MenuScanProgram::unRegisterOnFocusChangeCallback() {
+        screenManager->unregisterOnFocusChangeListener();
     }
 
 } // menu

@@ -41,7 +41,7 @@ namespace pico::ibus::observers {
                  * or scan program are correct. Use this to develop the menu business
                  * logic before the scan program totally works.
                  */
-                bool mock_knob_state_preConditions = true;
+                bool mock_knob_state_preConditions = false;
             protected:
                 std::string getTag() override { return "KnobListenerObserver"; };
                 void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) override;

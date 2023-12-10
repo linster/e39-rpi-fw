@@ -45,6 +45,8 @@ namespace video::ScreenManager {
             virtual std::string getTag() = 0;
         public:
 
+            virtual int getScreenId() = 0;
+
             /** Subclasses must implement this to indicate items */
             virtual std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>>getScreenItems() = 0;
 
