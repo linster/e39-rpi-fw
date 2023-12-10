@@ -44,7 +44,7 @@ namespace pico::ibus::observers {
                 bool mock_knob_state_preConditions = false;
             protected:
                 std::string getTag() override { return "KnobListenerObserver"; };
-                void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) override;
+                void onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) override;
             };
 
         } // observers
