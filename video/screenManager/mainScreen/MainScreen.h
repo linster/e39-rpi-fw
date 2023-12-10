@@ -31,7 +31,7 @@ namespace video::ScreenManager::MainScreen {
                 std::shared_ptr<pico::config::ConfigurationManager> configurationManager;
                 std::shared_ptr<pico::ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter;
                 std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter;
-
+                std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;
 
                 std::shared_ptr<video::ScreenManager::MainScreen::TurnOnPi4MenuItem> turnOnPi4MenuItem;
                 std::shared_ptr<video::ScreenManager::MainScreen::SafePi4PowerOffMenuItem> safePi4PowerOffMenuItem;
@@ -54,7 +54,8 @@ namespace video::ScreenManager::MainScreen {
                         std::shared_ptr<pico::hardware::pi4powerswitch::IPi4PowerSwitchManager> pi4PowerSwitchManager,
                         std::shared_ptr<pico::hardware::videoSwitch::VideoSwitch> videoSwitch,
                         std::shared_ptr<pico::ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter,
-                        std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter
+                        std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter,
+                        std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper
                 );
 
                 std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>> getScreenItems() override;

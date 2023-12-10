@@ -12,7 +12,8 @@ namespace video::ScreenManager::MainScreen {
                                std::shared_ptr<pico::hardware::pi4powerswitch::IPi4PowerSwitchManager> pi4PowerSwitchManager,
                                std::shared_ptr<pico::hardware::videoSwitch::VideoSwitch> videoSwitch,
                                std::shared_ptr<pico::ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter,
-                               std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter) {
+                               std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter,
+                               std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper) {
 
             this->logger = logger;
             this->configurationManager = configurationManager;
@@ -20,14 +21,15 @@ namespace video::ScreenManager::MainScreen {
             this->videoSwitch = videoSwitch;
             this->configurationStatusWriter = configurationStatusWriter;
             this->softPowerRequestWriter = softPowerRequestWriter;
+            this->scanProgramSwapper = scanProgramSwapper;
 
             this->turnOnPi4MenuItem = std::make_shared<TurnOnPi4MenuItem>(this->logger, this->pi4PowerSwitchManager);
             this->safePi4PowerOffMenuItem = std::make_shared<SafePi4PowerOffMenuItem>(this->softPowerRequestWriter);
             this->hardPi4PowerOffMenuItem = std::make_shared<HardPi4PowerOffMenuItem>(this->pi4PowerSwitchManager);
 
-            this->videoToRvcMenuItem = std::make_shared<VideoToRvcMenuItem>(this->videoSwitch);
-            this->videoToUpstreamMenuItem = std::make_shared<VideoToUpstreamMenuItem>(this->videoSwitch);
-            this->videoToPiMenuItem = std::make_shared<VideoToPiMenuItem>(this->videoSwitch);
+            this->videoToRvcMenuItem = std::make_shared<VideoToRvcMenuItem>(this->videoSwitch, this->scanProgramSwapper);
+            this->videoToUpstreamMenuItem = std::make_shared<VideoToUpstreamMenuItem>(this->videoSwitch, this->scanProgramSwapper);
+            this->videoToPiMenuItem = std::make_shared<VideoToPiMenuItem>(this->videoSwitch, this->scanProgramSwapper);
             this->configPushMenuItem = std::make_shared<ConfigPushMenuItem>(this->configurationStatusWriter, this->configurationManager);
 
             this->screenItems = std::vector<std::shared_ptr<ScreenItem>>();

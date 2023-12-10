@@ -8,9 +8,9 @@
 namespace pico::di {
         void PimoroniFactory::initializeAllSmartPointers() {
             this->logger = std::make_shared<logger::StdioPrintFLogger>();
-//            this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::MockPi4PowerSwitchManager>(this->logger);
 
 
+            //this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::MockPi4PowerSwitchManager>(this->logger);
             this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::GpioPi4PowerSwitchManager>(this->logger);
 
             this->videoSwitch = std::make_shared<hardware::videoSwitch::max4314::Max4314VideoSwitch>(this->logger);
@@ -62,14 +62,7 @@ namespace pico::di {
             );
 
 
-            this->mainScreen = std::make_shared<video::ScreenManager::MainScreen::MainScreen>(
-                    logger,
-                    configurationManager,
-                    powerSwitchManager,
-                    videoSwitch,
-                    configurationStatusWriter,
-                    softPowerRequestWriter
-                    );
+
             this->screenManager = std::make_shared<video::ScreenManager::ScreenManager>(
                     std::reinterpret_pointer_cast<video::ScreenManager::Screen>(mainScreen)
                     );
@@ -97,6 +90,17 @@ namespace pico::di {
                     logger,
                     scanProgramManager
                     );
+
+            this->mainScreen = std::make_shared<video::ScreenManager::MainScreen::MainScreen>(
+                    logger,
+                    configurationManager,
+                    powerSwitchManager,
+                    videoSwitch,
+                    configurationStatusWriter,
+                    softPowerRequestWriter,
+                    scanProgramSwapper
+            );
+
             this->mockIncomingIBusObserver = std::make_shared<ibus::observers::MockObserver>(this->logger);
 
              this->ignitionStateObserver = std::make_shared<ibus::observers::IgnitionStateObserver>(
