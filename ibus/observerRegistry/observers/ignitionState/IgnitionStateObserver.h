@@ -34,7 +34,7 @@ namespace pico {
                 void onIgnitionKeyPosition(int position);
             protected:
                 std::string getTag() override { return "IgnitionStateObserver"; };
-                void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) override;
+                void onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) override;
             };
 
         } // pico

@@ -25,7 +25,7 @@ namespace pico {
             }
 
 
-            void IgnitionStateObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
+            void IgnitionStateObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {
 
                 //https://github.com/piersholt/wilhelm-docs/blob/master/ike/11.md
                 //80 04 BF 11 00 2A   # KL-30  -- position 0
@@ -34,11 +34,11 @@ namespace pico {
                 //80 04 BF 11 07 2D   # KL-50  -- position 3
 
 
-                if (iBusPacket.getSourceDevice() == data::IbusDeviceEnum::IKE && iBusPacket.getDestinationDevice() == 0xBF) {
+                if (iBusPacket->getSourceDevice() == data::IbusDeviceEnum::IKE && iBusPacket->getDestinationDevice() == 0xBF) {
 
-                    if (iBusPacket.getData()->size() == 2) {
-                        if ((*iBusPacket.getData())[0] == 0x11) {
-                            uint8_t position = (*iBusPacket.getData())[1];
+                    if (iBusPacket->getData()->size() == 2) {
+                        if ((*iBusPacket->getData())[0] == 0x11) {
+                            uint8_t position = (*iBusPacket->getData())[1];
                             switch (position) {
                                 case 0x00:
                                     onIgnitionKeyPosition(0);
