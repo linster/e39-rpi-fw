@@ -13,8 +13,8 @@ namespace pico {
                 logger->d("MockObserver", "Constructed");
             }
 
-            void MockObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
-                logger->d("MockObserver", iBusPacket.toString());
+            void MockObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {
+                logger->d("MockObserver", iBusPacket->toString());
             }
         } // pico
     } // ibus

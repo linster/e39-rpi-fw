@@ -7,9 +7,7 @@
 
 #include <ibus/observerRegistry/observers/BaseObserver.h>
 #include <logging/BaseLogger.h>
-namespace pico {
-    namespace ibus {
-        namespace observers {
+namespace pico::ibus::observers {
 
             class MockObserver : public BaseObserver {
 
@@ -23,11 +21,9 @@ namespace pico {
 
             protected:
                 std::string getTag() override { return "MockObserver"; };
-                void onNewPacket(pico::ibus::data::IbusPacket iBusPacket) override;
+                void onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) override;
             };
 
-        } // pico
-    } // ibus
-} // observers
+        } // observers
 
 #endif //PICOTEMPLATE_MOCKOBSERVER_H
