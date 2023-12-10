@@ -4,9 +4,7 @@
 
 #include "ObserverRegistry.h"
 #include <algorithm>
-namespace pico {
-    namespace ibus {
-        namespace observerRegistry {
+namespace pico::ibus::observerRegistry {
             ObserverRegistry::ObserverRegistry(std::shared_ptr<pico::logger::BaseLogger> logger) {
                 this-> logger = logger;
                 this->logger->d("ObserverRegistry", "Construction");
@@ -26,8 +24,9 @@ namespace pico {
             }
 
             void ObserverRegistry::dispatchMessageToAllObservers(data::IbusPacket packet) {
+                std::shared_ptr packetPtr = std::make_shared<data::IbusPacket>(packet);
                 for (const auto &item: observerList) {
-                    item->dispatchPacket(logger, packet);
+                    item->dispatchPacket(logger, packetPtr);
                 }
             }
 
@@ -39,6 +38,4 @@ namespace pico {
                             );
                 }
             }
-        } // pico
-    } // ibus
-} // observerRegistry
+        } // observerRegistry
