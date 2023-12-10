@@ -16,9 +16,9 @@ namespace pico::ibus::observers {
                 this->configurationManager = configurationManager;
             }
 
-            void PicoConfigurationReadRequestObserver::onNewPacket(pico::ibus::data::IbusPacket iBusPacket) {
-                if (iBusPacket.getSourceDevice() == PI_VALUE && iBusPacket.getDestinationDevice() == PICO_VALUE) {
-                    messages::PiToPicoMessage decoded = decodePiToPicoMessage(logger, iBusPacket);
+            void PicoConfigurationReadRequestObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {
+                if (iBusPacket->getSourceDevice() == PI_VALUE && iBusPacket->getDestinationDevice() == PICO_VALUE) {
+                    messages::PiToPicoMessage decoded = decodePiToPicoMessage(logger, *iBusPacket);
                     onNewPiToPicoPacket(decoded);
                 }
             }
