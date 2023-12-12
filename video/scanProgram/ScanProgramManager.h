@@ -26,6 +26,7 @@
 #include "hardware/structs/pll.h"
 #include "hardware/structs/clocks.h"
 #include "pico/util/queue.h"
+#include "pico/scanvideo.h"
 
 namespace video::scanProgram {
 

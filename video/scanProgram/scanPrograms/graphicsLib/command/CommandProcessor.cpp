@@ -47,7 +47,8 @@ namespace video::scanVideo::graphics::command {
 //        mutex_enter_blocking(&isFrameComputedMutex);
         rleRunsForLine.clear();
         lineBuffer.fill(baseColour);
-        computeFrame();
+//        computeFrame();
+        isFrameComputed = true;
         //isFrameComputed = false; //Optimization to quick-skip frames until an object is added.
 //        mutex_exit(&isFrameComputedMutex);
     }

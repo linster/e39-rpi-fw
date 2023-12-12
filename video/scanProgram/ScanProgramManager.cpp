@@ -228,6 +228,7 @@ namespace video::scanProgram {
 
         if (shouldSwap) {
             //these need to be run from CPU1 because they setup scanvideo timing.
+            scanvideo_wait_for_vblank();
             getScanProgramPtr(previousScanProgram)->stopScanProgram();
             getScanProgramPtr(currentScanProgram)->startScanProgram();
         }
