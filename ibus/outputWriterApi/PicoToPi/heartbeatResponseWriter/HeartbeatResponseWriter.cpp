@@ -18,8 +18,8 @@ namespace pico::ibus::output::writer {
 
                 void HeartbeatResponseWriter::sendHeartbeatResponse() {
                     logger->d(getTag(), "Sending heartbeat response");
-                    schedulePicoToPiMessageForWrite(messages::PicoToPiMessage {
-                        .messageType = messages::PicoToPiMessage::MessageType::HeartbeatResponse
-                    });
+                    schedulePicoToPiMessageForWrite(messages::PicoToPiMessage (
+                            messages::PicoToPiMessage::MessageType::HeartbeatResponse
+                    ));
                 }
             } // writer

@@ -25,10 +25,10 @@ namespace pico {
                         //Just take the first part of the message and print one out.
                         std::string shortened = message.substr(0, std::min((int)message.size(), truncateLogMessagesToCharacters));
 
-                        schedulePicoToPiMessageForWrite(messages::PicoToPiMessage {
-                            .messageType = messages::PicoToPiMessage::MessageType::LogStatement,
-                            .loggerStatement = shortened
-                        });
+                        schedulePicoToPiMessageForWrite(messages::PicoToPiMessage(
+                                messages::PicoToPiMessage::MessageType::LogStatement,
+                                shortened
+                        ));
                     }
                 }
             } // pico

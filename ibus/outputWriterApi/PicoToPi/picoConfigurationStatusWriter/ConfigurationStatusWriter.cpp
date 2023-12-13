@@ -22,10 +22,10 @@ namespace pico {
                 }
 
                 void ConfigurationStatusWriter::scheduleEmit(messages::ConfigMessage configMessage) {
-                    this->schedulePicoToPiMessageForWrite(messages::PicoToPiMessage {
-                        .messageType = messages::PicoToPiMessage::MessageType::ConfigStatusResponse,
-                        .existingConfig = configMessage
-                    });
+                    this->schedulePicoToPiMessageForWrite(messages::PicoToPiMessage(
+                            messages::PicoToPiMessage::MessageType::ConfigStatusResponse,
+                            configMessage
+                    ));
                 }
             } // pico
         } // ibus

@@ -13,6 +13,8 @@ namespace pico {
 
         class PicoToPiMessage {
         public:
+            PicoToPiMessage() {}
+
             enum MessageType {
                 HeartbeatRequest,
                 HeartbeatResponse,
@@ -25,6 +27,28 @@ namespace pico {
             MessageType messageType;
             ConfigMessage existingConfig;
             std::string loggerStatement;
+
+            PicoToPiMessage(
+                    MessageType messageType
+            ) {
+                this->messageType = messageType;
+            };
+
+            PicoToPiMessage(
+                    MessageType messageType,
+                    ConfigMessage configMessage
+            ) {
+                this->messageType = messageType;
+                this->existingConfig = configMessage;
+            };
+
+            PicoToPiMessage (
+                    MessageType messageType,
+                    std::string loggerStatement
+            ) {
+                this->messageType = messageType;
+                this->loggerStatement = loggerStatement;
+            };
         };
 
         class PicoToPiMessageConverter : public NanoPb::Converter::MessageConverter<
@@ -74,6 +98,19 @@ namespace pico {
                     .loggerStatement = NanoPb::Converter::StringConverter::decoderInit(local.loggerStatement)
                 };
             };
+            static bool decoderApply(const ProtoType& proto, LocalType& local) {
+                local.messageType = PicoToPiMessageTypeConverter::decode(proto.messageType);
+
+//                if (proto.has_existingConfig) {
+//                    ConfigMessageConverter::decoderApply(proto.existingConfig, local.existingConfig);
+//                }
+//
+//                NanoPb::Converter::StringConverter::decoderApply(proto.loggerStatement,
+//                                                                 local.loggerStatement
+//                                                                 );
+
+                return true;
+            }
         };
     } // pico
 } // messages

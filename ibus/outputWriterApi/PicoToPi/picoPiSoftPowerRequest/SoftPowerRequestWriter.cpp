@@ -22,16 +22,16 @@ namespace pico {
 
                 void SoftPowerRequestWriter::requestRpiRestart() {
                     logger->d(getTag(), "Requesting rpi soft restart");
-                    schedulePicoToPiMessageForWrite(messages::PicoToPiMessage {
-                        .messageType = messages::PicoToPiMessage::MessageType::PiSoftPowerRestartPi
-                    });
+                    schedulePicoToPiMessageForWrite(messages::PicoToPiMessage(
+                            messages::PicoToPiMessage::MessageType::PiSoftPowerRestartPi
+                    ));
                 }
 
                 void SoftPowerRequestWriter::requestRpiRestartX() {
                     logger->d(getTag(), "Requesting rpi restart X server.");
-                    schedulePicoToPiMessageForWrite(messages::PicoToPiMessage {
-                        .messageType = messages::PicoToPiMessage::MessageType::PiSoftPowerRestartX
-                    });
+                    schedulePicoToPiMessageForWrite(messages::PicoToPiMessage(
+                        messages::PicoToPiMessage::MessageType::PiSoftPowerRestartX
+                    ));
                 }
 
 
