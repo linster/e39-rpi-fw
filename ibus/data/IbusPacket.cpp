@@ -5,9 +5,7 @@
 #include "IbusPacket.h"
 #include "fmt/format.h"
 
-namespace pico {
-    namespace ibus {
-        namespace data {
+namespace pico::ibus::data {
 
             [[deprecated("Only used in legacy DmaManager")]]
             IbusPacket::IbusPacket(void* packetStart) {
@@ -111,7 +109,7 @@ namespace pico {
                 destinationDevice = dest;
                 this->data = std::vector<uint8_t>(data);
 
-                this->packetLength = data.size() + 4;
+                this->packetLength = data.size() + 2;
 
                 if (packetLength <= 2) {
                     data = std::vector<uint8_t>();
@@ -120,13 +118,13 @@ namespace pico {
                 }
 
                 //Set complete Raw packet
-                completeRawPacket = std::vector<uint8_t>(packetLength);
+                completeRawPacket = std::vector<uint8_t>(packetLength + 2);
                 completeRawPacket[0] = sourceDevice;
                 completeRawPacket[1] = packetLength;
                 completeRawPacket[2] = destinationDevice;
 
                 int completeRawPacketIndex = 3;
-                for (uint8_t byte: data) {
+                for (uint8_t byte: this->data) {
                     completeRawPacket[completeRawPacketIndex++] = byte;
                 }
 
@@ -142,12 +140,12 @@ namespace pico {
                 completeRawPacket[completeRawPacketIndex] = actualCrc;
             }
 
-            IbusPacket::~IbusPacket() {
-                data.clear();
-                data.shrink_to_fit();
-                completeRawPacket.clear();
-                completeRawPacket.shrink_to_fit();
-            }
+//            IbusPacket::~IbusPacket() {
+//                data.clear();
+//                data.shrink_to_fit();
+//                completeRawPacket.clear();
+//                completeRawPacket.shrink_to_fit();
+//            }
 
             void IbusPacket::cloneFrom(IbusPacket other) {
                 this->completeRawPacket = other.completeRawPacket;
@@ -253,6 +251,4 @@ namespace pico {
             }
 
 
-        } // pico
-    } // ibus
-} // data
+        } // data
