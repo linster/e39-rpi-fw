@@ -295,17 +295,16 @@ namespace pico::ibus::dma {
                           fmt::format("Dispatching packet from Q {} to cpu0 observers", queue_name));
             }
 
-            //TODO dumb hack, convert the array to a vector so that we can call a different constructor.
             data::IbusPacket packetFromArray = data::IbusPacket(buffer);
+            observerRegistry->dispatchMessageToAllObservers(packetFromArray);
 
-            std::vector<uint8_t> bufferVector = std::vector<uint8_t>();
-            for (uint8_t byte : buffer) {
-                bufferVector.push_back(byte);
-            }
-            data::IbusPacket packetFromVector = data::IbusPacket(bufferVector);
-
-//            observerRegistry->dispatchMessageToAllObservers(packetFromArray);
-            observerRegistry->dispatchMessageToAllObservers(packetFromVector);
+//TODO dumb hack, convert the array to a vector so that we can call a different constructor.
+//            std::vector<uint8_t> bufferVector = std::vector<uint8_t>();
+//            for (uint8_t byte : buffer) {
+//                bufferVector.push_back(byte);
+//            }
+//            data::IbusPacket packetFromVector = data::IbusPacket(bufferVector);
+//            observerRegistry->dispatchMessageToAllObservers(packetFromVector);
 
             if (log_dispatch_trace) {
                 logger->d("SingleCoreDmaManager",
