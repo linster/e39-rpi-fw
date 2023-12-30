@@ -111,11 +111,6 @@ namespace pico::ibus::dma {
         uart_set_hw_flow(uart0, false, false);
         uart_set_format(uart0, 8, 1, UART_PARITY_EVEN); //8E1
 
-//        //Always use the Adafruit 954 to go from Pico -> PC.
-//        uart_init(uart1, 9600);
-//        uart_set_hw_flow(uart1, false, false);
-//        uart_set_format(uart1, 8, 1, UART_PARITY_EVEN); //8E1
-
         bool hookedUpToPicoProbe = true; //Set to false if the UART 1 is sent to rpi rx/tx pins
         if (hookedUpToPicoProbe) {
             uart_init(uart1, 115200);
