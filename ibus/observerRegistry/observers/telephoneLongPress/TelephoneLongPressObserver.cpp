@@ -14,9 +14,25 @@ namespace pico::ibus::observers {
                     std::shared_ptr<pico::ibus::output::writer::TestingOutputWriter> testingOutputWriter) {
                 this->logger = baseLogger;
                 this->videoSwitch = videoSwitch;
+                if (this->videoSwitch == nullptr) {
+                    logger->wtf("TelephoneLongPressObserver", "videoSwitch is null");
+                }
+
                 this->scanProgramSwapper = scanProgramSwapper;
+                if (this->scanProgramSwapper == nullptr) {
+                    logger->wtf("TelephoneLongPressObserver", "scanProgramSwapper is null");
+                }
+
                 this->screenPowerManager = screenPowerManager;
+                if (this->screenPowerManager == nullptr) {
+                    logger->wtf("TelephoneLongPressObserver", "screenPowerManager is null");
+                }
+
                 this->testingOutputWriter = testingOutputWriter;
+                if (this->testingOutputWriter == nullptr) {
+                    logger->wtf("TelephoneLongPressObserver", "testingOutputWriter is null");
+                }
+
             }
 
             void TelephoneLongPressObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {

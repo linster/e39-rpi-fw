@@ -10,6 +10,9 @@ namespace pico::ibus::output::writer {
                         std::shared_ptr<dma::IDmaManager> dmaManager) {
                     this->logger = logger;
                     this->dmaManager = dmaManager;
+                    if (this->dmaManager == nullptr) {
+                        logger->wtf("HeartbeatResponseWriter", "dmaManager is null");
+                    }
                 }
 
                 std::shared_ptr<dma::IDmaManager> HeartbeatResponseWriter::getDmaManager() {

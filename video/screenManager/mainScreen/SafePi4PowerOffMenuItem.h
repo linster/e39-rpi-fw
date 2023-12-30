@@ -15,10 +15,12 @@ namespace video::ScreenManager::MainScreen {
 
 
             private:
+                std::shared_ptr<pico::logger::BaseLogger> logger;
                 std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter;
             public:
 
                 SafePi4PowerOffMenuItem(
+                        std::shared_ptr<pico::logger::BaseLogger> logger,
                         std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter
                         );
 

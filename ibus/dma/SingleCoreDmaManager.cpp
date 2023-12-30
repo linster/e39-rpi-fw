@@ -12,6 +12,10 @@ namespace pico::ibus::dma {
         this->logger = logger;
         this->observerRegistry = observerRegistry;
 
+        if (this->observerRegistry == nullptr) {
+            logger->wtf("SingleCoreDmaManager", "observerRegistry is null");
+        }
+
         //TODO length==255 might actually be too short. Because, the packet length could be 255+1?
 
         queue_init(

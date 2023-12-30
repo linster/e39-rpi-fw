@@ -14,8 +14,20 @@ namespace pico::ibus::observers {
                     std::shared_ptr<video::ScreenManager::ScreenManager> screenManager) {
                 this->logger = baseLogger;
                 this->scanProgramSwapper = scanProgramSwapper;
+                if (this->scanProgramSwapper == nullptr) {
+                    logger->wtf("KnobListenerObserver", "scanProgramSwapper is null");
+                }
+
                 this->videoSwitch = videoSwitch;
+                if (this->videoSwitch == nullptr) {
+                    logger->wtf("KnobListenerObserver", "videoSwitch is null");
+                }
+
                 this->screenManager = screenManager;
+                if (this->screenManager == nullptr) {
+                    logger->wtf("KnobListenerObserver", "screenManager is null");
+                }
+
             }
 
             void KnobListenerObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {

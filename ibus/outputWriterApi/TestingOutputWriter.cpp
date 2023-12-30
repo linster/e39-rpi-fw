@@ -10,7 +10,14 @@ namespace pico::ibus::output::writer {
                                              std::shared_ptr<radio::AudioFocusOutputWriter> audioFocusOutputWriter) {
         this->logger = logger;
         this->dmaManager = dmaManager;
+        if (this->dmaManager == nullptr) {
+            logger->wtf("TestingOutputWriter", "dmaManager is null");
+        }
+
         this->audioFocusOutputWriter = audioFocusOutputWriter;
+        if (this->audioFocusOutputWriter == nullptr) {
+            logger->wtf("TestngOutputWriter", "AudioFocusOutputWriter is null");
+        }
     }
 
     void TestingOutputWriter::sendDummyPacket() {

@@ -18,9 +18,25 @@ namespace pico {
                     ) {
                 this->logger = baseLogger;
                 this->pi4PowerSwitchManager = pi4PowerSwitchManager;
+                if (this->pi4PowerSwitchManager == nullptr) {
+                    logger->wtf("IgnitionStateObserver", "pi4PowerSwitchManager is null");
+                }
+
                 this->videoSwitch = videoSwitch;
+                if (this->videoSwitch == nullptr) {
+                    logger->wtf("IgnitionStateObserver", "videoSwitch is null");
+                }
+
                 this->scanProgramSwapper = scanProgramSwapper;
+                if (this->scanProgramSwapper == nullptr) {
+                    logger->wtf("IgnitionStateObserver", "scanProgramSwapper is null");
+                }
+
                 this->screenPowerManager = screenPowerManager;
+                if (this->screenPowerManager == nullptr) {
+                    logger->wtf("IgnitionStateObserver", "screenPowerManager is null");
+                }
+
                 logger->d(getTag(), "Constructed");
             }
 

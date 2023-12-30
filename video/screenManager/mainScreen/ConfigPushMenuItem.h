@@ -15,11 +15,13 @@ namespace video::ScreenManager::MainScreen {
             class ConfigPushMenuItem : public ScreenItem {
 
             private:
+                std::shared_ptr<pico::logger::BaseLogger> logger;
                 std::shared_ptr<pico::ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter;
                 std::shared_ptr<pico::config::ConfigurationManager> configurationManager;
 
             public:
                 ConfigPushMenuItem(
+                        std::shared_ptr<pico::logger::BaseLogger> logger,
                         std::shared_ptr<pico::ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter,
                         std::shared_ptr<pico::config::ConfigurationManager> configurationManager
                         );

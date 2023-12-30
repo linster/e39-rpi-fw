@@ -8,16 +8,19 @@
 #include <memory>
 #include <hardware/pi4powerswitch/IPi4PowerSwitchManager.h>
 #include <video/screenManager/ScreenItem.h>
+#include "logging/BaseLogger.h"
 
 namespace video::ScreenManager::MainScreen {
 
             class HardPi4PowerOffMenuItem : ScreenItem {
 
             private:
+                std::shared_ptr<pico::logger::BaseLogger> logger;
                 std::shared_ptr<pico::hardware::pi4powerswitch::IPi4PowerSwitchManager> pi4PowerSwitchManager;
 
             public:
                 HardPi4PowerOffMenuItem(
+                        std::shared_ptr<pico::logger::BaseLogger> logger,
                         std::shared_ptr<pico::hardware::pi4powerswitch::IPi4PowerSwitchManager> pi4PowerSwitchManager
                         );
 

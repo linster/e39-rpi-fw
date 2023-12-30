@@ -11,6 +11,9 @@ namespace pico::ibus::observers {
                     std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch) {
                 this->logger = logger;
                 this->videoSwitch = videoSwitch;
+                if (this->videoSwitch == nullptr) {
+                    logger->wtf("PicoVideoRequestObserver", "videoSwitch is null");
+                }
             }
 
             void PicoVideoRequestObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {

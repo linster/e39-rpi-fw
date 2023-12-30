@@ -13,7 +13,15 @@ namespace pico::ibus::observers {
 
                 this->logger = logger;
                 this->configurationStatusWriter = configurationStatusWriter;
+                if (this->configurationStatusWriter == nullptr) {
+                    logger->wtf("PicoConfigurationRequestObserver", "configurationStatusWriter is null");
+                }
+
                 this->configurationManager = configurationManager;
+                if (this->configurationManager == nullptr) {
+                    logger->wtf("PicoConfigurationRequestObserver", "configurationManager is null");
+                }
+
             }
 
             void PicoConfigurationReadRequestObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {

@@ -14,9 +14,11 @@ namespace video::ScreenManager::MainScreen {
             class RestartXMenuItem : ScreenItem {
 
             private:
+                std::shared_ptr<pico::logger::BaseLogger> logger;
                 std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter;
             public:
                 RestartXMenuItem(
+                        std::shared_ptr<pico::logger::BaseLogger> logger,
                         std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter
                 );
 

@@ -6,10 +6,7 @@
 #include "Max4314VideoSwitch.h"
 
 
-namespace pico {
-    namespace hardware {
-        namespace videoSwitch {
-            namespace max4314 {
+namespace pico::hardware::videoSwitch::max4314 {
 
                 Max4314VideoSwitch::Max4314VideoSwitch(std::shared_ptr<logger::BaseLogger> baseLogger) {
                     logger = baseLogger;
@@ -72,7 +69,4 @@ namespace pico {
                     return previousVideoSource;
                 }
 
-            } // pico
-        } // hardware
-    } // videoSwitch
-} // max4314
+            } // max4314

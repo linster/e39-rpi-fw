@@ -10,10 +10,7 @@
 #include <logging/BaseLogger.h>
 #include <libs/fmt/include/fmt/format.h>
 
-namespace pico {
-    namespace hardware {
-        namespace videoSwitch {
-            namespace mock {
+namespace pico::hardware::videoSwitch::mock {
 
                 class MockVideoSwitch : public pico::hardware::videoSwitch::VideoSwitch {
                 private:
@@ -27,9 +24,6 @@ namespace pico {
                     VideoSource getPreviousVideoSource() override;
                 };
 
-            } // pico
-        } // hardware
-    } // videoSwitch
-} // mock
+            } // mock
 
 #endif //PICOTEMPLATE_MOCKVIDEOSWITCH_H

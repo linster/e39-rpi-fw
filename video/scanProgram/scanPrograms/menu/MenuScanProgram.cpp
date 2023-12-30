@@ -173,6 +173,8 @@ namespace video::scanProgram::scanPrograms::menu {
     }
 
     void MenuScanProgram::refreshUi() {
+        logger->d(getTag(), "RefreshUI");
+        scanvideo_wait_for_vblank();
         graphicsLib->clearFrame();
         drawScreenBackground();
         drawScreen(screenManager->getCurrentScreen());

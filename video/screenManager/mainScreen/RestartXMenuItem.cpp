@@ -7,8 +7,13 @@
 namespace video::ScreenManager::MainScreen {
 
             RestartXMenuItem::RestartXMenuItem(
+                    std::shared_ptr<pico::logger::BaseLogger> logger,
                     std::shared_ptr<pico::ibus::output::writer::SoftPowerRequestWriter> softPowerRequestWriter) {
+                this->logger = logger;
                 this->softPowerRequestWriter = softPowerRequestWriter;
+                if (this->softPowerRequestWriter == nullptr) {
+                    logger->wtf("RestartXMenuItem", "softPowerRequestWriter is null");
+                }
             }
 
             void RestartXMenuItem::onItemClicked() {

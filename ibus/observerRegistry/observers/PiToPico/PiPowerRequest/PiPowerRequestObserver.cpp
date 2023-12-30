@@ -11,6 +11,9 @@ namespace pico::ibus::observers {
                     std::shared_ptr<hardware::pi4powerswitch::IPi4PowerSwitchManager> powerSwitchManager) {
                 this->logger = logger;
                 this->powerSwitchManager = powerSwitchManager;
+                if (this->powerSwitchManager == nullptr) {
+                    logger->wtf("PiPowerRequestObserver", "powerSwitchManager is null");
+                }
             }
 
             void PiPowerRequestObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {

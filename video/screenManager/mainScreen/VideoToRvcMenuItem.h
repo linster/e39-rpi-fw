@@ -15,10 +15,12 @@ namespace video::ScreenManager::MainScreen {
             class VideoToRvcMenuItem : ScreenItem {
 
             private:
+                std::shared_ptr<pico::logger::BaseLogger> logger;
                 std::shared_ptr<pico::hardware::videoSwitch::VideoSwitch> videoSwitch;
                 std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper;
             public:
                 VideoToRvcMenuItem(
+                        std::shared_ptr<pico::logger::BaseLogger> logger,
                         std::shared_ptr<pico::hardware::videoSwitch::VideoSwitch> videoSwitch,
                         std::shared_ptr<video::scanProgram::ScanProgramSwapper> scanProgramSwapper
                         );

@@ -12,7 +12,11 @@ namespace pico {
                     std::shared_ptr<logger::BaseLogger> logger,
                     std::shared_ptr<output::writer::HeartbeatResponseWriter> heartbeatResponseWriter) {
                 this->logger = logger;
+
                 this->heartbeatResponseWriter = heartbeatResponseWriter;
+                if (this->heartbeatResponseWriter == nullptr) {
+                    logger->wtf("HeartbeatRequestObserver", "heartbeatResponseWriter is null");
+                }
             }
 
             void HeatbeatRequestObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {

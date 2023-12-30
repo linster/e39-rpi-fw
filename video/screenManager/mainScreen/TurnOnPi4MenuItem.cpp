@@ -11,6 +11,9 @@ namespace video::ScreenManager::MainScreen {
                     std::shared_ptr<pico::hardware::pi4powerswitch::IPi4PowerSwitchManager> pi4PowerSwitchManager) {
                 this->logger = logger;
                 this->pi4PowerSwitchManager = pi4PowerSwitchManager;
+                if (this->pi4PowerSwitchManager == nullptr) {
+                    logger->wtf("TurnOnPi4MenuItem", "pi4PowerSwitchManager is null");
+                }
             }
 
             std::string TurnOnPi4MenuItem::getLabel() {
