@@ -260,6 +260,9 @@ target_sources(
         ibus/outputWriterApi/TestingOutputWriter.cpp
         ibus/outputWriterApi/radioControl/AudioFocusOutputWriter.h
         ibus/outputWriterApi/radioControl/AudioFocusOutputWriter.cpp
+
+        watchdog/WatchdogManager.h
+        watchdog/WatchdogManager.cpp
 )
 
 target_include_directories(

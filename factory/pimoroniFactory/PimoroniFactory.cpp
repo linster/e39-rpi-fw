@@ -9,6 +9,7 @@ namespace pico::di {
         void PimoroniFactory::initializeAllSmartPointers() {
             this->logger = std::make_shared<logger::StdioPrintFLogger>();
 
+            this->watchdogManager = std::make_shared<watchdog::WatchdogManager>(logger);
 
             //this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::MockPi4PowerSwitchManager>(this->logger);
             this->powerSwitchManager = std::make_shared<hardware::pi4powerswitch::GpioPi4PowerSwitchManager>(this->logger);
@@ -175,6 +176,7 @@ namespace pico::di {
         ApplicationContainer* PimoroniFactory::getApplicationContainer() {
             return new ApplicationContainer(
                     logger,
+                    watchdogManager,
                     powerSwitchManager,
                     videoSwitch,
                     configurationManager,

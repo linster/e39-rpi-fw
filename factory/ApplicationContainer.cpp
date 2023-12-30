@@ -11,6 +11,8 @@ namespace pico {
 
         logger->d("onMain", "onMain");
 
+        watchdogManager->cpu1Setup();
+
         //Register all the observers to the observer registry.
         for (auto & element : *baseObservers) {
             logger->d("onMain", fmt::format("Registering observer: {}", element->getTag()));
@@ -46,12 +48,14 @@ namespace pico {
     }
 
     void ApplicationContainer::onLoop() {
+        watchdogManager->onCpu0Loop();
         dmaManager->onCpu0Loop();
         scanProgramManager->onCpu0Loop();
     }
 
     void ApplicationContainer::onCpu1Main() {
         logger->i("onCpu1Main", "onCpu1Main");
+        watchdogManager->cpu1Setup();
         dmaManager->cpu1Setup(); //NOOP with SingleCoreDmaManager
         logger->i("onCpu1Main", "dmaManager->cpu1Setup() done");
 
@@ -61,6 +65,7 @@ namespace pico {
     }
 
     void ApplicationContainer::onCpu1Loop() {
+        watchdogManager->onCpu1Loop();
         dmaManager->onCpu1Loop(); //NOOP with SingleCoreDmaManager
         scanProgramManager->onCpu1Loop();
         //Let's make the LED blink while we're running this loop

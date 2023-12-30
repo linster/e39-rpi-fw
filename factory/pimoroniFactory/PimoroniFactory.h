@@ -39,6 +39,8 @@ namespace pico::di {
 
         private:
             std::shared_ptr<logger::BaseLogger> logger;
+            std::shared_ptr<watchdog::WatchdogManager> watchdogManager;
+
             std::shared_ptr<hardware::pi4powerswitch::IPi4PowerSwitchManager> powerSwitchManager;
             std::shared_ptr<pico::hardware::videoSwitch::VideoSwitch> videoSwitch;
 
