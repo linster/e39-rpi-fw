@@ -263,6 +263,8 @@ target_sources(
 
         watchdog/WatchdogManager.h
         watchdog/WatchdogManager.cpp
+
+        ibus/dma/topology/PicoBusTopology.h
 )
 
 target_include_directories(
