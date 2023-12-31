@@ -18,6 +18,11 @@ namespace video::scanProgram::scanPrograms::noop {
     void NoopScanProgram::onScanProgramStart() {
         logger->d(getTag(), "onScanProgramStart()");
         //scanvideo_timing_enable(false);
+        //TODO we only ever scanvideo_timing_enable(true) from bootsplash and menu, so we need to test if it's actually
+        //TODO possible to start -> clock ->  menu. TEST #1
+
+        //TODO we may want to move the scan video timing out of the onStart()/onStop() and put it in the scanProgramManager
+        //TOOD in onCpu1Setup().
     }
 
     void NoopScanProgram::onScanProgramStop() {
@@ -26,6 +31,12 @@ namespace video::scanProgram::scanPrograms::noop {
 
     void NoopScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
         //NOOP
+
+        //TODO if this scan program runs after another scan program has started scanvideo_timing, we might
+        //TODO be starving the DMA of something, causing it to lock up CPU1. I'm not sure why a lockup of CPU1 causes
+        //TODO cpu0 to lock up too, but that could be related to a deadlock?
+
+        //TODO what we may want to do here is to just always return a skipped scanline?
     }
 
 

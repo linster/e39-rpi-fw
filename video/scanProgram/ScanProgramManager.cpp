@@ -190,7 +190,9 @@ namespace video::scanProgram {
     void ScanProgramManager::cpu0EnqueueSwapTo(ScanProgram scanProgram) {
         bool added = queue_try_add(&cpu1IncomingCommandQ, &scanProgram);
         if (!added) {
+            logger->wtf(getTag(), "Could not add scanProgram swap request to q.");
             logger->w(getTag(),
+                      //TODO this might be the fmt statement that blows up and crashes a cpu core?
                       fmt::format("Could not add scanProgram {} to queue with size {}",
                                   (int)scanProgram,
                                   queue_get_level(&cpu1IncomingCommandQ)
@@ -228,6 +230,7 @@ namespace video::scanProgram {
 
         if (shouldSwap) {
             //these need to be run from CPU1 because they setup scanvideo timing.
+            //TODO this might not be needed here?
             scanvideo_wait_for_vblank();
             getScanProgramPtr(previousScanProgram)->stopScanProgram();
             getScanProgramPtr(currentScanProgram)->startScanProgram();
