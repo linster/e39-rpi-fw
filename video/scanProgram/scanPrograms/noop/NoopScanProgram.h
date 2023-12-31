@@ -13,6 +13,8 @@ namespace video::scanProgram::scanPrograms::noop {
 
                 private:
                     std::shared_ptr<pico::logger::BaseLogger> logger;
+
+                    void skipScanline(scanvideo_scanline_buffer_t *scanline_buffer);
                 public:
 
                     NoopScanProgram(

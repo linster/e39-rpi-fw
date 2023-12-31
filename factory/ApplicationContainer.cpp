@@ -11,7 +11,7 @@ namespace pico {
 
         logger->d("onMain", "onMain");
 
-        watchdogManager->cpu1Setup();
+        watchdogManager->cpu0setup();
 
         //Register all the observers to the observer registry.
         for (auto & element : *baseObservers) {
@@ -68,7 +68,5 @@ namespace pico {
         watchdogManager->onCpu1Loop();
         dmaManager->onCpu1Loop(); //NOOP with SingleCoreDmaManager
         scanProgramManager->onCpu1Loop();
-        //Let's make the LED blink while we're running this loop
-
     }
 } // pico

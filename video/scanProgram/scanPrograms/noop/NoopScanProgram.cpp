@@ -37,6 +37,14 @@ namespace video::scanProgram::scanPrograms::noop {
         //TODO cpu0 to lock up too, but that could be related to a deadlock?
 
         //TODO what we may want to do here is to just always return a skipped scanline?
+        if (scanline_buffer != nullptr) {
+            skipScanline(scanline_buffer);
+        }
+    }
+
+    void NoopScanProgram::skipScanline(scanvideo_scanline_buffer_t *scanline_buffer) {
+        scanline_buffer->data_used = 0;
+        scanline_buffer->status = SCANLINE_SKIPPED;
     }
 
 

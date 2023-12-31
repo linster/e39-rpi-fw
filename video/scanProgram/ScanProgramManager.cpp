@@ -224,15 +224,18 @@ namespace video::scanProgram {
     void ScanProgramManager::swapTo(uint8_t cpuNum, ScanProgram scanProgram) {
 //        mutex_enter_blocking(&this->scanProgramStateMutex);
         logger->d(getTag(), fmt::format("cpu{:x}SwapTo Swap to: {:x}. Previous: {:x}", cpuNum, (int)scanProgram, (int)previousScanProgram));
+
+        ScanProgram local_previousScanProgram = this->previousScanProgram;
+
         this->previousScanProgram = this->currentScanProgram;
         this->currentScanProgram = scanProgram;
-        bool shouldSwap = (currentScanProgram != previousScanProgram);
+        bool shouldSwap = (currentScanProgram != local_previousScanProgram);
 
         if (shouldSwap) {
             //these need to be run from CPU1 because they setup scanvideo timing.
             //TODO this might not be needed here?
             scanvideo_wait_for_vblank();
-            getScanProgramPtr(previousScanProgram)->stopScanProgram();
+            getScanProgramPtr(local_previousScanProgram)->stopScanProgram();
             getScanProgramPtr(currentScanProgram)->startScanProgram();
         }
 
