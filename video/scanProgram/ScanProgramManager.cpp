@@ -190,7 +190,7 @@ namespace video::scanProgram {
     void ScanProgramManager::cpu0EnqueueSwapTo(ScanProgram scanProgram) {
         bool added = queue_try_add(&cpu1IncomingCommandQ, &scanProgram);
         if (!added) {
-            logger->wtf(getTag(), "Could not add scanProgram swap request to q.");
+            logger->wtf(getTag(), "Could not add scanProgram swap request to q. Next statement might cause a fmt crash.");
             logger->w(getTag(),
                       //TODO this might be the fmt statement that blows up and crashes a cpu core?
                       fmt::format("Could not add scanProgram {} to queue with size {}",
@@ -223,11 +223,9 @@ namespace video::scanProgram {
 
     void ScanProgramManager::swapTo(uint8_t cpuNum, ScanProgram scanProgram) {
 //        mutex_enter_blocking(&this->scanProgramStateMutex);
-        logger->d(getTag(), fmt::format("cpu{:x}SwapTo Swap to: {:x}. Previous: {:x}", cpuNum, (int)scanProgram, (int)previousScanProgram));
+        logger->d(getTag(), fmt::format("cpu{:x}SwapTo Swap to: {:x}. Previous: {:x}", cpuNum, (int)scanProgram, (int)currentScanProgram));
 
-        ScanProgram local_previousScanProgram = this->previousScanProgram;
-
-        this->previousScanProgram = this->currentScanProgram;
+        ScanProgram local_previousScanProgram = this->currentScanProgram;
         this->currentScanProgram = scanProgram;
         bool shouldSwap = (currentScanProgram != local_previousScanProgram);
 

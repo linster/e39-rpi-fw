@@ -51,7 +51,6 @@ namespace video::scanProgram {
             /** Guard the currently running scan program */
             mutex_t scanProgramStateMutex;
             //Guard: scanProgramStateMutex
-            ScanProgram previousScanProgram = NOOP;
             ScanProgram currentScanProgram = NOOP;
             //End Guard: scanProgramStateMutex
 

@@ -61,19 +61,8 @@ namespace pico::di {
                     logger,
                     dmaManager
             );
-            this->mainScreen = std::make_shared<video::ScreenManager::MainScreen::MainScreen>(
-                    logger,
-                    configurationManager,
-                    powerSwitchManager,
-                    videoSwitch,
-                    configurationStatusWriter,
-                    softPowerRequestWriter,
-                    scanProgramSwapper
-            );
-            this->screenManager = std::make_shared<video::ScreenManager::ScreenManager>(
-                    std::reinterpret_pointer_cast<video::ScreenManager::Screen>(mainScreen)
-                    );
 
+            this->screenManager = std::make_shared<video::ScreenManager::ScreenManager>();
 
             std::shared_ptr<video::scanVideo::graphics::command::CommandProcessor> commandProcessor =
                     std::make_shared<video::scanVideo::graphics::command::CommandProcessor>(logger);
@@ -97,6 +86,19 @@ namespace pico::di {
                     logger,
                     scanProgramManager
                     );
+
+            this->mainScreen = std::make_shared<video::ScreenManager::MainScreen::MainScreen>(
+                    logger,
+                    configurationManager,
+                    powerSwitchManager,
+                    videoSwitch,
+                    configurationStatusWriter,
+                    softPowerRequestWriter,
+                    scanProgramSwapper
+            );
+
+            this->screenManager->registerScreen(std::reinterpret_pointer_cast<video::ScreenManager::Screen>(mainScreen));
+
             this->mockIncomingIBusObserver = std::make_shared<ibus::observers::MockObserver>(this->logger);
 
              this->ignitionStateObserver = std::make_shared<ibus::observers::IgnitionStateObserver>(

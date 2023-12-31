@@ -22,7 +22,13 @@ namespace video::ScreenManager {
             void callOnFocusChangeCallback();
         public:
 
-            explicit ScreenManager(std::shared_ptr<Screen> initialScreen);
+            explicit ScreenManager();
+
+            //ScreenManager also acts like a ScreenRegistry to untangle a DI circular dependency.
+            //Registering a screen also makes it the current one.
+            void registerScreen(std::shared_ptr<Screen> screen);
+
+
 
             std::shared_ptr<Screen> getCurrentScreen();
 

@@ -7,10 +7,10 @@
 namespace video {
     namespace ScreenManager {
 
-        ScreenManager::ScreenManager(
-                std::shared_ptr<Screen> initialScreen) {
-            this->currentScreen = initialScreen;
+        ScreenManager::ScreenManager() = default;
 
+        void ScreenManager::registerScreen(std::shared_ptr<Screen> screen) {
+            this->currentScreen = screen;
         }
 
         void ScreenManager::clickOnItem() {

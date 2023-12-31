@@ -24,13 +24,15 @@ namespace video::ScreenManager::MainScreen {
             this->scanProgramSwapper = scanProgramSwapper;
 
             this->turnOnPi4MenuItem = std::make_shared<TurnOnPi4MenuItem>(this->logger, this->pi4PowerSwitchManager);
-            this->safePi4PowerOffMenuItem = std::make_shared<SafePi4PowerOffMenuItem>(this->softPowerRequestWriter);
-            this->hardPi4PowerOffMenuItem = std::make_shared<HardPi4PowerOffMenuItem>(this->pi4PowerSwitchManager);
+            this->safePi4PowerOffMenuItem = std::make_shared<SafePi4PowerOffMenuItem>(this->logger,
+                                                                                      this->softPowerRequestWriter);
+            this->hardPi4PowerOffMenuItem = std::make_shared<HardPi4PowerOffMenuItem>(this->logger,
+                                                                                      this->pi4PowerSwitchManager);
 
-            this->videoToRvcMenuItem = std::make_shared<VideoToRvcMenuItem>(this->videoSwitch, this->scanProgramSwapper);
-            this->videoToUpstreamMenuItem = std::make_shared<VideoToUpstreamMenuItem>(this->videoSwitch, this->scanProgramSwapper);
-            this->videoToPiMenuItem = std::make_shared<VideoToPiMenuItem>(this->videoSwitch, this->scanProgramSwapper);
-            this->configPushMenuItem = std::make_shared<ConfigPushMenuItem>(this->configurationStatusWriter, this->configurationManager);
+            this->videoToRvcMenuItem = std::make_shared<VideoToRvcMenuItem>(this->logger, this->videoSwitch, this->scanProgramSwapper);
+            this->videoToUpstreamMenuItem = std::make_shared<VideoToUpstreamMenuItem>(this->logger, this->videoSwitch, this->scanProgramSwapper);
+            this->videoToPiMenuItem = std::make_shared<VideoToPiMenuItem>(this->logger, this->videoSwitch, this->scanProgramSwapper);
+            this->configPushMenuItem = std::make_shared<ConfigPushMenuItem>(this->logger, this->configurationStatusWriter, this->configurationManager);
 
             this->screenItems = std::vector<std::shared_ptr<ScreenItem>>();
             screenItems.push_back(std::reinterpret_pointer_cast<ScreenItem>(this->turnOnPi4MenuItem));

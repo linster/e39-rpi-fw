@@ -11,6 +11,9 @@ namespace video::scanProgram {
 
             this->logger = logger;
             this->scanProgramManager = scanProgramManager;
+            if (this->scanProgramManager == nullptr) {
+                logger->wtf("ScanProgramSwapper", "ScanProgramManager is null");
+            }
         }
 
         void ScanProgramSwapper::swapTo(ScanProgram scanProgram) {
