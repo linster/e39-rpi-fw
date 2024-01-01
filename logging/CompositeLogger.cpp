@@ -4,8 +4,7 @@
 
 #include "CompositeLogger.h"
 
-namespace pico {
-    namespace logger {
+namespace pico::logger {
         CompositeLogger::CompositeLogger(std::vector<std::shared_ptr<BaseLogger>> loggerList) {
             this->loggerList = loggerList;
         }
@@ -45,5 +44,4 @@ namespace pico {
                 item->print(level, tag, message);
             }
         }
-    } // pico
-} // logger
+    } // logger

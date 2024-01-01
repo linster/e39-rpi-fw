@@ -17,4 +17,8 @@ namespace pico::logger::ibus {
         }
         loggerOutput->print(fmt::format("{} {}", levelString, message));
     }
+
+    IBusOutLogger::IBusOutLogger(std::shared_ptr<pico::ibus::output::writer::IbusLoggerOutput> loggerOutput) {
+        this->loggerOutput = loggerOutput;
+    }
 } // ibus

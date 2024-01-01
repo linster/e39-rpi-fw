@@ -15,6 +15,11 @@ namespace pico::logger::ibus {
                 std::shared_ptr<pico::ibus::output::writer::IbusLoggerOutput> loggerOutput;
             protected:
                 void print(Level level, std::string tag, std::string message) override;
+
+            public:
+                explicit IBusOutLogger(
+                        std::shared_ptr<pico::ibus::output::writer::IbusLoggerOutput> loggerOutput
+                        );
             };
 
         } // ibus
