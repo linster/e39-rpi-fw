@@ -117,6 +117,8 @@ target_sources(
         logging/CompositeLogger.h
         logging/ibusOutLogger/IBusOutLogger.cpp
         logging/ibusOutLogger/IBusOutLogger.h
+        logging/factory/LoggerFactory.cpp
+        logging/factory/LoggerFactory.h
         ibus/data/IBusDevices.h
         ibus/data/IbusPacket.cpp
         ibus/data/IbusPacket.h
@@ -267,6 +269,7 @@ target_sources(
         ibus/dma/topology/PicoBusTopology.h
         ibus/dma/topology/BusTopologyManager.h
         ibus/dma/topology/BusTopologyManager.cpp
+
 )
 
 target_include_directories(
@@ -296,6 +299,8 @@ target_link_libraries(PicoTemplate
 pico_add_extra_outputs(PicoTemplate)
 
 # Enable USB serial
+#TODO we need to have a flag here that the bus topology manager also reads.
+#TODO set the stdios differently depending on the flag.
 pico_enable_stdio_usb(PicoTemplate 0)
 pico_enable_stdio_uart(PicoTemplate 1)
 

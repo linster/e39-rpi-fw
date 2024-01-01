@@ -8,9 +8,7 @@
 #include <memory>
 #include "../BaseLogger.h"
 #include "../../ibus/outputWriterApi/PicoToPi/ibusLoggerOutput/IbusLoggerOutput.h"
-namespace pico {
-    namespace logger {
-        namespace ibus {
+namespace pico::logger::ibus {
 
             class IBusOutLogger : public BaseLogger {
             private:
@@ -19,8 +17,6 @@ namespace pico {
                 void print(Level level, std::string tag, std::string message) override;
             };
 
-        } // pico
-    } // logger
-} // ibus
+        } // ibus
 
 #endif //PICOTEMPLATE_IBUSOUTLOGGER_H
