@@ -8,10 +8,10 @@
 namespace pico::logger::factory {
 
     LoggerFactory::LoggerFactory(
-            std::shared_ptr<pico::ibus::dma::IDmaManager> dmaManager,
+            std::function<std::shared_ptr<pico::ibus::dma::IDmaManager>()> dmaManagerAccessor,
             std::shared_ptr<pico::ibus::topology::BusTopologyManager> busTopologyManager
     ) {
-        this->dmaManager = dmaManager;
+        this->dmaManagerAccessor = dmaManagerAccessor;
         this->busTopologyManager = busTopologyManager;
     }
 
@@ -41,7 +41,7 @@ namespace pico::logger::factory {
 
         this->stdioPrintFLogger = std::make_shared<StdioPrintFLogger>();
 
-        this->loggerOutput = std::make_shared<pico::ibus::output::writer::IbusLoggerOutput>(this->dmaManager);
+        this->loggerOutput = std::make_shared<pico::ibus::output::writer::IbusLoggerOutput>(this->dmaManagerAccessor);
         this->iBusOutLogger = std::make_shared<pico::logger::ibus::IBusOutLogger>(this->loggerOutput);
 
         std::vector<std::shared_ptr<BaseLogger>> loggerList;

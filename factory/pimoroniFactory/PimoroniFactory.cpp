@@ -7,7 +7,22 @@
 
 namespace pico::di {
         void PimoroniFactory::initializeAllSmartPointers() {
-            this->logger = std::make_shared<logger::StdioPrintFLogger>();
+            //TODO we have a knot. The logger factory needs dma manager to build a dependency,
+            //TODO but dma manager needs a logger.
+
+            this->busTopologyManager = std::make_shared<pico::ibus::topology::BusTopologyManager>();
+
+            std::function<std::shared_ptr<pico::ibus::dma::IDmaManager>()> dmaManagerAccessor = [this](){
+                    return this->dmaManager;
+            };
+            
+            this->loggerFactory = std::make_shared<logger::factory::LoggerFactory>(dmaManagerAccessor, busTopologyManager);
+
+            this->logger = loggerFactory->buildAndGetLogger();
+
+            this->observerRegistry = std::make_shared<ibus::observerRegistry::ObserverRegistry>(this->logger);
+            this->dmaManager = std::make_shared<ibus::dma::SingleCoreDmaManager>(logger, observerRegistry);
+
 
             this->watchdogManager = std::make_shared<watchdog::WatchdogManager>(logger);
 
@@ -17,13 +32,10 @@ namespace pico::di {
             this->videoSwitch = std::make_shared<hardware::videoSwitch::max4314::Max4314VideoSwitch>(this->logger);
 
 
-            this->observerRegistry = std::make_shared<ibus::observerRegistry::ObserverRegistry>(this->logger);
+
             this->baseObservers = std::make_shared<std::vector<std::shared_ptr<ibus::observers::BaseObserver>>>(
                     std::vector<std::shared_ptr<ibus::observers::BaseObserver>>()
             );
-
-            //This has to be before any outputWriters are made.
-            this->dmaManager = std::make_shared<ibus::dma::SingleCoreDmaManager>(logger, observerRegistry);
 
             std::shared_ptr<config::FlashConfigurationStore> flashConfigurationStore = std::make_shared<config::FlashConfigurationStore>(this->logger);
             std::shared_ptr<ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter =

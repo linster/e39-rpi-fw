@@ -6,34 +6,30 @@
 #define PICOTEMPLATE_IBUSLOGGEROUTPUT_H
 
 #include <ibus/outputWriterApi/BaseOutputWriter.h>
+#include <functional>
 
-namespace pico {
-    namespace ibus {
-        namespace output {
-            namespace writer {
+namespace pico::ibus::output::writer {
 
-                class IbusLoggerOutput : public BaseOutputWriter {
+    class IbusLoggerOutput : public BaseOutputWriter {
 
-                    //Notably, don't log anything here to prevent an infinite loop.
-                private:
-                    int truncateLogMessagesToCharacters = 80;
-                    //If false, drop the remainder after truncation.
-                    bool splitLogMessagesAtTruncationPoint = false;
+        //Notably, don't log anything here to prevent an infinite loop.
+    private:
+        int truncateLogMessagesToCharacters = 80;
+        //If false, drop the remainder after truncation.
+        bool splitLogMessagesAtTruncationPoint = false;
 
-                    std::shared_ptr<dma::IDmaManager> dmaManager;
-                public:
-                    IbusLoggerOutput(
-                            std::shared_ptr<dma::IDmaManager> dmaManager
-                    );
-                    void print(std::string message);
-                protected:
-                    std::string getTag() override { return "IbusLoggerOutput"; };
-                    std::shared_ptr<dma::IDmaManager> getDmaManager() override;
-                };
+        std::function<std::shared_ptr<dma::IDmaManager>()> dmaManagerAccessor;
+    public:
+        IbusLoggerOutput(
+                std::function<std::shared_ptr<dma::IDmaManager>()> dmaManagerAccessor
+        );
+        void print(std::string message);
+    protected:
+        std::string getTag() override { return "IbusLoggerOutput"; };
+        //This accessor is only called when the packet is scheduled to be written.
+        std::shared_ptr<dma::IDmaManager> getDmaManager() override;
+    };
 
-            } // pico
-        } // ibus
-    } // output
 } // writer
 
 #endif //PICOTEMPLATE_IBUSLOGGEROUTPUT_H

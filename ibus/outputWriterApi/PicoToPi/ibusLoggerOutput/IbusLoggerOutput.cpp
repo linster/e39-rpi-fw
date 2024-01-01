@@ -3,35 +3,29 @@
 //
 
 #include "IbusLoggerOutput.h"
-namespace pico {
-    namespace ibus {
-        namespace output {
-            namespace writer {
-                IbusLoggerOutput::IbusLoggerOutput(
-                        std::shared_ptr<dma::IDmaManager> dmaManager
-                ) {
-                    this->dmaManager = dmaManager;
-                }
+namespace pico::ibus::output::writer {
+    IbusLoggerOutput::IbusLoggerOutput(
+            std::function<std::shared_ptr<dma::IDmaManager>()> dmaManagerAccessor
+    ) {
+        this->dmaManagerAccessor = dmaManagerAccessor;
+    }
 
-                std::shared_ptr<dma::IDmaManager> IbusLoggerOutput::getDmaManager() {
-                    return dmaManager;
-                }
+    std::shared_ptr<dma::IDmaManager> IbusLoggerOutput::getDmaManager() {
+        return dmaManagerAccessor();
+    }
 
-                void IbusLoggerOutput::print(std::string message) {
-                    if (splitLogMessagesAtTruncationPoint) {
-                        //TODO Split into multiple messages and pump them all out.
-                        //TODO
-                    } else {
-                        //Just take the first part of the message and print one out.
-                        std::string shortened = message.substr(0, std::min((int)message.size(), truncateLogMessagesToCharacters));
+    void IbusLoggerOutput::print(std::string message) {
+        if (splitLogMessagesAtTruncationPoint) {
+            //TODO Split into multiple messages and pump them all out.
+            //TODO
+        } else {
+            //Just take the first part of the message and print one out.
+            std::string shortened = message.substr(0, std::min((int)message.size(), truncateLogMessagesToCharacters));
 
-                        schedulePicoToPiMessageForWrite(messages::PicoToPiMessage {
-                            .messageType = messages::PicoToPiMessage::MessageType::LogStatement,
-                            .loggerStatement = shortened
-                        });
-                    }
-                }
-            } // pico
-        } // ibus
-    } // output
+            schedulePicoToPiMessageForWrite(messages::PicoToPiMessage {
+                .messageType = messages::PicoToPiMessage::MessageType::LogStatement,
+                .loggerStatement = shortened
+            });
+        }
+    }
 } // writer
