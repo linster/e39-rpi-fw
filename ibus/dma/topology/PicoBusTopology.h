@@ -9,7 +9,53 @@ namespace pico::ibus::topology {
 
     enum BusTopology {
 
-        //Take the piece of paper with all the pico bus topologies and ascii-art them in here.
+        /**
+         *
+         *
+         *                                  +--------+
+         *             ---------swd-------->|  Pico  |
+         *            /                     |  Debug |
+         *           /                      |  Probe |
+         *          |                       +--------+
+         *          |                            ^
+         *          |                            | (swd)
+         *          v                            v
+         *      +--------+                  +--------+       +---------+
+         *      | Laptop |<==(usb stdio)===>|  Pico  |<=====>| MCP2020 | (UART0, 9600-8E1, IBUS raw)
+         *      +--------+                  +--------+       +---------+
+         *                                      ^^
+         *                                      ||<......................(UART1, 9600-8E1, IBUS raw)
+         *                                      vv
+         *                                  +--------+
+         *                                  |  Rpi  |
+         *                                  +-------+
+         *
+         */
+        CAR_WITH_PI,
+
+
+
+        /**
+         *                    .....(SWD, 115200-8N1. Debug log + Raw IBUS)
+         *                   .
+         *                  .               +--------+
+         *             ====================>|  Pico  |
+         *            //                    |  Debug |
+         *           //                     |  Probe |
+         *          ||                      +--------+
+         *          ||                           ^^
+         *          ||                           ||<.....................(UART1, 115200-8N1. Debug log + Raw IBUS)
+         *          vv                           vv
+         *      +--------+                  +--------+       +---------+
+         *      | Laptop |<-(usb pwr only)->|  Pico  |<=====>| MCP2020 | (UART0, 9600-8E1 IBUS raw)
+         *      +--------+                  +--------+       +---------+
+         *
+         *                                  +--------+
+         *                                  |  Rpi  |
+         *                                  +-------+
+         *
+         */
+         SLED_NO_PI
 
         //Then, we make a TopologyManager that knows how to set up each pin and uart
         //Then, we put that inside the dmaManager.
