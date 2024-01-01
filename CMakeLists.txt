@@ -265,6 +265,8 @@ target_sources(
         watchdog/WatchdogManager.cpp
 
         ibus/dma/topology/PicoBusTopology.h
+        ibus/dma/topology/BusTopologyManager.h
+        ibus/dma/topology/BusTopologyManager.cpp
 )
 
 target_include_directories(
