@@ -8,9 +8,7 @@
 #include <vector>
 #include <ibus/observerRegistry/observers/BaseObserver.h>
 #include <ibus/data/IbusPacket.h>
-namespace pico {
-    namespace ibus {
-        namespace observerRegistry {
+namespace pico::ibus::observerRegistry {
 
             class ObserverRegistry {
 
@@ -28,8 +26,6 @@ namespace pico {
 
                 void printRegisteredObserverTags();
             };
-        } // pico
-    } // ibus
-} // observerRegistry
+        } // observerRegistry
 
 #endif //PICOTEMPLATE_OBSERVERREGISTRY_H
