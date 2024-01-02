@@ -15,13 +15,13 @@ namespace pico::di {
             std::function<std::shared_ptr<pico::ibus::dma::IDmaManager>()> dmaManagerAccessor = [this](){
                     return this->dmaManager;
             };
-            
+
             this->loggerFactory = std::make_shared<logger::factory::LoggerFactory>(dmaManagerAccessor, busTopologyManager);
 
             this->logger = loggerFactory->buildAndGetLogger();
 
             this->observerRegistry = std::make_shared<ibus::observerRegistry::ObserverRegistry>(this->logger);
-            this->dmaManager = std::make_shared<ibus::dma::SingleCoreDmaManager>(logger, observerRegistry);
+            this->dmaManager = std::make_shared<ibus::dma::SingleCoreDmaManager>(logger, observerRegistry, busTopologyManager);
 
 
             this->watchdogManager = std::make_shared<watchdog::WatchdogManager>(logger);

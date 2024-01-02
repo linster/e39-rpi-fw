@@ -8,13 +8,17 @@ namespace pico::ibus::dma {
 
     SingleCoreDmaManager::SingleCoreDmaManager(
             std::shared_ptr<logger::BaseLogger> logger,
-            std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry) {
+            std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry,
+            std::shared_ptr<pico::ibus::topology::BusTopologyManager> busTopologyManager
+            ) {
         this->logger = logger;
         this->observerRegistry = observerRegistry;
 
         if (this->observerRegistry == nullptr) {
             logger->wtf("SingleCoreDmaManager", "observerRegistry is null");
         }
+
+        this->busTopologyManager = busTopologyManager;
 
         //TODO length==255 might actually be too short. Because, the packet length could be 255+1?
 

@@ -23,6 +23,7 @@
 #include "hardware/pio.h"
 #include "pico/sync.h"
 #include "pico/scanvideo.h"
+#include "ibus/dma/topology/BusTopologyManager.h"
 
 
 namespace pico::ibus::dma {
@@ -34,6 +35,8 @@ namespace pico::ibus::dma {
             //TODO initialize this variable
             inline static std::shared_ptr<logger::BaseLogger> staticLogger;
             std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry;
+
+            std::shared_ptr<pico::ibus::topology::BusTopologyManager> busTopologyManager;
 
             inline static Packetizer fromPiQPacketizer = Packetizer();
             inline static Packetizer fromCarQPacketizer = Packetizer();
@@ -110,7 +113,8 @@ namespace pico::ibus::dma {
 
             SingleCoreDmaManager(
                     std::shared_ptr<logger::BaseLogger> logger,
-                    std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry
+                    std::shared_ptr<observerRegistry::ObserverRegistry> observerRegistry,
+                    std::shared_ptr<pico::ibus::topology::BusTopologyManager>
             );
 
             void cpu0setup() override;
