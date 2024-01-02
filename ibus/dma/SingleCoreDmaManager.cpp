@@ -110,21 +110,24 @@ namespace pico::ibus::dma {
         gpio_set_function(UART1_PICOPROBE_TX, GPIO_FUNC_UART);
 
 
+        //Uart0 always goes to MCP2020 to IBUS
         //We're 9600 8E1, just like the modbmw interface
         uart_init(uart0, 9600);
         uart_set_hw_flow(uart0, false, false);
         uart_set_format(uart0, 8, 1, UART_PARITY_EVEN); //8E1
 
-        bool hookedUpToPicoProbe = true; //Set to false if the UART 1 is sent to rpi rx/tx pins
-        if (hookedUpToPicoProbe) {
-            uart_init(uart1, 115200);
-            uart_set_hw_flow(uart1, false, false);
-            uart_set_format(uart1, 8, 1, UART_PARITY_NONE); //8N1
-        } else {
-            uart_init(uart1, 9600);
-            uart_set_hw_flow(uart1, false, false);
-            //We're 9600 8E1, just like the modbmw interface
-            uart_set_format(uart1, 8, 1, UART_PARITY_EVEN); //8E1
+        switch (busTopologyManager->getBusToplogy()) {
+            case topology::CAR_WITH_PI:
+                //We're 9600 8E1, just like the modbmw interface
+                uart_init(uart1, 9600);
+                uart_set_hw_flow(uart1, false, false);
+                uart_set_format(uart1, 8, 1, UART_PARITY_EVEN); //8E1
+                break;
+            case topology::SLED_NO_PI:
+                uart_init(uart1, 115200);
+                uart_set_hw_flow(uart1, false, false);
+                uart_set_format(uart1, 8, 1, UART_PARITY_NONE); //8N1
+                break;
         }
 
         //TODO do we want an IRQ when the fault line on the lin transceiver goes high?
@@ -149,7 +152,14 @@ namespace pico::ibus::dma {
         //gpio_put(LIN_ChipSelect, true);
 
 
-        stdio_uart_init_full(uart1, 115200, UART1_PICOPROBE_TX, UART1_PICOPROBE_RX);
+        if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
+            stdio_uart_init_full(uart1, 115200, UART1_PICOPROBE_TX, UART1_PICOPROBE_RX);
+        }
+
+        if (busTopologyManager->getBusToplogy() == topology::BusTopology::CAR_WITH_PI) {
+            //TODO This might depend on CMake settings to make sure that usb stdio is enabled.
+            stdio_init_all();
+        }
         //Not sure if this helps.
         //sleep_ms(200);
 
