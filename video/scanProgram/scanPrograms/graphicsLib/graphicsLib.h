@@ -125,6 +125,8 @@ namespace video::scanProgram {
 
             void clearFrame();
 
+            bool hasGraphicsToRender();
+
             void drawLine(
                     scanVideo::graphics::command::PxCoord topLeftPx,
                     scanVideo::graphics::command::PxCoord bottomRightPx,

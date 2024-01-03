@@ -60,7 +60,19 @@ namespace pico::di {
             std::shared_ptr<video::ScreenManager::MainScreen::MainScreen> mainScreen;
             std::shared_ptr<video::ScreenManager::ScreenManager> screenManager;
 
-            std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
+            /// Graphics Libs
+            std::shared_ptr<video::scanVideo::graphics::command::CommandProcessor> bootsplashCommandProcessor;
+            std::shared_ptr<video::scanProgram::graphicsLib> bootsplashGraphicsLib;
+
+            std::shared_ptr<video::scanVideo::graphics::command::CommandProcessor> menuCommandProcessor;
+            std::shared_ptr<video::scanProgram::graphicsLib> menuGraphicsLib;
+
+            std::shared_ptr<video::scanVideo::graphics::command::CommandProcessor> demoCommandProcessor;
+            std::shared_ptr<video::scanProgram::graphicsLib> demoGraphicsLib;
+
+            std::shared_ptr<video::scanVideo::graphics::command::CommandProcessor> clockCommandProcessor;
+            std::shared_ptr<video::scanProgram::graphicsLib> clockGraphicsLib;
+            /// Graphics Libs
 
             std::shared_ptr<video::scanProgram::scanPrograms::noop::NoopScanProgram> noopScanProgram;
             std::shared_ptr<video::scanProgram::scanPrograms::menu::MenuScanProgram> menuScanProgram;

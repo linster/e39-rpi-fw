@@ -9,13 +9,22 @@ namespace video::scanProgram::scanPrograms::menu {
 
     MenuScanProgram::MenuScanProgram(
             std::shared_ptr<pico::logger::BaseLogger> logger,
-            std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib,
+            std::shared_ptr<video::scanProgram::graphicsLib> bootsplashGraphicsLib,
+            std::shared_ptr<video::scanProgram::graphicsLib> menuGraphicsLib,
             std::shared_ptr<ScreenManager::ScreenManager> screenManager) {
         this->logger = logger;
-        this->graphicsLib = graphicsLib;
-        this->graphicsLib->setDisplayMetrics(
+
+        this->bootsplashGraphicsLib = bootsplashGraphicsLib;
+        this->menuGraphicsLib = menuGraphicsLib;
+
+        this->bootsplashGraphicsLib->setDisplayMetrics(
                 DisplayMetrics(getDisplayHeightPx(), getDisplayWidthPx())
         );
+
+        this->menuGraphicsLib->setDisplayMetrics(
+                DisplayMetrics(getDisplayHeightPx(), getDisplayWidthPx())
+        );
+
         this->screenManager = screenManager;
         init(this->logger);
     }
@@ -41,91 +50,54 @@ namespace video::scanProgram::scanPrograms::menu {
     void MenuScanProgram::onScanProgramStop() {
         logger->d(getTag(), "onScanProgramStop()");
 
-        graphicsLib->clearFrame(); //Free up some memory
+        menuGraphicsLib->clearFrame(); //Free up some memory
 
         unRegisterOnFocusChangeCallback();
     }
 
     void MenuScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
-        graphicsLib->render_commandProcessed(scanline_buffer);
+
+        //TODO find these numbers.
+        uint16_t menuTopScanline = 10;
+        uint16_t menuBottomScanline = 11;
+
+        uint16_t line_num = scanvideo_scanline_number(scanline_buffer->scanline_id);
+
+        if (line_num < menuTopScanline || line_num > menuBottomScanline) {
+            bootsplashGraphicsLib->render_commandProcessed(scanline_buffer);
+        } else {
+            menuGraphicsLib->render_commandProcessed(scanline_buffer);
+        }
     }
 
     void MenuScanProgram::drawScreenBackground() {
-        uint8_t topColourHeight = 40;
-        graphicsLib->drawFilledRectangle(
-                scanVideo::graphics::command::PxCoord(1,1),
-                scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 2,getDisplayHeightPx() - topColourHeight),
-                graphicsLib::LINOS_BACKGROUND
-        );
+        //First check if the bootsplashScreenGraphicsLib has the data we need.
+        //If so, skip.
 
-        uint8_t linOs_x = 5;
-        uint8_t linOs_y = 20;
-        uint8_t linOs_height = 2;
-        std::string linOs_text = std::string("Linster OS");
-        graphicsLib->drawText(
-                linOs_text,
-                scanVideo::graphics::command::PxCoord(linOs_x + 3, linOs_y + 2),
-                graphicsLib->getPalette()[0],
-                linOs_height
-        );
-        graphicsLib->drawText(
-                linOs_text,
-                scanVideo::graphics::command::PxCoord(linOs_x, linOs_y),
-                graphicsLib->getPalette()[15],
-                linOs_height
-        );
+        if (bootsplashGraphicsLib->hasGraphicsToRender()) {
+            //The bootsplash already has the background, let's not waste cycles recomputing it.
+            return;
+        }
 
-        std::string automotive_text = std::string("Automotive");
-        uint8_t automotive_x = linOs_x + (8 * linOs_height);
-        uint8_t automotive_y = linOs_y + (8 * linOs_height) + 8;
-        uint8_t automotive_height = 1;
-        graphicsLib->drawText(
-                "Automotive",
-                scanVideo::graphics::command::PxCoord(automotive_x, automotive_y),
-                graphicsLib->getPalette()[15],
-                automotive_height
-        );
+        logger->w(getTag(), "drawScreenBackground couldn't reuse the bootsplash background, redrawing.");
 
-        graphicsLib->drawFilledRectangle(
-                scanVideo::graphics::command::PxCoord(1,getDisplayHeightPx() - topColourHeight),
-                scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 2,getDisplayHeightPx() - 2),
-                graphicsLib->getPalette()[14]
-        );
-
-        uint32_t copyrightColour = graphicsLib::LINOS_BACKGROUND;
-        graphicsLib->drawText(
-                "e39-Rpi",
-                scanVideo::graphics::command::PxCoord(10, getDisplayHeightPx() - topColourHeight + 8),
-                copyrightColour,
-                1
-        );
-
-        graphicsLib->drawText(
-                "  Stefan Martynkiw 2019-2024",
-                scanVideo::graphics::command::PxCoord(10, getDisplayHeightPx() - topColourHeight + 10 + 10),
-                copyrightColour,
-                1
-        );
-
-        graphicsLib->drawTextSpecialCharacter(
-                graphicsLib::SPECIAL_CHARACTER_COPYRIGHT,
-                scanVideo::graphics::command::PxCoord(20, getDisplayHeightPx() - topColourHeight + 10 + 10),
-                copyrightColour,
-                1
-        );
+        bootsplash::BootsplashScanProgram::drawLinsterOs(
+                bootsplashGraphicsLib,
+                DisplayMetrics(getDisplayHeightPx(), getDisplayWidthPx())
+                );
     }
 
     void MenuScanProgram::drawScreen(std::shared_ptr<ScreenManager::Screen> screen) {
 
-        graphicsLib->drawFilledRectangle(
+        menuGraphicsLib->drawFilledRectangle(
             scanVideo::graphics::command::PxCoord(30, 58),
             scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, 58 + 8 + 2),
-            graphicsLib->getPalette()[14]
+            menuGraphicsLib->getPalette()[14]
             );
-        graphicsLib->drawText(
+        menuGraphicsLib->drawText(
                 screen->getTitle(),
                 scanVideo::graphics::command::PxCoord(90, 60),
-                graphicsLib->getPalette()[4],
+                menuGraphicsLib->getPalette()[4],
                 1
                 );
 
@@ -146,18 +118,18 @@ namespace video::scanProgram::scanPrograms::menu {
         uint16_t menuItem_x = 30;
 
         if (item->getIsFocused()) {
-            graphicsLib->drawEmptyRectangle(
+            menuGraphicsLib->drawEmptyRectangle(
                     scanVideo::graphics::command::PxCoord(menuItem_x, tl),
                     scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, tl + 8 + 6),
-                    graphicsLib->getPalette()[15],
+                    menuGraphicsLib->getPalette()[15],
                     2
             );
         }
 
-        graphicsLib->drawText(
+        menuGraphicsLib->drawText(
                 item->getLabel(),
                 scanVideo::graphics::command::PxCoord(menuItem_x + 4, tl + 4),
-                graphicsLib->getPalette()[15],
+                menuGraphicsLib->getPalette()[15],
                 1
         );
 
@@ -165,7 +137,8 @@ namespace video::scanProgram::scanPrograms::menu {
     }
 
     void MenuScanProgram::blankMenuItemArea() {
-        graphicsLib->drawFilledRectangle(
+        menuGraphicsLib->clearFrame();
+        menuGraphicsLib->drawFilledRectangle(
                 scanVideo::graphics::command::PxCoord(30,58),
                 scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, getDisplayHeightPx() - 40 - 2),
                 graphicsLib::LINOS_BACKGROUND
@@ -175,7 +148,7 @@ namespace video::scanProgram::scanPrograms::menu {
     void MenuScanProgram::refreshUi() {
         logger->d(getTag(), "RefreshUI");
         scanvideo_wait_for_vblank();
-        graphicsLib->clearFrame();
+        menuGraphicsLib->clearFrame();
         drawScreenBackground();
         drawScreen(screenManager->getCurrentScreen());
     }

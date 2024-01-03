@@ -134,5 +134,9 @@ namespace video::scanProgram {
         this->commandProcessor->clearScanlines(min, max);
     }
 
+    bool graphicsLib::hasGraphicsToRender() {
+        return this->commandProcessor->hasGraphicsToRender();
+    }
+
 
 } // scanProgram

@@ -219,5 +219,10 @@ namespace video::scanVideo::graphics::command {
 
     }
 
+    bool CommandProcessor::hasGraphicsToRender() {
+        //TODO maybe check if each key is just an empty vector too?
+        return !rleRunsForLine.empty();
+    }
+
 
 } // command

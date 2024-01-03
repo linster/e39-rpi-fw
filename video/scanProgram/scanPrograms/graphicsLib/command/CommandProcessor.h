@@ -98,6 +98,7 @@ namespace video::scanVideo::graphics::command {
         void setBaseColour(uint32_t color);
 
         void clearScanlines(uint16_t min, uint16_t max);
+        bool hasGraphicsToRender();
     };
 
 } // command

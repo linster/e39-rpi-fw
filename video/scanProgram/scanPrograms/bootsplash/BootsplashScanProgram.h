@@ -24,6 +24,11 @@ namespace video::scanProgram::scanPrograms::bootsplash {
             std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib
         );
 
+        static void drawLinsterOs(
+                std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib,
+                DisplayMetrics displayMetrics
+                );
+
     private:
         std::shared_ptr<pico::logger::BaseLogger> logger;
         std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;

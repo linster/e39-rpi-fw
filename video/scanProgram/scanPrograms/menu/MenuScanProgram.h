@@ -6,6 +6,7 @@
 #define PICOTEMPLATE_MENUSCANPROGRAM_H
 
 #include <video/scanProgram/scanPrograms/BaseScanProgram.h>
+#include <video/scanProgram/scanPrograms/bootsplash/BootsplashScanProgram.h>
 #include <video/scanProgram/scanPrograms/graphicsLib/graphicsLib.h>
 #include <video/screenManager/Screen.h>
 #include <video/screenManager/ScreenItem.h>
@@ -17,7 +18,9 @@ namespace video::scanProgram::scanPrograms::menu {
 
     private:
         std::shared_ptr<pico::logger::BaseLogger> logger;
-        std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
+
+        std::shared_ptr<video::scanProgram::graphicsLib> bootsplashGraphicsLib;
+        std::shared_ptr<video::scanProgram::graphicsLib> menuGraphicsLib;
 
         std::shared_ptr<ScreenManager::ScreenManager> screenManager;
 
@@ -35,7 +38,8 @@ namespace video::scanProgram::scanPrograms::menu {
     public:
         MenuScanProgram(
                 std::shared_ptr<pico::logger::BaseLogger> logger,
-                std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib,
+                std::shared_ptr<video::scanProgram::graphicsLib> bootsplashGraphicsLib,
+                std::shared_ptr<video::scanProgram::graphicsLib> menuGraphicsLib,
                 std::shared_ptr<ScreenManager::ScreenManager> screenManager
         );
 

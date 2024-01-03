@@ -12,6 +12,8 @@ namespace pico::di {
 
             this->busTopologyManager = std::make_shared<pico::ibus::topology::BusTopologyManager>();
 
+            //TODO we might want to make this a class variable so it isn't popped off the stack when
+            //TODO this method completes.
             std::function<std::shared_ptr<pico::ibus::dma::IDmaManager>()> dmaManagerAccessor = [this](){
                     return this->dmaManager;
             };
@@ -37,6 +39,8 @@ namespace pico::di {
                     std::vector<std::shared_ptr<ibus::observers::BaseObserver>>()
             );
 
+            //TODO we might want to make this a class variable so it isn't popped off the stack when
+            //TODO this method completes.
             std::shared_ptr<config::FlashConfigurationStore> flashConfigurationStore = std::make_shared<config::FlashConfigurationStore>(this->logger);
             std::shared_ptr<ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter =
                     std::make_shared<ibus::output::writer::ConfigurationStatusWriter>(
@@ -76,15 +80,35 @@ namespace pico::di {
 
             this->screenManager = std::make_shared<video::ScreenManager::ScreenManager>();
 
-            std::shared_ptr<video::scanVideo::graphics::command::CommandProcessor> commandProcessor =
+            //Use in bootsplash and menu to recycle frame-buffer.
+            this->bootsplashCommandProcessor =
                     std::make_shared<video::scanVideo::graphics::command::CommandProcessor>(logger);
-            this->graphicsLib = std::make_shared<video::scanProgram::graphicsLib>(commandProcessor);
+            this->bootsplashGraphicsLib =
+                    std::make_shared<video::scanProgram::graphicsLib>(bootsplashCommandProcessor);
+
+            this->menuCommandProcessor =
+                    std::make_shared<video::scanVideo::graphics::command::CommandProcessor>(logger);
+            this->bootsplashGraphicsLib =
+                    std::make_shared<video::scanProgram::graphicsLib>(menuCommandProcessor);
+
+            //Use for the demo scan program only so there's no shared state
+            this->demoCommandProcessor =
+                    std::make_shared<video::scanVideo::graphics::command::CommandProcessor>(logger);
+            this->demoGraphicsLib =
+                    std::make_shared<video::scanProgram::graphicsLib>(demoCommandProcessor);
+
+            //Use for the clock scan program only so there's no shared state
+            this->clockCommandProcessor =
+                    std::make_shared<video::scanVideo::graphics::command::CommandProcessor>(logger);
+            this->clockGraphicsLib =
+                    std::make_shared<video::scanProgram::graphicsLib>(clockCommandProcessor);
+
 
             this->noopScanProgram = std::make_shared<video::scanProgram::scanPrograms::noop::NoopScanProgram>(logger);
-            this->menuScanProgram = std::make_shared<video::scanProgram::scanPrograms::menu::MenuScanProgram>(logger, graphicsLib, screenManager);
-            this->demoScanProgram = std::make_shared<video::scanProgram::scanPrograms::demo::DemoScanProgram>(logger, graphicsLib);
-            this->clockScanProgram = std::make_shared<video::scanProgram::scanPrograms::clock::ClockScanProgram>(logger, graphicsLib);
-            this->bootsplashScanProgram = std::make_shared<video::scanProgram::scanPrograms::bootsplash::BootsplashScanProgram>(logger, graphicsLib);
+            this->menuScanProgram = std::make_shared<video::scanProgram::scanPrograms::menu::MenuScanProgram>(logger, bootsplashGraphicsLib, menuGraphicsLib, screenManager);
+            this->demoScanProgram = std::make_shared<video::scanProgram::scanPrograms::demo::DemoScanProgram>(logger, demoGraphicsLib);
+            this->clockScanProgram = std::make_shared<video::scanProgram::scanPrograms::clock::ClockScanProgram>(logger, clockGraphicsLib);
+            this->bootsplashScanProgram = std::make_shared<video::scanProgram::scanPrograms::bootsplash::BootsplashScanProgram>(logger, bootsplashGraphicsLib);
 
             this->scanProgramManager = std::make_shared<video::scanProgram::ScanProgramManager>(
                     logger,
