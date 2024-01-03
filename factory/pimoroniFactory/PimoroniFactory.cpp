@@ -78,6 +78,11 @@ namespace pico::di {
                     dmaManager
             );
 
+            this->uartForwarderWriter = std::make_shared<pico::ibus::output::writer::UartForwarderWriter>(
+                    this->logger,
+                    this->dmaManager
+                    );
+
             this->screenManager = std::make_shared<video::ScreenManager::ScreenManager>();
 
             //Use in bootsplash and menu to recycle frame-buffer.
@@ -135,7 +140,10 @@ namespace pico::di {
 
             this->screenManager->registerScreen(std::reinterpret_pointer_cast<video::ScreenManager::Screen>(mainScreen));
 
-            this->mockIncomingIBusObserver = std::make_shared<ibus::observers::MockObserver>(this->logger);
+            this->mockIncomingIBusObserver = std::make_shared<ibus::observers::MockObserver>(
+                    this->logger,
+                    this->busTopologyManager
+                    );
 
              this->ignitionStateObserver = std::make_shared<ibus::observers::IgnitionStateObserver>(
                      logger,
@@ -183,6 +191,12 @@ namespace pico::di {
                      screenPowerManager,
                      testingOutputWriter
                      );
+             this->uartForwarderObserver = std::make_shared<ibus::observers::UartForwarderObserver>(
+                     this->logger,
+                     this->busTopologyManager,
+                     this->uartForwarderWriter,
+                     this->videoSwitch
+                     );
 
 
             //Populate the list of observers in the ObserverRegistry and up-cast them.
@@ -204,7 +218,8 @@ namespace pico::di {
                     std::static_pointer_cast<ibus::observers::BaseObserver>(picoVideoRequestObserver));
             baseObservers->push_back(
                     std::static_pointer_cast<ibus::observers::BaseObserver>(telephoneLongPressObserver));
-
+            baseObservers->push_back(
+                    std::static_pointer_cast<ibus::observers::BaseObserver>(uartForwarderObserver));
         }
 
         PimoroniFactory::PimoroniFactory() {

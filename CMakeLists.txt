@@ -168,6 +168,10 @@ target_sources(
         main.cpp
         ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.cpp
         ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h
+        ibus/observerRegistry/observers/uartForwarderObserver/UartForwarderObserver.cpp
+        ibus/observerRegistry/observers/uartForwarderObserver/UartForwarderObserver.h
+        ibus/outputWriterApi/uartForwarderWriter/UartForwarderWriter.cpp
+        ibus/outputWriterApi/uartForwarderWriter/UartForwarderWriter.h
         ibus/outputWriterApi/PicoToPi/ibusLoggerOutput/IbusLoggerOutput.cpp
         ibus/outputWriterApi/PicoToPi/ibusLoggerOutput/IbusLoggerOutput.h
         ibus/outputWriterApi/screenPowerManager/ScreenPowerManager.cpp

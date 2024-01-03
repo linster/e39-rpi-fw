@@ -10,62 +10,66 @@
 #include <cstddef>
 #include "IbusDeviceEnum.h"
 
-namespace pico {
-    namespace ibus {
-        namespace data {
+namespace pico::ibus::data {
 
-            class IbusPacket : std::enable_shared_from_this<IbusPacket>{
+    ///Used by the DMA Manager to label a packet's source so that it
+    ///can be forwarded to other UARTS
+    enum PacketSource { NOT_SET, FROM_CAR, FROM_PI };
 
-            private:
-                //The complete raw packet that the other fields are made of, including CRC.
-                std::vector<uint8_t> completeRawPacket = std::vector<uint8_t>();
+    class IbusPacket : std::enable_shared_from_this<IbusPacket>{
 
-                IbusDeviceEnum sourceDevice;
-                IbusDeviceEnum destinationDevice;
+    private:
+        //The complete raw packet that the other fields are made of, including CRC.
+        std::vector<uint8_t> completeRawPacket = std::vector<uint8_t>();
 
-                uint8_t packetLength;
-                std::vector<uint8_t> data;
-                uint8_t givenCrc;
-                uint8_t actualCrc;
+        IbusDeviceEnum sourceDevice;
+        IbusDeviceEnum destinationDevice;
 
-                void cloneFrom(IbusPacket other);
+        uint8_t packetLength;
+        std::vector<uint8_t> data;
+        uint8_t givenCrc;
+        uint8_t actualCrc;
 
-            public:
+        void cloneFrom(IbusPacket other);
 
-                IbusPacket(std::array<uint8_t, 255> raw);
+        PacketSource packetSource = NOT_SET;
+    public:
 
-                explicit IbusPacket(std::vector<uint8_t> raw);
+        IbusPacket(std::array<uint8_t, 255> raw);
 
-                explicit IbusPacket(void * packetStart);
+        explicit IbusPacket(std::vector<uint8_t> raw);
 
-                IbusPacket(
-                        IbusDeviceEnum src,
-                        IbusDeviceEnum dest,
-                        std::vector<uint8_t> data
-                        );
+        explicit IbusPacket(void * packetStart);
 
-                IbusDeviceEnum getSourceDevice();
-                IbusDeviceEnum getDestinationDevice();
-                std::shared_ptr<std::vector<uint8_t>> getData();
-                //The CRC in the packet when it's assembled from a stream.
-                uint8_t getGivenCrc();
-                //The CRC in the packet after assembly.
-                uint8_t getActualCrc();
-                bool isPacketValid();
+        IbusPacket(
+                IbusDeviceEnum src,
+                IbusDeviceEnum dest,
+                std::vector<uint8_t> data
+                );
 
-                std::vector<uint8_t> getRawPacket();
+        IbusDeviceEnum getSourceDevice();
+        IbusDeviceEnum getDestinationDevice();
+        std::shared_ptr<std::vector<uint8_t>> getData();
+        //The CRC in the packet when it's assembled from a stream.
+        uint8_t getGivenCrc();
+        //The CRC in the packet after assembly.
+        uint8_t getActualCrc();
+        bool isPacketValid();
 
-                std::string toString();
+        std::vector<uint8_t> getRawPacket();
 
-                ~IbusPacket();
+        std::string toString();
 
-                static std::string IbusDeviceEnumToString(IbusDeviceEnum value);
+        ~IbusPacket();
 
-                //TODO override the equals to compare the rawPackets.
-            };
+        static std::string IbusDeviceEnumToString(IbusDeviceEnum value);
 
-        } // pico
-    } // ibus
+        //TODO override the equals to compare the rawPackets.
+
+        void setPacketSource(PacketSource source);
+        PacketSource getPacketSource();
+    };
+
 } // data
 
 #endif //PICOTEMPLATE_IBUSPACKET_H

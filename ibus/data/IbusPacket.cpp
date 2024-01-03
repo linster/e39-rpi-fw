@@ -252,6 +252,14 @@ namespace pico {
                 return ret;
             }
 
+            void IbusPacket::setPacketSource(PacketSource source) {
+                this->packetSource = source;
+            }
+
+            PacketSource IbusPacket::getPacketSource() {
+                return this->packetSource;
+            }
+
 
         } // pico
     } // ibus

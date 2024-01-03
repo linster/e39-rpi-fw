@@ -33,6 +33,8 @@
 #include <configuration/default/DefaultConfigurationProvider.h>
 #include <configuration/default/PimoroniDefaultConfigurationProvider.h>
 #include <video/screenManager/mainScreen/MainScreen.h>
+#include "ibus/outputWriterApi/uartForwarderWriter/UartForwarderWriter.h"
+#include "ibus/observerRegistry/observers/uartForwarderObserver/UartForwarderObserver.h"
 
 namespace pico::di {
 
@@ -56,6 +58,7 @@ namespace pico::di {
 
             std::shared_ptr<pico::ibus::output::writer::TestingOutputWriter> testingOutputWriter;
             std::shared_ptr<pico::ibus::output::writer::radio::AudioFocusOutputWriter> audioFocusOutputWriter;
+            std::shared_ptr<pico::ibus::output::writer::UartForwarderWriter> uartForwarderWriter;
 
             std::shared_ptr<video::ScreenManager::MainScreen::MainScreen> mainScreen;
             std::shared_ptr<video::ScreenManager::ScreenManager> screenManager;
@@ -93,7 +96,7 @@ namespace pico::di {
             std::shared_ptr<ibus::observers::PiPowerRequestObserver> piPowerRequestObserver;
             std::shared_ptr<ibus::observers::PicoVideoRequestObserver> picoVideoRequestObserver;
             std::shared_ptr<ibus::observers::TelephoneLongPressObserver> telephoneLongPressObserver;
-
+            std::shared_ptr<ibus::observers::UartForwarderObserver> uartForwarderObserver;
 
             std::shared_ptr<ibus::observerRegistry::ObserverRegistry> observerRegistry;
 

@@ -305,15 +305,16 @@ namespace pico::ibus::dma {
             }
 
             data::IbusPacket packetFromArray = data::IbusPacket(buffer);
-            observerRegistry->dispatchMessageToAllObservers(packetFromArray);
 
-//TODO dumb hack, convert the array to a vector so that we can call a different constructor.
-//            std::vector<uint8_t> bufferVector = std::vector<uint8_t>();
-//            for (uint8_t byte : buffer) {
-//                bufferVector.push_back(byte);
-//            }
-//            data::IbusPacket packetFromVector = data::IbusPacket(bufferVector);
-//            observerRegistry->dispatchMessageToAllObservers(packetFromVector);
+            if (queue == &fromCarQ) {
+                packetFromArray.setPacketSource(data::PacketSource::FROM_CAR);
+            }
+
+            if (queue == &fromPiQ) {
+                packetFromArray.setPacketSource(data::PacketSource::FROM_PI);
+            }
+
+            observerRegistry->dispatchMessageToAllObservers(packetFromArray);
 
             if (log_dispatch_trace) {
                 logger->d("SingleCoreDmaManager",
