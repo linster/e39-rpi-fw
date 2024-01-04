@@ -138,5 +138,17 @@ namespace video::scanProgram {
         return this->commandProcessor->hasGraphicsToRender();
     }
 
+    bool graphicsLib::getIsImmediateMode() {
+        return this->commandProcessor->getIsImmediateMode();
+    }
+
+    void graphicsLib::setImmediateMode(bool immediateModeOn) {
+        this->commandProcessor->setImmediateMode(immediateModeOn);
+    }
+
+    void graphicsLib::computeFrame() {
+        this->commandProcessor->computeFrame();
+    }
+
 
 } // scanProgram

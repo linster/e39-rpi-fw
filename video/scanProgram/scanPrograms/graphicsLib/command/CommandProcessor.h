@@ -60,6 +60,8 @@ namespace video::scanVideo::graphics::command {
 
         //Finish this (without depending on display metrics) to fill the screen with baseColour.
         //void drawSolidColorScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour);
+
+        bool isImmediateMode = true;
     public:
 
         explicit CommandProcessor(
@@ -99,6 +101,18 @@ namespace video::scanVideo::graphics::command {
 
         void clearScanlines(uint16_t min, uint16_t max);
         bool hasGraphicsToRender();
+
+        /** If true, we are in immediate mode, which means that every addCommand()
+         *  causes a computeFrame().
+         * @return
+         */
+        bool getIsImmediateMode();
+        /**
+         * Enables and disables immediate mode. If enabled, every addCommand() causes
+         * a computeFrame(), which can cause flickering when there's lots of text on screen.
+         * @param immediateModeOn
+         */
+        void setImmediateMode(bool immediateModeOn);
     };
 
 } // command

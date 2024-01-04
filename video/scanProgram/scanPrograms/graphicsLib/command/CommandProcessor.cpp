@@ -18,7 +18,10 @@ namespace video::scanVideo::graphics::command {
     //Called from CPU0
     void CommandProcessor::addCommand(std::unique_ptr<BaseCommand> baseCommand) {
         commandsToProcess.push_back(std::move(baseCommand));
-        computeFrame();
+
+        if (isImmediateMode) {
+            computeFrame();
+        }
     }
 
     //Called from CPU0
@@ -31,7 +34,9 @@ namespace video::scanVideo::graphics::command {
 
         commandsToProcess.push_back(std::move(ptr));
 
-        computeFrame();
+        if (isImmediateMode) {
+            computeFrame();
+        }
     }
 
     void CommandProcessor::clearFrame() {
@@ -222,6 +227,14 @@ namespace video::scanVideo::graphics::command {
     bool CommandProcessor::hasGraphicsToRender() {
         //TODO maybe check if each key is just an empty vector too?
         return !rleRunsForLine.empty();
+    }
+
+    bool CommandProcessor::getIsImmediateMode() {
+        return isImmediateMode;
+    }
+
+    void CommandProcessor::setImmediateMode(bool immediateModeOn) {
+        this->isImmediateMode = immediateModeOn;
     }
 
 

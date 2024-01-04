@@ -85,6 +85,9 @@ namespace video::scanProgram::scanPrograms::menu {
 
     void MenuScanProgram::drawScreen(std::shared_ptr<ScreenManager::Screen> screen) {
         blankMenuItemArea();
+
+        menuGraphicsLib->setImmediateMode(false);
+
         menuGraphicsLib->drawFilledRectangle(
             scanVideo::graphics::command::PxCoord(30, 58),
             scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, 58 + 8 + 2),
@@ -98,6 +101,9 @@ namespace video::scanProgram::scanPrograms::menu {
                 );
 
         drawScreenMenuItems(screen->getScreenItems());
+
+        menuGraphicsLib->computeFrame();
+        menuGraphicsLib->setImmediateMode(true);
     }
 
     void MenuScanProgram::drawScreenMenuItems(std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>> screenItems) {

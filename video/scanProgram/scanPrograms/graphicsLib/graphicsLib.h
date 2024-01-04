@@ -170,6 +170,20 @@ namespace video::scanProgram {
 
             void render_commandProcessed(scanvideo_scanline_buffer_t *scanline_buffer);
 
+            /** If true, we are in immediate mode, which means that every addCommand()
+             *  causes a computeFrame().
+             * @return
+             */
+            bool getIsImmediateMode();
+            /**
+             * Enables and disables immediate mode. If enabled, every addCommand() causes
+             * a computeFrame(), which can cause flickering when there's lots of text on screen.
+             * @param immediateModeOn
+             */
+            void setImmediateMode(bool immediateModeOn);
+
+            /** Tell the command processor to compute the frame. Necessary if immediate mode is off */
+            void computeFrame();
         };
 
     } // scanProgram
