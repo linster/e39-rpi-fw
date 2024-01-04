@@ -57,9 +57,8 @@ namespace video::scanProgram::scanPrograms::menu {
 
     void MenuScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
 
-        //TODO find these numbers.
-        uint16_t menuTopScanline = 10;
-        uint16_t menuBottomScanline = 11;
+        uint16_t menuTopScanline = 58;
+        uint16_t menuBottomScanline = getDisplayHeightPx() - 40 - 2;
 
         uint16_t line_num = scanvideo_scanline_number(scanline_buffer->scanline_id);
 
@@ -71,9 +70,6 @@ namespace video::scanProgram::scanPrograms::menu {
     }
 
     void MenuScanProgram::drawScreenBackground() {
-        //First check if the bootsplashScreenGraphicsLib has the data we need.
-        //If so, skip.
-
         if (bootsplashGraphicsLib->hasGraphicsToRender()) {
             //The bootsplash already has the background, let's not waste cycles recomputing it.
             return;
@@ -88,7 +84,7 @@ namespace video::scanProgram::scanPrograms::menu {
     }
 
     void MenuScanProgram::drawScreen(std::shared_ptr<ScreenManager::Screen> screen) {
-
+        blankMenuItemArea();
         menuGraphicsLib->drawFilledRectangle(
             scanVideo::graphics::command::PxCoord(30, 58),
             scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, 58 + 8 + 2),
@@ -137,7 +133,7 @@ namespace video::scanProgram::scanPrograms::menu {
     }
 
     void MenuScanProgram::blankMenuItemArea() {
-        menuGraphicsLib->clearFrame();
+        //menuGraphicsLib->clearFrame();
         menuGraphicsLib->drawFilledRectangle(
                 scanVideo::graphics::command::PxCoord(30,58),
                 scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, getDisplayHeightPx() - 40 - 2),
