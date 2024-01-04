@@ -88,7 +88,7 @@ namespace pico::di {
 
             this->menuCommandProcessor =
                     std::make_shared<video::scanVideo::graphics::command::CommandProcessor>(logger);
-            this->bootsplashGraphicsLib =
+            this->menuGraphicsLib =
                     std::make_shared<video::scanProgram::graphicsLib>(menuCommandProcessor);
 
             //Use for the demo scan program only so there's no shared state
