@@ -59,7 +59,7 @@ namespace video::scanVideo::graphics::command {
         void skipScanline(scanvideo_scanline_buffer_t *scanline_buffer);
 
         //Finish this (without depending on display metrics) to fill the screen with baseColour.
-        //void drawSolidColorScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour);
+        void drawSolidColorScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour);
 
         bool isImmediateMode = true;
     public:

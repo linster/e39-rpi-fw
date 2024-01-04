@@ -40,6 +40,8 @@ namespace video::scanProgram::scanPrograms::menu {
 
         registerOnFocusChangeCallback();
 
+        menuGraphicsLib->setBaseColour(graphicsLib::LINOS_BACKGROUND);
+
         drawScreenBackground();
 
         logger->d(getTag(), "onScanProgramStart() drew screen background");

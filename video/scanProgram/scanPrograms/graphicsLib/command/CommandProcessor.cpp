@@ -72,6 +72,11 @@ namespace video::scanVideo::graphics::command {
         }
         uint16_t line_num = scanvideo_scanline_number(scanline_buffer->scanline_id);
 
+        if (rleRunsForLine.count(line_num) == 0 && baseColour != 0) {
+            drawSolidColorScanline(scanline_buffer, baseColour);
+            return;
+        }
+
         //mutex_enter_blocking(&isFrameComputedMutex);
         if (rleRunsForLine.count(line_num) == 0) {
             //No command has artifacts for the line, so skip it
@@ -235,6 +240,32 @@ namespace video::scanVideo::graphics::command {
 
     void CommandProcessor::setImmediateMode(bool immediateModeOn) {
         this->isImmediateMode = immediateModeOn;
+    }
+
+    void CommandProcessor::drawSolidColorScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour) {
+
+        uint16_t *p = (uint16_t *) scanline_buffer->data;
+
+        *p++ = COMPOSABLE_COLOR_RUN;
+        uint32_t color = colour;
+        *p++ = color;
+        *p++ = 400 - 3;
+
+        // 32 * 3, so we should be word aligned
+//        assert(!(3u & (uintptr_t) p));
+
+        // black pixel to end line
+        *p++ = COMPOSABLE_RAW_1P;
+        *p++ = 0;
+        // end of line with alignment padding
+        *p++ = COMPOSABLE_EOL_SKIP_ALIGN;
+        *p++ = 0;
+
+        scanline_buffer->data_used = ((uint32_t *) p) - scanline_buffer->data;
+        assert(scanline_buffer->data_used < scanline_buffer->data_max);
+
+        scanline_buffer->status = SCANLINE_OK;
+
     }
 
 
