@@ -21,15 +21,18 @@ namespace pico::ibus::topology {
          *          |                            | (swd)
          *          v                            v
          *      +--------+                  +--------+       +---------+
-         *      | Laptop |<==(usb stdio)===>|  Pico  |<=====>| MCP2020 | (UART0, 9600-8E1, IBUS raw)
+         *      | Laptop |                  |  Pico  |<=====>| MCP2020 | (UART0, 9600-8E1, IBUS raw)
          *      +--------+                  +--------+       +---------+
          *                                      ^^
-         *                                      ||<......................(UART1, 9600-8E1, IBUS raw)
+         *                                      ||<......................(USB stdio, 9600-8E1, IBUS raw)
          *                                      vv
          *                                  +--------+
          *                                  |  Rpi  |
          *                                  +-------+
          *
+         * We can't use UART1 to talk to the Rpi because when the Rpi is in display parallel mode
+         * to get VGA-out, there aren't enough GPIO pins we can use (and they're all disabled for SPI
+         * too). So, we run another USB cable from the pico to the pi.
          */
         CAR_WITH_PI,
 
@@ -51,8 +54,8 @@ namespace pico::ibus::topology {
          *      +--------+                  +--------+       +---------+
          *
          *                                  +--------+
-         *                                  |  Rpi  |
-         *                                  +-------+
+         *                                  |  Rpi   |
+         *                                  +--------+
          *
          */
          SLED_NO_PI
