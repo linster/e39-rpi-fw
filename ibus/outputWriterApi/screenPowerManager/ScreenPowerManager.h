@@ -49,6 +49,12 @@ namespace pico {
 
                     void sendScreenInitializationMessage();
 
+                    //TODO a method to blank the screen so that when video switch != upstream,
+                    //TODO there is nothing the user can click on
+                    //https://github.com/piersholt/wilhelm-docs/blob/master/radio/46.md
+                    //I think there's a packet we can send with all the radio clickable stuff
+                    //disabled.
+
                 protected:
                     std::shared_ptr<dma::IDmaManager> getDmaManager() override;
                 };
