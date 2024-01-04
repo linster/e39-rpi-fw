@@ -141,12 +141,13 @@ namespace video::scanProgram::scanPrograms::menu {
     }
 
     void MenuScanProgram::blankMenuItemArea() {
-        //menuGraphicsLib->clearFrame();
+        menuGraphicsLib->clearFrame();
         menuGraphicsLib->drawFilledRectangle(
                 scanVideo::graphics::command::PxCoord(30,58),
                 scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, getDisplayHeightPx() - 40 - 2),
                 graphicsLib::LINOS_BACKGROUND
                 );
+        menuGraphicsLib->computeFrame();
     }
 
     void MenuScanProgram::refreshUi() {
