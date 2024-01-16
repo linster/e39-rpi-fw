@@ -1,0 +1,21 @@
+//
+// Created by stefan on 1/15/24.
+//
+
+
+//Valid values
+//CMAKE_BUS_TOPOLOGY_CAR_WITH_PI
+//CMAKE_BUS_TOPOLOGY_SLED_NO_PI
+#cmakedefine CMAKE_BUS_TOPOLOGY @CMAKE_BUS_TOPOLOGY@
+
+#ifdef CMAKE_BUS_TOPOLOGY
+    #if (CMAKE_BUS_TOPOLOGY == CMAKE_BUS_TOPOLOGY_CAR_WITH_PI)
+    #define CMAKE_BUS_TOPOLOGY_CAR_WITH_PI
+    #endif
+#endif
+
+#ifdef CMAKE_BUS_TOPOLOGY
+    #if (CMAKE_BUS_TOPOLOGY == CMAKE_BUS_TOPOLOGY_SLED_NO_PI)
+    #define CMAKE_BUS_TOPOLOGY_SLED_NO_PI
+    #endif
+#endif

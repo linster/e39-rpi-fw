@@ -337,6 +337,27 @@ target_link_libraries(PicoTemplate
 # Create map/bin/hex/uf2 files
 pico_add_extra_outputs(PicoTemplate)
 
+
+#https://discourse.cmake.org/t/how-to-get-access-cmake-variable-in-a-header-file/7125
+#https://cmake.org/cmake/help/latest/command/configure_file.html
+
+### See PicoBusTopology.h for details. Valid values are:
+# CMAKE_BUS_TOPOLOGY_CAR_WITH_PI
+# CMAKE_BUS_TOPOLOGY_SLED_NO_PI
+set(CMAKE_BUS_TOPOLOGY "CMAKE_BUS_TOPOLOGY_SLED_NO_PI")
+
+configure_file(
+        ibus/dma/topology/CMakeHeaderFlags.in.h
+        ibus/dma/topology/CMakeHeaderFlags.h
+)
+target_include_directories(
+        PicoTemplate
+        PUBLIC
+#        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}_DIR}/ibus/dma/topology>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/ibus/dma/topology>
+#        ${CMAKE_CURRENT_BINARY_DIR}/ibus/dma/topology>
+)
+
 # Enable USB serial
 #TODO we need to have a flag here that the bus topology manager also reads.
 #TODO set the stdios differently depending on the flag.

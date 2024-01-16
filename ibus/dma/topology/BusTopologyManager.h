@@ -6,6 +6,7 @@
 #define PICOTEMPLATE_BUSTOPOLOGYMANAGER_H
 
 #include "PicoBusTopology.h"
+#include <CMakeHeaderFlags.h>
 
 namespace pico::ibus::topology {
 
