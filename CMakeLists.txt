@@ -340,11 +340,13 @@ pico_add_extra_outputs(PicoTemplate)
 
 #https://discourse.cmake.org/t/how-to-get-access-cmake-variable-in-a-header-file/7125
 #https://cmake.org/cmake/help/latest/command/configure_file.html
+# @value@ turns into a name substitution, TCL style for a variable
+# in scope in a CMakeScript. Wild. Literally expecting set(value 5).
 
 ### See PicoBusTopology.h for details. Valid values are:
 # CMAKE_BUS_TOPOLOGY_CAR_WITH_PI
 # CMAKE_BUS_TOPOLOGY_SLED_NO_PI
-set(CMAKE_BUS_TOPOLOGY "CMAKE_BUS_TOPOLOGY_SLED_NO_PI")
+set(CMAKE_BUS_TOPOLOGY CMAKE_BUS_TOPOLOGY_SLED_NO_PI)
 
 configure_file(
         ibus/dma/topology/CMakeHeaderFlags.in.h
@@ -353,17 +355,25 @@ configure_file(
 target_include_directories(
         PicoTemplate
         PUBLIC
-#        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}_DIR}/ibus/dma/topology>
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/ibus/dma/topology>
-#        ${CMAKE_CURRENT_BINARY_DIR}/ibus/dma/topology>
 )
 
 # Enable USB serial
 #TODO we need to have a flag here that the bus topology manager also reads.
 #TODO set the stdios differently depending on the flag.
-pico_enable_stdio_usb(PicoTemplate 0)
-pico_enable_stdio_uart(PicoTemplate 1)
+#pico_enable_stdio_usb(PicoTemplate 0)
+#pico_enable_stdio_uart(PicoTemplate 1)
 
+if(CMAKE_BUS_TOPOLOGY EQUAL CMAKE_BUS_TOPOLOGY_SLED_NO_PI)
+    pico_enable_stdio_usb(PicoTemplate 0)
+    pico_enable_stdio_uart(PicoTemplate 1)
+endif()
+
+
+if(CMAKE_BUS_TOPOLOGY EQUAL CMAKE_BUS_TOPOLOGY_CAR_WITH_PI)
+    pico_enable_stdio_usb(PicoTemplate 1)
+    pico_enable_stdio_uart(PicoTemplate 0)
+endif()
 #Set PicoVGA Params
 
 #target_compile_definitions(PicoTemplate PUBLIC IS_TWO_BPP=false)
