@@ -34,6 +34,7 @@ namespace video::scanProgram::scanPrograms::bootsplash {
         std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
 
         BootSplashType bootSplashType = LINSTER_OS;
+//        BootSplashType bootSplashType = GOOSE;
 
         void onScanProgramStart_drawLinsterOS();
         void onScanProgramStart_BMW();

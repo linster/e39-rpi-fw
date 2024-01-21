@@ -158,5 +158,24 @@ namespace video::scanProgram::scanPrograms::bootsplash {
 
     void BootsplashScanProgram::onScanProgramStart_Goose() {
 
+//        std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs = std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>>();
+        uint16_t topScanline = 58;
+        uint16_t bottomScanline = topScanline + 128;
+
+        uint32_t color_outlineTriange = PICO_COLOR_FROM_RGB2(1, 1, 1);
+        uint32_t color_water = PICO_COLOR_FROM_RGB2(0, 0, 3);
+        uint32_t color_letters = PICO_COLOR_FROM_RGB2(0, 3, 0);
+
+
+//        graphicsLib->setImmediateMode(false);
+//        graphicsLib->contributeRleRuns(runs);
+        graphicsLib->drawFilledRectangle(
+                scanVideo::graphics::command::PxCoord(100, topScanline),
+                scanVideo::graphics::command::PxCoord(200, 90),
+                PICO_COLOR_FROM_RGB2(2, 2, 2)
+                );
+//        graphicsLib->setImmediateMode(true);
+//        graphicsLib->computeFrame();
+
     }
 } // bootsplash
