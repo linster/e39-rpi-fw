@@ -8,6 +8,8 @@
 #include <video/scanProgram/scanPrograms/BaseScanProgram.h>
 #include <video/scanProgram/scanPrograms/graphicsLib/graphicsLib.h>
 
+using video::scanVideo::graphics::command::PxCoord;
+
 namespace video::scanProgram::scanPrograms::bootsplash {
 
     class BootsplashScanProgram : public BaseScanProgram {
@@ -33,8 +35,8 @@ namespace video::scanProgram::scanPrograms::bootsplash {
         std::shared_ptr<pico::logger::BaseLogger> logger;
         std::shared_ptr<video::scanProgram::graphicsLib> graphicsLib;
 
-        BootSplashType bootSplashType = LINSTER_OS;
-//        BootSplashType bootSplashType = GOOSE;
+//        BootSplashType bootSplashType = LINSTER_OS;
+        BootSplashType bootSplashType = GOOSE;
 
         void onScanProgramStart_drawLinsterOS();
         void onScanProgramStart_BMW();
