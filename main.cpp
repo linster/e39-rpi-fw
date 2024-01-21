@@ -52,6 +52,13 @@ int main() {
 
     applicationContainer->onMain(); //Run main one-time setup code.
 
+    //https://github.com/raspberrypi/pico-examples/blob/eca13acf57916a0bd5961028314006983894fc84/multicore/multicore_fifo_irqs/multicore_fifo_irqs.c#L53
+    // We MUST start the other core before we enabled FIFO interrupts.
+    // This is because the launch uses the FIFO's, enabling interrupts before
+    // they are used for the launch will result in unexpected behaviour.
+    //TODO I think this is why we sometimes crash on boot. We might need to rejig
+    //TODO how we start up the cores.
+
     multicore_reset_core1();
     multicore_launch_core1(core1_entry); //Launch the coprocessor and have it block.
 //    Push the pointer to the application container to the second core. This unblocks the co-processor.

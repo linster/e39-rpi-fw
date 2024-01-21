@@ -270,6 +270,8 @@ target_sources(
         ibus/dma/topology/BusTopologyManager.h
         ibus/dma/topology/BusTopologyManager.cpp
 
+        startupManager/StartupManager.cpp
+        startupManager/StartupManager.h
 )
 
 target_include_directories(
