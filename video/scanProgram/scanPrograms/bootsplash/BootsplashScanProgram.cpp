@@ -186,12 +186,12 @@ namespace video::scanProgram::scanPrograms::bootsplash {
                 0//PICO_COLOR_FROM_RGB2(2, 2, 2)
                 );
 
-        graphicsLib->drawLine(
-                PxCoord(logoCenterX, topScanline),
-                PxCoord(logoCenterX, bottomRight.getY()),
-                PICO_COLOR_FROM_RGB2(3, 3, 3),
-                1
-                );
+//        graphicsLib->drawLine(
+//                PxCoord(logoCenterX, topScanline),
+//                PxCoord(logoCenterX, bottomRight.getY()),
+//                PICO_COLOR_FROM_RGB2(3, 3, 3),
+//                1
+//                );
 
         uint8_t outerTriangleThickness = 5;
         PxCoord outerTriangle_topLeft = PxCoord(topLeft.getX() + (logoSize / 8), topLeft.getY());
@@ -266,6 +266,29 @@ namespace video::scanProgram::scanPrograms::bootsplash {
         //end draw the mountain top snow
 
 
+        //left rock peak
+        uint8_t rockPeakTop = mountainSnowBottomY - 3;
+        graphicsLib->drawDelta(
+                rockPeakTop,
+                PxCoord(logoCenterX - (mountainSnowBottomWidth), mountainSnowBottomY),
+                PxCoord(logoCenterX, mountainSnowBottomY),
+                true,
+                1,
+                color_mountainRocks
+                );
+        //end left rock peak
+
+        //right rock peak
+        graphicsLib->drawDelta(
+                rockPeakTop,
+                PxCoord(logoCenterX, mountainSnowBottomY),
+                PxCoord(logoCenterX + (mountainSnowBottomWidth), mountainSnowBottomY),
+                true,
+                1,
+                color_mountainRocks
+        );
+        //end right rock peak
+
         //draw 3
 
             //horizontal line top
@@ -305,6 +328,35 @@ namespace video::scanProgram::scanPrograms::bootsplash {
             //end horizontal line bottom
 
         //end draw 3
+
+        //draw H
+            //draw horizontal line
+            graphicsLib->drawLine(
+                    PxCoord(logoCenterX + ( outerTriangleThickness)+ 3, topScanline + ( 2 * outerTriangleThickness)),
+                    PxCoord(outerTriangle_topRight.getX() - (2* outerTriangleThickness), topScanline + ( 2 * outerTriangleThickness)),
+                    color_letters,
+                    outerTriangleThickness / 2
+            );
+            //end draw horizontal line
+
+            //draw vertical line
+            graphicsLib->drawLine(
+                    PxCoord(logoCenterX + ( outerTriangleThickness) + 3, topScanline + ( 2 * outerTriangleThickness)),
+                    PxCoord(logoCenterX + ( outerTriangleThickness) + 3, mountainTopY),
+                    color_letters,
+                    3
+                    );
+            //end draw vertical line
+
+            //draw diagonal line
+            graphicsLib->drawLine(
+                    PxCoord(logoCenterX + ( outerTriangleThickness) + 3, mountainTopY),
+                    PxCoord(logoCenterX + 28 - 2, mountainTrapezoidTopY - 16),
+                    color_letters,
+                    3
+                    );
+            //end draw diagonal line
+        //end draw H
 
         graphicsLib->drawLine(
                 outerTriangle_topLeft,
