@@ -159,9 +159,15 @@ namespace video::scanProgram {
             uint8_t thickness,
             uint32_t colour
     ) {
-        setImmediateMode(false);
+        bool wasInImmediateMode = getIsImmediateMode();
+        if (wasInImmediateMode) {
+            setImmediateMode(false);
+        }
 
         if (filled) {
+            //TODO we can speed this up by drawing the left and right lines,
+            //TODO then seeing what the extremes are for the RleRuns for each
+            //TODO line, and just filling in the run in between.
             PxCoord bottom = PxCoord(
                     topLeft.getX() + ((topRight.getX() - topLeft.getX()) / 2),
                     bottomY
@@ -180,8 +186,11 @@ namespace video::scanProgram {
 
         }
 
-        setImmediateMode(true);
-        computeFrame();
+        if (!wasInImmediateMode) {
+            //The user may have been in a larger drawing session
+            setImmediateMode(true);
+            computeFrame();
+        }
 
     }
 
@@ -193,9 +202,15 @@ namespace video::scanProgram {
             uint8_t thickness,
             uint32_t colour
     ) {
-        setImmediateMode(false);
+        bool wasInImmediateMode = getIsImmediateMode();
+        if (wasInImmediateMode) {
+            setImmediateMode(false);
+        }
 
         if (filled) {
+            //TODO we can speed this up by drawing the left and right lines,
+            //TODO then seeing what the extremes are for the RleRuns for each
+            //TODO line, and just filling in the run in between.
             PxCoord top = PxCoord(
                 bottomLeft.getX() + ((bottomRight.getX() - bottomLeft.getX()) / 2),
                 topY
@@ -210,8 +225,11 @@ namespace video::scanProgram {
             }
         }
 
-        setImmediateMode(true);
-        computeFrame();
+        if (!wasInImmediateMode) {
+            //The user may have been in a larger drawing session
+            setImmediateMode(true);
+            computeFrame();
+        }
     }
 
 

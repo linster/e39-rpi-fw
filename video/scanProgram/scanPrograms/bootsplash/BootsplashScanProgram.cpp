@@ -178,6 +178,8 @@ namespace video::scanProgram::scanPrograms::bootsplash {
         uint32_t color_mountainRocks = 0x2A;// 10_10_10;
         uint32_t color_mountainSnow = PICO_COLOR_FROM_RGB2(3, 3, 3);
 
+        uint32_t color_goose = PICO_COLOR_FROM_RGB2(0, 3, 0);
+
 //        graphicsLib->setImmediateMode(false);
 //        graphicsLib->contributeRleRuns(runs);
         graphicsLib->drawFilledRectangle(
@@ -398,6 +400,77 @@ namespace video::scanProgram::scanPrograms::bootsplash {
                     outerTriangle_topRight.getY()
             );
         }
+
+        //draw goose boundingbox
+            uint8_t gooseWidth = 34;
+            uint8_t gooseHeight = 32;
+//            graphicsLib->drawEmptyRectangle(
+//                    PxCoord(logoCenterX - (gooseWidth / 2), mountainTrapezoidTopY - 5),
+//                    PxCoord(logoCenterX + (gooseWidth / 2), mountainTrapezoidTopY - 5 + gooseHeight),
+//                    color_water,
+//                    1
+//                    );
+        //end draw goose boundingbox
+
+        PxCoord gooseOrigin = PxCoord(logoCenterX - (gooseWidth / 2), mountainTrapezoidTopY - 5);
+
+        std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs = std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>>();
+
+        for (int i = gooseOrigin.getY(); i < gooseOrigin.getY() + gooseHeight; i++) {
+            runs[i] = std::vector<scanVideo::graphics::command::RleRun>();
+        }
+
+        runs[gooseOrigin.getY() + 0].emplace_back(gooseOrigin.getX() + 23, 1, color_goose);
+        runs[gooseOrigin.getY() + 1].emplace_back(gooseOrigin.getX() + 22, 2, color_goose);
+        runs[gooseOrigin.getY() + 2].emplace_back(gooseOrigin.getX() + 22, 2, color_goose);
+        runs[gooseOrigin.getY() + 3].emplace_back(gooseOrigin.getX() + 21, 4, color_goose);
+        runs[gooseOrigin.getY() + 4].emplace_back(gooseOrigin.getX() + 20, 5, color_goose);
+        runs[gooseOrigin.getY() + 5].emplace_back(gooseOrigin.getX() + 20, 5, color_goose);
+        runs[gooseOrigin.getY() + 6].emplace_back(gooseOrigin.getX() + 19, 6, color_goose);
+        runs[gooseOrigin.getY() + 7].emplace_back(gooseOrigin.getX() + 19, 7, color_goose);
+        runs[gooseOrigin.getY() + 8].emplace_back(gooseOrigin.getX() + 18, 8, color_goose);
+        runs[gooseOrigin.getY() + 9].emplace_back(gooseOrigin.getX() + 18, 7, color_goose);
+        runs[gooseOrigin.getY() + 10].emplace_back(gooseOrigin.getX() + 18, 7, color_goose);
+        runs[gooseOrigin.getY() + 11].emplace_back(gooseOrigin.getX() + 17, 7, color_goose);
+        runs[gooseOrigin.getY() + 12].emplace_back(gooseOrigin.getX() + 17, 6, color_goose);
+        runs[gooseOrigin.getY() + 13].emplace_back(gooseOrigin.getX() + 16, 6, color_goose);
+        runs[gooseOrigin.getY() + 14].emplace_back(gooseOrigin.getX() + 0, 1, color_goose);
+        runs[gooseOrigin.getY() + 14].emplace_back(gooseOrigin.getX() + 16, 6, color_goose);
+        runs[gooseOrigin.getY() + 15].emplace_back(gooseOrigin.getX() + 0, 2, color_goose);
+        runs[gooseOrigin.getY() + 15].emplace_back(gooseOrigin.getX() + 16, 5, color_goose);
+        runs[gooseOrigin.getY() + 16].emplace_back(gooseOrigin.getX() + 0, 4, color_goose);
+        runs[gooseOrigin.getY() + 16].emplace_back(gooseOrigin.getX() + 16, 5, color_goose);
+        runs[gooseOrigin.getY() + 17].emplace_back(gooseOrigin.getX() + 1, 7, color_goose);
+        runs[gooseOrigin.getY() + 17].emplace_back(gooseOrigin.getX() + 16, 4, color_goose);
+        runs[gooseOrigin.getY() + 18].emplace_back(gooseOrigin.getX() + 5, 7, color_goose);
+        runs[gooseOrigin.getY() + 18].emplace_back(gooseOrigin.getX() + 17, 3, color_goose);
+        runs[gooseOrigin.getY() + 18].emplace_back(gooseOrigin.getX() + 26, 5, color_goose);
+        runs[gooseOrigin.getY() + 19].emplace_back(gooseOrigin.getX() + 6, 8, color_goose);
+        runs[gooseOrigin.getY() + 19].emplace_back(gooseOrigin.getX() + 19, 3, color_goose);
+        runs[gooseOrigin.getY() + 19].emplace_back(gooseOrigin.getX() + 25, 6, color_goose);
+        runs[gooseOrigin.getY() + 20].emplace_back(gooseOrigin.getX() + 10, 6, color_goose);
+        runs[gooseOrigin.getY() + 20].emplace_back(gooseOrigin.getX() + 19, 3, color_goose);
+        runs[gooseOrigin.getY() + 20].emplace_back(gooseOrigin.getX() + 24, 8, color_goose);
+        runs[gooseOrigin.getY() + 21].emplace_back(gooseOrigin.getX() + 11, 12, color_goose);
+        runs[gooseOrigin.getY() + 21].emplace_back(gooseOrigin.getX() + 24, 10, color_goose);
+        runs[gooseOrigin.getY() + 22].emplace_back(gooseOrigin.getX() + 12, 16, color_goose);
+        runs[gooseOrigin.getY() + 22].emplace_back(gooseOrigin.getX() + 30, 5, color_goose);
+        runs[gooseOrigin.getY() + 23].emplace_back(gooseOrigin.getX() + 13, 15, color_goose);
+        runs[gooseOrigin.getY() + 24].emplace_back(gooseOrigin.getX() + 12, 14, color_goose);
+        runs[gooseOrigin.getY() + 25].emplace_back(gooseOrigin.getX() + 9, 15, color_goose);
+        runs[gooseOrigin.getY() + 26].emplace_back(gooseOrigin.getX() + 4, 20, color_goose);
+        runs[gooseOrigin.getY() + 27].emplace_back(gooseOrigin.getX() + 5, 18, color_goose);
+        runs[gooseOrigin.getY() + 28].emplace_back(gooseOrigin.getX() + 7, 2, color_goose);
+        runs[gooseOrigin.getY() + 28].emplace_back(gooseOrigin.getX() + 10, 1, color_goose);
+        runs[gooseOrigin.getY() + 28].emplace_back(gooseOrigin.getX() + 12, 11, color_goose);
+        runs[gooseOrigin.getY() + 29].emplace_back(gooseOrigin.getX() + 6, 2, color_goose);
+        runs[gooseOrigin.getY() + 29].emplace_back(gooseOrigin.getX() + 9, 1, color_goose);
+        runs[gooseOrigin.getY() + 29].emplace_back(gooseOrigin.getX() + 14, 8, color_goose);
+        runs[gooseOrigin.getY() + 30].emplace_back(gooseOrigin.getX() + 17, 4, color_goose);
+
+
+
+        graphicsLib->contributeRleRuns(runs);
 
 
 
