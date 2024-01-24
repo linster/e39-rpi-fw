@@ -21,8 +21,34 @@ namespace video::scanVideo::graphics::command {
                 uint16_t y
                 );
 
+        bool operator==(const PxCoord &rhs) const;
+
+        bool operator!=(const PxCoord &rhs) const;
+
         uint16_t getX();
         uint16_t getY();
+
+        bool operator<(const PxCoord &rhs) const {
+            //sort by y, then x, because our other
+            //data structures store map<scanline, rleRun>
+            if (y < rhs.y)
+                return true;
+            if (rhs.y < y)
+                return false;
+            return x < rhs.x;
+        }
+
+        bool operator>(const PxCoord &rhs) const {
+            return rhs < *this;
+        }
+
+        bool operator<=(const PxCoord &rhs) const {
+            return !(rhs < *this);
+        }
+
+        bool operator>=(const PxCoord &rhs) const {
+            return !(*this < rhs);
+        }
     };
 
 } // command

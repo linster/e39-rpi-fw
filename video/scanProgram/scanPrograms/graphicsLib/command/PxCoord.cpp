@@ -18,4 +18,14 @@ namespace video::scanVideo::graphics::command {
     uint16_t PxCoord::getY() {
         return y;
     }
+
+    bool PxCoord::operator==(const PxCoord &rhs) const {
+        return x == rhs.x &&
+               y == rhs.y;
+    }
+
+
+    bool PxCoord::operator!=(const PxCoord &rhs) const {
+        return !(rhs == *this);
+    }
 } // command

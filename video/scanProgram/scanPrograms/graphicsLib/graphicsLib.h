@@ -167,6 +167,26 @@ namespace video::scanProgram {
                     std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs
             );
 
+            /** A triangle where the pointy end is at the top */
+            void drawDelta(
+                    uint16_t topY,
+                    scanVideo::graphics::command::PxCoord bottomLeft,
+                    scanVideo::graphics::command::PxCoord bottomRight,
+                    bool filled,
+                    uint8_t thickness,
+                    uint32_t colour
+                    );
+
+            /** A triangle where the pointy end is at the bottom */
+            void drawNabla(
+                    uint16_t bottomY,
+                    scanVideo::graphics::command::PxCoord topLeft,
+                    scanVideo::graphics::command::PxCoord topRight,
+                    bool filled,
+                    uint8_t thickness,
+                    uint32_t colour
+                    );
+
 
             void render_commandProcessed(scanvideo_scanline_buffer_t *scanline_buffer);
 

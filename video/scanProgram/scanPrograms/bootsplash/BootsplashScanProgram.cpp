@@ -158,5 +158,322 @@ namespace video::scanProgram::scanPrograms::bootsplash {
 
     void BootsplashScanProgram::onScanProgramStart_Goose() {
 
+//        std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs = std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>>();
+
+        uint16_t logoSize = 160;
+
+        uint16_t topScanline = 32;
+        uint16_t startx = 200 - (logoSize / 2);
+        uint16_t logoCenterX = 200;
+
+        PxCoord topLeft = PxCoord(startx, topScanline);
+        PxCoord bottomRight = PxCoord(topLeft.getX() + logoSize, topLeft.getY() + logoSize);
+
+
+        uint32_t color_outlineTriangle = PICO_COLOR_FROM_RGB2(1, 1, 1);
+        uint32_t color_water = PICO_COLOR_FROM_RGB2(0, 0, 3);
+        uint32_t color_letters = PICO_COLOR_FROM_RGB2(1, 1, 1);
+
+//        uint32_t color_mountainRocks = PICO_COLOR_FROM_RGB2(3, 3, 3);
+        uint32_t color_mountainRocks = 0x2A;// 10_10_10;
+        uint32_t color_mountainSnow = PICO_COLOR_FROM_RGB2(3, 3, 3);
+
+        uint32_t color_goose = PICO_COLOR_FROM_RGB2(0, 3, 0);
+
+        graphicsLib->setImmediateMode(false);
+
+        graphicsLib->drawFilledRectangle(
+                topLeft,
+                bottomRight,
+                0//PICO_COLOR_FROM_RGB2(2, 2, 2)
+                );
+
+//        graphicsLib->drawLine(
+//                PxCoord(logoCenterX, topScanline),
+//                PxCoord(logoCenterX, bottomRight.getY()),
+//                PICO_COLOR_FROM_RGB2(3, 3, 3),
+//                1
+//                );
+
+        uint8_t outerTriangleThickness = 5;
+        PxCoord outerTriangle_topLeft = PxCoord(topLeft.getX() + (logoSize / 8), topLeft.getY());
+        PxCoord outerTriangle_topRight = PxCoord(bottomRight.getX() - (logoSize / 8), topLeft.getY());
+
+
+
+        //draw the water
+        uint16_t waterNablaTopY = bottomRight.getY() - ((bottomRight.getY() - topLeft.getY()) * 0.25);
+        uint8_t waterNablaWidth = 13;
+        graphicsLib->drawNabla(
+                bottomRight.getY() - outerTriangleThickness,
+                PxCoord(logoCenterX - waterNablaWidth, waterNablaTopY),
+                PxCoord(logoCenterX + waterNablaWidth, waterNablaTopY),
+                true,
+                1,
+                color_water
+        );
+        // end draw the water
+
+        //mountain trapezoid
+            uint16_t mountainTrapezoidTopY = waterNablaTopY - 36;
+            uint16_t mountainTrapezoidBottomY = waterNablaTopY - 1;
+            //draw the left half of the mountain trapezoid
+            graphicsLib->drawLine(
+                    PxCoord(logoCenterX - (2 * waterNablaWidth), mountainTrapezoidTopY),
+                    PxCoord(logoCenterX - waterNablaWidth, mountainTrapezoidBottomY),
+                    color_mountainRocks,
+                    26
+                    );
+            //end draw the left half of the mountain trapezoid
+
+            //draw the right half of the mountain trapezoid
+            graphicsLib->drawNabla(
+                    mountainTrapezoidBottomY,
+                    PxCoord(logoCenterX, mountainTrapezoidTopY),
+                    PxCoord(logoCenterX + (2* waterNablaWidth), mountainTrapezoidTopY),
+                    true,
+                    1,
+                    color_mountainRocks
+                    );
+            //end draw the right half of the mountain trapezoid
+        //end mountain trapezoid
+
+        //draw mountain top rocks
+        uint8_t mountainTopY = topScanline + outerTriangleThickness + (
+                0.3 * (mountainTrapezoidTopY - (topScanline + outerTriangleThickness))
+                );
+        graphicsLib->drawDelta(
+                mountainTopY,
+                PxCoord(logoCenterX - (2 * waterNablaWidth), mountainTrapezoidTopY),
+                PxCoord(logoCenterX + (2 * waterNablaWidth), mountainTrapezoidTopY),
+                true,
+                1,
+                color_mountainRocks
+                );
+        //end draw mountain top rocks
+
+        //draw the mountain top snow
+        uint8_t mountainSnowBottomWidth = 10;
+        uint8_t mountainSnowBottomY = topScanline + outerTriangleThickness + (
+                0.55 * (mountainTrapezoidTopY - (topScanline + outerTriangleThickness))
+        );
+        graphicsLib->drawDelta(
+                mountainTopY,
+                PxCoord(logoCenterX - (mountainSnowBottomWidth), mountainSnowBottomY),
+                PxCoord(logoCenterX + (mountainSnowBottomWidth), mountainSnowBottomY),
+                true,
+                1,
+                color_mountainSnow
+                );
+        //end draw the mountain top snow
+
+
+        //left rock peak
+        uint8_t rockPeakTop = mountainSnowBottomY - 3;
+        graphicsLib->drawDelta(
+                rockPeakTop,
+                PxCoord(logoCenterX - (mountainSnowBottomWidth), mountainSnowBottomY),
+                PxCoord(logoCenterX, mountainSnowBottomY),
+                true,
+                1,
+                color_mountainRocks
+                );
+        //end left rock peak
+
+        //right rock peak
+        graphicsLib->drawDelta(
+                rockPeakTop,
+                PxCoord(logoCenterX, mountainSnowBottomY),
+                PxCoord(logoCenterX + (mountainSnowBottomWidth), mountainSnowBottomY),
+                true,
+                1,
+                color_mountainRocks
+        );
+        //end right rock peak
+
+        //draw 3
+
+            //horizontal line top
+            graphicsLib->drawLine(
+                    PxCoord(outerTriangle_topLeft.getX() + (2* outerTriangleThickness), topScanline + ( 2 * outerTriangleThickness)),
+                    PxCoord(logoCenterX - ( outerTriangleThickness), topScanline + ( 2 * outerTriangleThickness)),
+                    color_letters,
+                    outerTriangleThickness / 2
+                    );
+            //end horizontal line top
+
+            //diagonal line top
+            graphicsLib->drawLine(
+                    PxCoord(logoCenterX - ( outerTriangleThickness), topScanline + ( 2 * outerTriangleThickness)),
+                    PxCoord(outerTriangle_topLeft.getX() + (4* outerTriangleThickness), mountainTopY),
+                    color_letters,
+                    3
+            );
+            //end diagonal line top
+
+            //diagonal line bottom
+            graphicsLib->drawLine(
+                    PxCoord(logoCenterX - ( outerTriangleThickness) - 5, mountainTopY),
+                    PxCoord(logoCenterX - 28, mountainTrapezoidTopY - 16),
+                    color_letters,
+                    3
+            );
+            //end diagonal line bottom
+
+            //horizontal line bottom
+            graphicsLib->drawLine(
+                    PxCoord(outerTriangle_topLeft.getX() + (4* outerTriangleThickness), mountainTopY),
+                    PxCoord(logoCenterX - ( outerTriangleThickness) - 5, mountainTopY),
+                    color_letters,
+                    outerTriangleThickness / 2
+            );
+            //end horizontal line bottom
+
+        //end draw 3
+
+        //draw H
+            //draw horizontal line
+            graphicsLib->drawLine(
+                    PxCoord(logoCenterX + ( outerTriangleThickness)+ 3, topScanline + ( 2 * outerTriangleThickness)),
+                    PxCoord(outerTriangle_topRight.getX() - (2* outerTriangleThickness), topScanline + ( 2 * outerTriangleThickness)),
+                    color_letters,
+                    outerTriangleThickness / 2
+            );
+            //end draw horizontal line
+
+            //draw vertical line
+            graphicsLib->drawLine(
+                    PxCoord(logoCenterX + ( outerTriangleThickness) + 3, topScanline + ( 2 * outerTriangleThickness)),
+                    PxCoord(logoCenterX + ( outerTriangleThickness) + 3, mountainTopY),
+                    color_letters,
+                    3
+                    );
+            //end draw vertical line
+
+            //draw diagonal line
+            graphicsLib->drawLine(
+                    PxCoord(logoCenterX + ( outerTriangleThickness) + 3, mountainTopY),
+                    PxCoord(logoCenterX + 28 - 2, mountainTrapezoidTopY - 16),
+                    color_letters,
+                    3
+                    );
+            //end draw diagonal line
+        //end draw H
+
+        graphicsLib->drawLine(
+                outerTriangle_topLeft,
+                outerTriangle_topRight,
+                color_outlineTriangle,
+                outerTriangleThickness
+                );
+
+        PxCoord outerTriangleLeftSideTopLeft = PxCoord(
+                outerTriangle_topLeft.getX() - outerTriangleThickness,
+                outerTriangle_topLeft.getY()
+                );
+        for (int i = 0; i < outerTriangleThickness; i++) {
+            graphicsLib->drawLine(
+                    outerTriangleLeftSideTopLeft,
+                    PxCoord(logoCenterX, bottomRight.getY() - i),
+                    color_outlineTriangle,
+                    1
+                    );
+            outerTriangleLeftSideTopLeft = PxCoord(
+                    outerTriangle_topLeft.getX() - outerTriangleThickness + i,
+                    outerTriangle_topLeft.getY()
+                    );
+        }
+
+        PxCoord outerTriangleRightSideTopRight = PxCoord(
+                outerTriangle_topRight.getX() + outerTriangleThickness,
+                outerTriangle_topRight.getY()
+                );
+        for (int i = outerTriangleThickness; i >0 ; i--) {
+            graphicsLib->drawLine(
+                    outerTriangleRightSideTopRight,
+                    PxCoord(logoCenterX, bottomRight.getY() - i),
+                    color_outlineTriangle,
+                    1
+                    );
+            outerTriangleRightSideTopRight = PxCoord(
+                    outerTriangle_topRight.getX() + outerTriangleThickness - i,
+                    outerTriangle_topRight.getY()
+            );
+        }
+
+        //draw goose boundingbox
+            uint8_t gooseWidth = 34;
+            uint8_t gooseHeight = 32;
+//            graphicsLib->drawEmptyRectangle(
+//                    PxCoord(logoCenterX - (gooseWidth / 2), mountainTrapezoidTopY - 5),
+//                    PxCoord(logoCenterX + (gooseWidth / 2), mountainTrapezoidTopY - 5 + gooseHeight),
+//                    color_water,
+//                    1
+//                    );
+        //end draw goose boundingbox
+
+        PxCoord gooseOrigin = PxCoord(logoCenterX - (gooseWidth / 2), mountainTrapezoidTopY - 5);
+
+        std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs = std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>>();
+
+        for (int i = gooseOrigin.getY(); i < gooseOrigin.getY() + gooseHeight; i++) {
+            runs[i] = std::vector<scanVideo::graphics::command::RleRun>();
+        }
+
+        runs[gooseOrigin.getY() + 0].emplace_back(gooseOrigin.getX() + 23, 1, color_goose);
+        runs[gooseOrigin.getY() + 1].emplace_back(gooseOrigin.getX() + 22, 2, color_goose);
+        runs[gooseOrigin.getY() + 2].emplace_back(gooseOrigin.getX() + 22, 2, color_goose);
+        runs[gooseOrigin.getY() + 3].emplace_back(gooseOrigin.getX() + 21, 4, color_goose);
+        runs[gooseOrigin.getY() + 4].emplace_back(gooseOrigin.getX() + 20, 5, color_goose);
+        runs[gooseOrigin.getY() + 5].emplace_back(gooseOrigin.getX() + 20, 5, color_goose);
+        runs[gooseOrigin.getY() + 6].emplace_back(gooseOrigin.getX() + 19, 6, color_goose);
+        runs[gooseOrigin.getY() + 7].emplace_back(gooseOrigin.getX() + 19, 7, color_goose);
+        runs[gooseOrigin.getY() + 8].emplace_back(gooseOrigin.getX() + 18, 8, color_goose);
+        runs[gooseOrigin.getY() + 9].emplace_back(gooseOrigin.getX() + 18, 7, color_goose);
+        runs[gooseOrigin.getY() + 10].emplace_back(gooseOrigin.getX() + 18, 7, color_goose);
+        runs[gooseOrigin.getY() + 11].emplace_back(gooseOrigin.getX() + 17, 7, color_goose);
+        runs[gooseOrigin.getY() + 12].emplace_back(gooseOrigin.getX() + 17, 6, color_goose);
+        runs[gooseOrigin.getY() + 13].emplace_back(gooseOrigin.getX() + 16, 6, color_goose);
+        runs[gooseOrigin.getY() + 14].emplace_back(gooseOrigin.getX() + 0, 1, color_goose);
+        runs[gooseOrigin.getY() + 14].emplace_back(gooseOrigin.getX() + 16, 6, color_goose);
+        runs[gooseOrigin.getY() + 15].emplace_back(gooseOrigin.getX() + 0, 2, color_goose);
+        runs[gooseOrigin.getY() + 15].emplace_back(gooseOrigin.getX() + 16, 5, color_goose);
+        runs[gooseOrigin.getY() + 16].emplace_back(gooseOrigin.getX() + 0, 4, color_goose);
+        runs[gooseOrigin.getY() + 16].emplace_back(gooseOrigin.getX() + 16, 5, color_goose);
+        runs[gooseOrigin.getY() + 17].emplace_back(gooseOrigin.getX() + 1, 7, color_goose);
+        runs[gooseOrigin.getY() + 17].emplace_back(gooseOrigin.getX() + 16, 4, color_goose);
+        runs[gooseOrigin.getY() + 18].emplace_back(gooseOrigin.getX() + 5, 7, color_goose);
+        runs[gooseOrigin.getY() + 18].emplace_back(gooseOrigin.getX() + 17, 3, color_goose);
+        runs[gooseOrigin.getY() + 18].emplace_back(gooseOrigin.getX() + 26, 5, color_goose);
+        runs[gooseOrigin.getY() + 19].emplace_back(gooseOrigin.getX() + 6, 8, color_goose);
+        runs[gooseOrigin.getY() + 19].emplace_back(gooseOrigin.getX() + 19, 3, color_goose);
+        runs[gooseOrigin.getY() + 19].emplace_back(gooseOrigin.getX() + 25, 6, color_goose);
+        runs[gooseOrigin.getY() + 20].emplace_back(gooseOrigin.getX() + 10, 6, color_goose);
+        runs[gooseOrigin.getY() + 20].emplace_back(gooseOrigin.getX() + 19, 3, color_goose);
+        runs[gooseOrigin.getY() + 20].emplace_back(gooseOrigin.getX() + 24, 8, color_goose);
+        runs[gooseOrigin.getY() + 21].emplace_back(gooseOrigin.getX() + 11, 12, color_goose);
+        runs[gooseOrigin.getY() + 21].emplace_back(gooseOrigin.getX() + 24, 10, color_goose);
+        runs[gooseOrigin.getY() + 22].emplace_back(gooseOrigin.getX() + 12, 16, color_goose);
+        runs[gooseOrigin.getY() + 22].emplace_back(gooseOrigin.getX() + 30, 5, color_goose);
+        runs[gooseOrigin.getY() + 23].emplace_back(gooseOrigin.getX() + 13, 15, color_goose);
+        runs[gooseOrigin.getY() + 24].emplace_back(gooseOrigin.getX() + 12, 14, color_goose);
+        runs[gooseOrigin.getY() + 25].emplace_back(gooseOrigin.getX() + 9, 15, color_goose);
+        runs[gooseOrigin.getY() + 26].emplace_back(gooseOrigin.getX() + 4, 20, color_goose);
+        runs[gooseOrigin.getY() + 27].emplace_back(gooseOrigin.getX() + 5, 18, color_goose);
+        runs[gooseOrigin.getY() + 28].emplace_back(gooseOrigin.getX() + 7, 2, color_goose);
+        runs[gooseOrigin.getY() + 28].emplace_back(gooseOrigin.getX() + 10, 1, color_goose);
+        runs[gooseOrigin.getY() + 28].emplace_back(gooseOrigin.getX() + 12, 11, color_goose);
+        runs[gooseOrigin.getY() + 29].emplace_back(gooseOrigin.getX() + 6, 2, color_goose);
+        runs[gooseOrigin.getY() + 29].emplace_back(gooseOrigin.getX() + 9, 1, color_goose);
+        runs[gooseOrigin.getY() + 29].emplace_back(gooseOrigin.getX() + 14, 8, color_goose);
+        runs[gooseOrigin.getY() + 30].emplace_back(gooseOrigin.getX() + 17, 4, color_goose);
+
+
+
+        graphicsLib->contributeRleRuns(runs);
+
+        graphicsLib->setImmediateMode(true);
+        graphicsLib->computeFrame();
+
     }
 } // bootsplash

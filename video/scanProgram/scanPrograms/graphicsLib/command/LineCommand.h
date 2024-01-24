@@ -6,6 +6,7 @@
 #define PICOTEMPLATE_LINECOMMAND_H
 
 #include <cstdint>
+#include <memory>
 #include "PxCoord.h"
 #include "BaseCommand.h"
 namespace video::scanVideo::graphics::command {
@@ -23,7 +24,6 @@ namespace video::scanVideo::graphics::command {
 
         //Bresenham line algorithms ftw
         std::map<uint16_t, std::vector<RleRun>> getRleRunsForAngledLine();
-
 
     public:
         LineCommand(

@@ -4,6 +4,7 @@
 
 #include "graphicsLib.h"
 
+using video::scanVideo::graphics::command::PxCoord;
 namespace video::scanProgram {
     uint32_t *graphicsLib::getPalette() {
         bool is_2_bpp = true;
@@ -148,6 +149,87 @@ namespace video::scanProgram {
 
     void graphicsLib::computeFrame() {
         this->commandProcessor->computeFrame();
+    }
+
+    void graphicsLib::drawNabla(
+            uint16_t bottomY,
+            scanVideo::graphics::command::PxCoord topLeft,
+            scanVideo::graphics::command::PxCoord topRight,
+            bool filled,
+            uint8_t thickness,
+            uint32_t colour
+    ) {
+        bool wasInImmediateMode = getIsImmediateMode();
+        if (wasInImmediateMode) {
+            setImmediateMode(false);
+        }
+
+        if (filled) {
+            //TODO we can speed this up by drawing the left and right lines,
+            //TODO then seeing what the extremes are for the RleRuns for each
+            //TODO line, and just filling in the run in between.
+            PxCoord bottom = PxCoord(
+                    topLeft.getX() + ((topRight.getX() - topLeft.getX()) / 2),
+                    bottomY
+                    );
+
+            for (int i = topLeft.getX(); i < topRight.getX(); i++) {
+                drawLine(
+                        scanVideo::graphics::command::PxCoord(i, topLeft.getY()),
+                        bottom,
+                        colour,
+                        1
+                );
+            }
+        } else {
+            //TODO copy in the code from bootspash scan program here.
+
+        }
+
+        if (!wasInImmediateMode) {
+            //The user may have been in a larger drawing session
+            setImmediateMode(true);
+            computeFrame();
+        }
+
+    }
+
+    void graphicsLib::drawDelta(
+            uint16_t topY,
+            scanVideo::graphics::command::PxCoord bottomLeft,
+            scanVideo::graphics::command::PxCoord bottomRight,
+            bool filled,
+            uint8_t thickness,
+            uint32_t colour
+    ) {
+        bool wasInImmediateMode = getIsImmediateMode();
+        if (wasInImmediateMode) {
+            setImmediateMode(false);
+        }
+
+        if (filled) {
+            //TODO we can speed this up by drawing the left and right lines,
+            //TODO then seeing what the extremes are for the RleRuns for each
+            //TODO line, and just filling in the run in between.
+            PxCoord top = PxCoord(
+                bottomLeft.getX() + ((bottomRight.getX() - bottomLeft.getX()) / 2),
+                topY
+                );
+            for (int i = bottomLeft.getX(); i < bottomRight.getX(); i++) {
+                drawLine(
+                        scanVideo::graphics::command::PxCoord(i, bottomRight.getY()),
+                        top,
+                        colour,
+                        1
+                );
+            }
+        }
+
+        if (!wasInImmediateMode) {
+            //The user may have been in a larger drawing session
+            setImmediateMode(true);
+            computeFrame();
+        }
     }
 
 
