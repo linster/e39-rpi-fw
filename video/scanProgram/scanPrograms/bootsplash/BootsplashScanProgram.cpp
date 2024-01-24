@@ -180,8 +180,8 @@ namespace video::scanProgram::scanPrograms::bootsplash {
 
         uint32_t color_goose = PICO_COLOR_FROM_RGB2(0, 3, 0);
 
-//        graphicsLib->setImmediateMode(false);
-//        graphicsLib->contributeRleRuns(runs);
+        graphicsLib->setImmediateMode(false);
+
         graphicsLib->drawFilledRectangle(
                 topLeft,
                 bottomRight,
@@ -472,17 +472,8 @@ namespace video::scanProgram::scanPrograms::bootsplash {
 
         graphicsLib->contributeRleRuns(runs);
 
-
-
-//        graphicsLib->drawText(
-//                "WAT",
-//                topLeft,
-//                PICO_COLOR_FROM_RGB2(3, 3, 0),
-//                2
-//                );
-
-//        graphicsLib->setImmediateMode(true);
-//        graphicsLib->computeFrame();
+        graphicsLib->setImmediateMode(true);
+        graphicsLib->computeFrame();
 
     }
 } // bootsplash
