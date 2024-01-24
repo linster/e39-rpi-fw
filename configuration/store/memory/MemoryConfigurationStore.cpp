@@ -6,7 +6,7 @@
 
 namespace pico::config {
 
-        MemoryConfigurationStore::MemoryConfigurationStore() {}
+        MemoryConfigurationStore::MemoryConfigurationStore() = default;
         bool MemoryConfigurationStore::canReadConfiguration() {
             return hasConfiguration;
         }

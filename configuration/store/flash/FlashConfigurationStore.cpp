@@ -44,41 +44,67 @@ namespace pico::config {
     std::pair<bool, std::vector<uint8_t>> FlashConfigurationStore::encodeConfiguration(
             Configuration configuration
     ) {
-        return std::pair<bool, std::vector<uint8_t>>(false, std::vector<uint8_t>());
-//            NanoPb::StringOutputStream outputStream;
-//
-//
-//            if (!NanoPb::encode<messages::ConfigMessageConverter>(outputStream, configuration)) {
-//                //TODO WTF
-//                return;
-//            }
-//
-//            std::unique_ptr<std::basic_string<char>> p = outputStream.release();
-////                    p->c_str();
-////                    p->length();
-//
-//            auto bytes = std::vector<uint8_t>();
-//            for (char c: *p) {
-//                bytes.push_back(c);
-//            }
-//
-//            return bytes;
+        bool encodeSuccess = false;
+
+        auto outputStream = NanoPb::StringOutputStream(getLengthOfConfigurationStorageInFlash());
+
+        encodeSuccess = NanoPb::encode<messages::ConfigMessageConverter>(
+                outputStream, configuration.toMessage());
+
+        if (!encodeSuccess) {
+            logger->w("FlashConfigurationStore", "encodeConfiguration encodeSuccess was false");
+            return {false, std::vector<uint8_t>()};
+        }
+
+        std::unique_ptr<std::basic_string<char>> p = outputStream.release();
+        auto bytes = std::vector<uint8_t>();
+        for (char c: *p) {
+            bytes.push_back(c);
+        }
+
+        return {true, bytes};
     }
 
-    uint8_t *FlashConfigurationStore::getPointerToConfigurationStorageInFlash() {
-        return nullptr;
+    uint32_t* FlashConfigurationStore::getPointerToConfigurationStorageInFlash() {
+        return getAddressPersistent();
     }
 
     uint16_t FlashConfigurationStore::getLengthOfConfigurationStorageInFlash() {
-        return 0;
+        return 4096;
     }
 
-    void FlashConfigurationStore::saveConfigurationBytes(uint8_t * ptr, std::vector<uint8_t>) {
 
+    std::pair<bool, Configuration> FlashConfigurationStore::decodeConfiguration(char *ptr, uint16_t len) {
+        //If the flash is initialized with junk, we won't be able to decode it,
+        //so no need to worry about memsetting it to 0s
+
+        bool decodeSuccess = false;
+
+        //A buffer to that backs the stream that NanoPB uses.
+        std::string inputString = std::string(len, '\0');
+
+        std::string
+
+        NanoPb::StringOutputStream();
+
+        std::make_unique<std::string>(ptr, getLengthOfConfigurationStorageInFlash());
+
+        for (const uint8_t item: data) {
+            inputString.push_back(item);
+        }
+        auto inputStream = NanoPb::StringInputStream(std::make_unique<std::string>(inputString.c_str()));
+
+        messages::ConfigMessage decoded;
+        decodeSuccess = NanoPb::decode<messages::ConfigMessageConverter>(inputStream, decoded);
+        if (!decodeSuccess) {
+            return {false, Configuration()};
+        }
+
+        return {true, Configuration(decoded)};
     }
 
-    std::pair<bool, Configuration> FlashConfigurationStore::decodeConfiguration(uint8_t *ptr, uint16_t len) {
-        return std::pair<bool, Configuration>(false, Configuration());
+    void FlashConfigurationStore::saveConfigurationBytes(uint32_t *ptr, std::vector<uint8_t> config) {
+
     }
 
 
