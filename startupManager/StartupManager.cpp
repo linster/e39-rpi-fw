@@ -3,6 +3,7 @@
 //
 
 #include "StartupManager.h"
+#define LED_PIN 25
 
 namespace pico::startupManager {
     StartupManager::StartupManager(ApplicationContainer* applicationContainer) {
@@ -10,6 +11,10 @@ namespace pico::startupManager {
     }
 
     void StartupManager::cpu0main() {
+
+        gpio_init(LED_PIN);
+        gpio_set_dir(LED_PIN, GPIO_OUT);
+
 
         multicore_reset_core1();
 
@@ -27,8 +32,8 @@ namespace pico::startupManager {
 
         multicore_fifo_push_blocking((uint32_t)applicationContainer);
 
+        /** Don't start looping on cpu0 until cpu1 has finished it's setup */
         uint32_t incomingMessage = multicore_fifo_pop_blocking();
-
         if (incomingMessage != 1) {
             //TODO somehow log we're out of sequence.
         }
@@ -50,13 +55,14 @@ namespace pico::startupManager {
         ApplicationContainer* applicationContainerPointer = (ApplicationContainer*)multicore_fifo_pop_blocking();
         applicationContainerPointer->onCpu1Main();
 
+        /** Tell Cpu0 that we're done setting up */
         multicore_fifo_push_blocking(1);
 
         while(true) {
             tight_loop_contents();
-            gpio_put(25, true);
+            gpio_put(LED_PIN, true);
             applicationContainer->onCpu1Loop();
-            gpio_put(25, false);
+            gpio_put(LED_PIN, false);
         }
 
     }
