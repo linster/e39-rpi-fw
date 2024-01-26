@@ -16,12 +16,12 @@ namespace pico::startupManager {
 
 
     private:
-        std::shared_ptr<ApplicationContainer> applicationContainer;
+        static ApplicationContainer* applicationContainer;
 
-        void core1Func();
+        static void core1Func();
     public:
         explicit StartupManager(
-                std::shared_ptr<ApplicationContainer> applicationContainer
+                ApplicationContainer* applicationContainer
         );
 
         void cpu0main();
