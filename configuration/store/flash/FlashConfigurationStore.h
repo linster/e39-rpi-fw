@@ -8,6 +8,9 @@
 #include <vector>
 #include <configuration/store/IConfigurationStore.h>
 #include "flash_utils.h"
+#include "hardware/flash.h"
+#include "hardware/sync.h"
+#include "pico/multicore.h"
 
 namespace pico::config {
 
@@ -18,14 +21,14 @@ namespace pico::config {
             std::shared_ptr<logger::BaseLogger> logger;
 
             std::pair<bool, std::vector<uint8_t>> encodeConfiguration(Configuration configuration);
-            std::pair<bool, Configuration> decodeConfiguration(uint32_t * ptr, uint16_t len);
+            std::pair<bool, Configuration> decodeConfiguration();
 
             //https://www.raspberrypi.com/documentation/pico-sdk/high_level.html#mutex
 
-            uint32_t* getPointerToConfigurationStorageInFlash();
+            uint8_t* getPointerToConfigurationStorageInFlash();
             uint16_t getLengthOfConfigurationStorageInFlash();
 
-            void saveConfigurationBytes(uint32_t* ptr, std::vector<uint8_t> config);
+            void saveConfigurationBytes(std::vector<uint8_t> config);
 
         public:
 

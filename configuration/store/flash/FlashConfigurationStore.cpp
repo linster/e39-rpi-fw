@@ -12,20 +12,12 @@ namespace pico::config {
     }
 
     bool FlashConfigurationStore::canReadConfiguration() {
-        std::pair<bool, Configuration> result = decodeConfiguration(
-                getPointerToConfigurationStorageInFlash(),
-                getLengthOfConfigurationStorageInFlash()
-        );
-
+        std::pair<bool, Configuration> result = decodeConfiguration();
         return result.first;
     }
 
     Configuration FlashConfigurationStore::getConfiguration() {
-        std::pair<bool, Configuration> result = decodeConfiguration(
-                getPointerToConfigurationStorageInFlash(),
-                getLengthOfConfigurationStorageInFlash()
-        );
-
+        std::pair<bool, Configuration> result = decodeConfiguration();
         return result.second;
     }
 
@@ -38,7 +30,7 @@ namespace pico::config {
             return;
         }
 
-        saveConfigurationBytes(getPointerToConfigurationStorageInFlash(), encodeResult.second);
+        saveConfigurationBytes(encodeResult.second);
     }
 
     std::pair<bool, std::vector<uint8_t>> FlashConfigurationStore::encodeConfiguration(
@@ -65,7 +57,7 @@ namespace pico::config {
         return {true, bytes};
     }
 
-    uint32_t* FlashConfigurationStore::getPointerToConfigurationStorageInFlash() {
+    uint8_t* FlashConfigurationStore::getPointerToConfigurationStorageInFlash() {
         return getAddressPersistent();
     }
 
@@ -74,38 +66,56 @@ namespace pico::config {
     }
 
 
-    std::pair<bool, Configuration> FlashConfigurationStore::decodeConfiguration(char *ptr, uint16_t len) {
+    std::pair<bool, Configuration> FlashConfigurationStore::decodeConfiguration() {
         //If the flash is initialized with junk, we won't be able to decode it,
         //so no need to worry about memsetting it to 0s
+
+
+
+        uint32_t flash_offset = (uint32_t)(&getAddressPersistent()[0]) - XIP_BASE;
+        assert(flash_offset > 0);
+        assert(flash_offset > XIP_BASE);
+        assert(flash_offset >= 0x10000000 + ((2048*1024) - 4096));
+
+
 
         bool decodeSuccess = false;
 
         //A buffer to that backs the stream that NanoPB uses.
-        std::string inputString = std::string(len, '\0');
-
-        std::string
-
-        NanoPb::StringOutputStream();
-
-        std::make_unique<std::string>(ptr, getLengthOfConfigurationStorageInFlash());
-
-        for (const uint8_t item: data) {
-            inputString.push_back(item);
+        std::vector<uint8_t> flashBytes = std::vector<uint8_t>();
+        for (int i = 0; i < 4096; i++) {
+            flashBytes[i] = getAddressPersistent()[i];
         }
-        auto inputStream = NanoPb::StringInputStream(std::make_unique<std::string>(inputString.c_str()));
+
+        //Another copy, sadly. RIP 4kb of memory.
+        std::string flashString = std::string(flashBytes.begin(), flashBytes.end());
+        auto inputStream = NanoPb::StringInputStream(std::make_unique<std::string>(flashString));
 
         messages::ConfigMessage decoded;
         decodeSuccess = NanoPb::decode<messages::ConfigMessageConverter>(inputStream, decoded);
         if (!decodeSuccess) {
             return {false, Configuration()};
         }
-
         return {true, Configuration(decoded)};
     }
 
-    void FlashConfigurationStore::saveConfigurationBytes(uint32_t *ptr, std::vector<uint8_t> config) {
+    void FlashConfigurationStore::saveConfigurationBytes(std::vector<uint8_t> config) {
 
+        //https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#hardware_flash
+        //https://www.raspberrypi.com/documentation/pico-sdk/high_level.html#multicore_lockout
+        //I think I need to do the startup manager work first, so that I can set up Core1 as the victim core.
+
+        multicore_lockout_start_blocking();
+
+        uint32_t flash_offset = (uint32_t)(&getAddressPersistent()[0]) - XIP_BASE;
+        assert(flash_offset > 0);
+        assert(flash_offset > XIP_BASE);
+        assert(flash_offset >= 0x10000000 + ((2048*1024) - 4096));
+
+        flash_range_erase(flash_offset, 1 /* 4096 bytes, the size of our persistent block */);
+        flash_range_program(flash_offset, config.data(), config.size());
+
+        multicore_lockout_end_blocking();
     }
-
 
 } // config

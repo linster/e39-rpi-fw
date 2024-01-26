@@ -282,6 +282,8 @@ target_include_directories(
 
 pico_set_linker_script(PicoTemplate ${CMAKE_SOURCE_DIR}/configuration/store/flash/memmap_persistent.ld)
 
+target_link_libraries(PicoTemplate hardware_flash hardware_sync)
+
 #https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf -- page 36
 #pico_generate_pio_header(PicoTemplate ${CMAKE_SOURCE_DIR}/ibus/dma/pio/FromCarProgram.pio)
 #pico_generate_pio_header(PicoTemplate ${CMAKE_CURRENT_LIST_DIR}/ibus/dma/pio/ToCarProgram.pio)
