@@ -15,7 +15,7 @@ namespace pico::config {
         public:
             explicit MemoryConfigurationStore();
             bool canReadConfiguration() override;
-            Configuration getConfiguration() override;
+            Configuration* getConfiguration() override;
             void saveConfiguration(Configuration configuration) override;
         };
 

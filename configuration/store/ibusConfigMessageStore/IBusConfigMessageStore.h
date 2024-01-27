@@ -21,7 +21,7 @@ namespace pico::config {
                     std::shared_ptr<ibus::output::writer::ConfigurationStatusWriter> configurationStatusWriter
                     );
 
-            Configuration getConfiguration() override;
+            Configuration* getConfiguration() override;
             bool canReadConfiguration() override;
 
             /** Emit an IBus message with the current config. */

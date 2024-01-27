@@ -7,17 +7,17 @@
 
 #include <configuration/Configuration.h>
 
-namespace pico {
-    namespace config {
+namespace pico::config {
 
-        class IConfigurationStore {
-        public:
-            virtual bool canReadConfiguration();
-            virtual void saveConfiguration(Configuration configuration);
-            virtual Configuration getConfiguration();
-        };
+    class IConfigurationStore {
+    public:
+        virtual bool canReadConfiguration();
 
-    } // pico
+        virtual void saveConfiguration(Configuration configuration) = 0;
+
+        virtual Configuration* getConfiguration() = 0;
+    };
+
 } // config
 
 #endif //PICOTEMPLATE_ICONFIGURATIONSTORE_H

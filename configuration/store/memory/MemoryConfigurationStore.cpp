@@ -11,8 +11,8 @@ namespace pico::config {
             return hasConfiguration;
         }
 
-        Configuration MemoryConfigurationStore::getConfiguration() {
-            return inMemoryConfiguration;
+        Configuration* MemoryConfigurationStore::getConfiguration() {
+            return &inMemoryConfiguration;
         }
 
         void MemoryConfigurationStore::saveConfiguration(Configuration configuration) {

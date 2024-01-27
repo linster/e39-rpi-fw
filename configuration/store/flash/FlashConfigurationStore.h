@@ -30,6 +30,11 @@ namespace pico::config {
 
             void saveConfigurationBytes(std::vector<uint8_t> config);
 
+            /** This is set here so that we never return a dangling pointer to configuration.
+             *
+             */
+            Configuration decodedConfiguration;
+
         public:
 
             explicit FlashConfigurationStore(
@@ -37,7 +42,7 @@ namespace pico::config {
             );
 
             void saveConfiguration(Configuration configuration) override;
-            Configuration getConfiguration() override;
+            Configuration* getConfiguration() override;
             bool canReadConfiguration() override;
         };
 

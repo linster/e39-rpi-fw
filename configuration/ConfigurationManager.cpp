@@ -18,26 +18,25 @@ namespace pico::config {
             this->defaultConfigurationProvider = defaultConfigurationProvider;
         }
 
-        std::unique_ptr<Configuration> ConfigurationManager::getMutableConfiguration() {
+        Configuration* ConfigurationManager::getMutableConfiguration() {
             bool hadMemoryConfig = memoryConfigurationStore->canReadConfiguration();
             if (hadMemoryConfig) {
                 logger->d("ConfigurationManager", "Using memory configuration store");
-                return std::make_unique<Configuration>(memoryConfigurationStore->getConfiguration());
+                return memoryConfigurationStore->getConfiguration();
             }
 
             if (flashConfigurationStore->canReadConfiguration()) {
                 logger->d("ConfigurationManager", "Using flash configuration store");
-                return std::make_unique<Configuration>(flashConfigurationStore->getConfiguration());
+                memoryConfigurationStore->saveConfiguration(*flashConfigurationStore->getConfiguration());
+                return memoryConfigurationStore->getConfiguration();
             }
 
             Configuration newDefault = defaultConfigurationProvider->getDefaultConfiguration();
             memoryConfigurationStore->saveConfiguration(newDefault);
-            if (!hadMemoryConfig) {
-                logger->d("ConfigurationManager", "Getting new default configuration and saving it.");
-                flashConfigurationStore->saveConfiguration(newDefault);
-                iBusConfigMessageStore->saveConfiguration(newDefault);
-            }
-            return std::make_unique<Configuration>(newDefault);
+            logger->d("ConfigurationManager", "Getting new default configuration and saving it.");
+            flashConfigurationStore->saveConfiguration(newDefault);
+            iBusConfigMessageStore->saveConfiguration(newDefault);
+            return memoryConfigurationStore->getConfiguration();
         }
 
         void ConfigurationManager::saveConfiguration(std::unique_ptr<Configuration> configuration) {

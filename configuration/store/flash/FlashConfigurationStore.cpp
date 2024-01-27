@@ -16,9 +16,11 @@ namespace pico::config {
         return result.first;
     }
 
-    Configuration FlashConfigurationStore::getConfiguration() {
+    Configuration* FlashConfigurationStore::getConfiguration() {
+        logger->d("FlashConfigurationStore", "getConfiguration()");
         std::pair<bool, Configuration> result = decodeConfiguration();
-        return result.second;
+        decodedConfiguration = result.second;
+        return &decodedConfiguration;
     }
 
     void FlashConfigurationStore::saveConfiguration(Configuration configuration) {
