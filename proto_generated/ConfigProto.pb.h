@@ -3,7 +3,7 @@
 
 #ifndef PB_CA_STEFANM_E39_PROTO_CONFIGPROTO_PB_H_INCLUDED
 #define PB_CA_STEFANM_E39_PROTO_CONFIGPROTO_PB_H_INCLUDED
-#include "../libs/nanopb/pb.h"
+#include <pb.h>
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
@@ -47,7 +47,7 @@ typedef enum _ca_stefanm_e39_proto_ConfigProto_AspectRatio {
 
 /* Struct definitions */
 typedef struct _ca_stefanm_e39_proto_ConfigProto {
-    pb_callback_t str;
+    pb_callback_t rpiFwGitCommitHash;
     bool isIbusLogOutputEnabled;
     ca_stefanm_e39_proto_ConfigProto_LoggingLevels enabledMaxLogLevelForIbusLog;
     ca_stefanm_e39_proto_ConfigProto_LoggingLevels enabledMaxLogLevelForPrintfLog;
@@ -102,7 +102,7 @@ extern "C" {
 #define ca_stefanm_e39_proto_ConfigProto_init_zero {{{NULL}, NULL}, 0, _ca_stefanm_e39_proto_ConfigProto_LoggingLevels_MIN, _ca_stefanm_e39_proto_ConfigProto_LoggingLevels_MIN, 0, 0, _ca_stefanm_e39_proto_ConfigProto_ScanProgram_MIN, _ca_stefanm_e39_proto_ConfigProto_VideoSource_MIN, 0, _ca_stefanm_e39_proto_ConfigProto_VideoEncoding_MIN, _ca_stefanm_e39_proto_ConfigProto_AspectRatio_MIN}
 
 /* Field tags (for use in manual encoding/decoding) */
-#define ca_stefanm_e39_proto_ConfigProto_str_tag 1
+#define ca_stefanm_e39_proto_ConfigProto_rpiFwGitCommitHash_tag 1
 #define ca_stefanm_e39_proto_ConfigProto_isIbusLogOutputEnabled_tag 2
 #define ca_stefanm_e39_proto_ConfigProto_enabledMaxLogLevelForIbusLog_tag 3
 #define ca_stefanm_e39_proto_ConfigProto_enabledMaxLogLevelForPrintfLog_tag 4
@@ -116,7 +116,7 @@ extern "C" {
 
 /* Struct field encoding specification for nanopb */
 #define ca_stefanm_e39_proto_ConfigProto_FIELDLIST(X, a) \
-X(a, CALLBACK, SINGULAR, STRING,   str,               1) \
+X(a, CALLBACK, SINGULAR, STRING,   rpiFwGitCommitHash,   1) \
 X(a, STATIC,   SINGULAR, BOOL,     isIbusLogOutputEnabled,   2) \
 X(a, STATIC,   SINGULAR, UENUM,    enabledMaxLogLevelForIbusLog,   3) \
 X(a, STATIC,   SINGULAR, UENUM,    enabledMaxLogLevelForPrintfLog,   4) \

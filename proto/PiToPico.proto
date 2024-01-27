@@ -21,11 +21,17 @@ message PiToPico {
     //For test purposes to toggle the power switch for the RPI power supply.
     PicoPowerRequestOn = 8;
     PicoPowerRequestOff = 9;
+
+    //Allow us to simulate ignition events without a GM or LCM or ignition switch
+    SimulatedIgnitionPosition0 = 10;
+    SimulatedIgnitionPosition1 = 11;
+    SimulatedIgnitionPosition2 = 12;
+    SimulatedIgnitionPosition3 = 13;
   }
 
   MessageType messageType = 1;
 
-  optional ConfigProto newConfig = 2;
+  ConfigProto newConfig = 2;
 
 
 }

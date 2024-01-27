@@ -9,8 +9,7 @@
 #include "ConfigMessage.h"
 #include <proto_generated/PiToPico.pb.h>
 
-namespace pico {
-    namespace messages {
+namespace pico::messages {
 
         class PiToPicoMessage {
         public:
@@ -29,6 +28,11 @@ namespace pico {
 
                 PicoPowerRequestOn,
                 PicoPowerRequestOff,
+
+                SimulatedIgnitionPosition0,
+                SimulatedIgnitionPosition1,
+                SimulatedIgnitionPosition2,
+                SimulatedIgnitionPosition3
             };
             MessageType messageType;
             ConfigMessage newConfig;
@@ -99,7 +103,6 @@ namespace pico {
             }
         };
 
-    } // pico
-} // messages
+    } // messages
 
 #endif //PICOTEMPLATE_PITOPICO_H

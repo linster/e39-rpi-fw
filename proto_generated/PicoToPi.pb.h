@@ -3,7 +3,7 @@
 
 #ifndef PB_CA_STEFANM_E39_PROTO_PICOTOPI_PB_H_INCLUDED
 #define PB_CA_STEFANM_E39_PROTO_PICOTOPI_PB_H_INCLUDED
-#include "../../../libs/nanopb/pb.h"
+#include <pb.h>
 #include "ConfigProto.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
@@ -60,7 +60,7 @@ extern "C" {
 #define ca_stefanm_e39_proto_PicoToPi_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UENUM,    messageType,       1) \
 X(a, STATIC,   OPTIONAL, MESSAGE,  existingConfig,    2) \
-X(a, CALLBACK, OPTIONAL, STRING,   loggerStatement,   3)
+X(a, CALLBACK, SINGULAR, STRING,   loggerStatement,   3)
 #define ca_stefanm_e39_proto_PicoToPi_CALLBACK pb_default_field_callback
 #define ca_stefanm_e39_proto_PicoToPi_DEFAULT NULL
 #define ca_stefanm_e39_proto_PicoToPi_existingConfig_MSGTYPE ca_stefanm_e39_proto_ConfigProto
