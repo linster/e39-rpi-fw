@@ -61,8 +61,11 @@ namespace pico::messages {
                         case PiToPicoMessage::MessageType::PicoVideoRequestRVC: return ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestRVC;
                         case PiToPicoMessage::MessageType::PicoPowerRequestOn: return ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOn;
                         case PiToPicoMessage::MessageType::PicoPowerRequestOff: return ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOff;
+                        case PiToPicoMessage::SimulatedIgnitionPosition0: return ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition0;
+                        case PiToPicoMessage::SimulatedIgnitionPosition1: return ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition1;
+                        case PiToPicoMessage::SimulatedIgnitionPosition2: return ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition2;
+                        case PiToPicoMessage::SimulatedIgnitionPosition3: return ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3;
                     }
-                  //TODO do we want invalid here?
                 };
                 static LocalType decode(const ProtoType& proto) {
                     switch (proto) {
@@ -76,8 +79,11 @@ namespace pico::messages {
                         case ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestRVC: return PiToPicoMessage::MessageType::PicoVideoRequestRVC;
                         case ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOn: return PiToPicoMessage::MessageType::PicoPowerRequestOn;
                         case ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOff: return PiToPicoMessage::MessageType::PicoPowerRequestOff;
+                        case ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition0: return PiToPicoMessage::SimulatedIgnitionPosition0;
+                        case ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition1: return PiToPicoMessage::SimulatedIgnitionPosition1;
+                        case ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition2: return PiToPicoMessage::SimulatedIgnitionPosition2;
+                        case ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3: return PiToPicoMessage::SimulatedIgnitionPosition3;
                     }
-                    //TODO do we want invalid here??
                 }
             };
         public:

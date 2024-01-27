@@ -110,7 +110,7 @@ namespace pico {
                             case messages::PiToPicoMessage::MessageType::SimulatedIgnitionPosition3:
                                 onIgnitionKeyPosition(3);
                                 break;
-                            default:
+                            default: break;
                         }
                     }
                 }
