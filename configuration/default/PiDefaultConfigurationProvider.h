@@ -7,18 +7,16 @@
 
 #include "DefaultConfigurationProvider.h"
 #include <proto_generated/ConfigProto.pb.h>
-namespace pico {
-    namespace config {
-        namespace defaults {
 
-            class PiDefaultConfigurationProvider : public DefaultConfigurationProvider{
-            public:
-                PiDefaultConfigurationProvider() = default;
-                Configuration getDefaultConfiguration() override;
-            };
+namespace pico::config::defaults {
 
-        } // pico
-    } // config
+    class PiDefaultConfigurationProvider : public DefaultConfigurationProvider {
+    public:
+        PiDefaultConfigurationProvider() = default;
+
+        Configuration getDefaultConfiguration() override;
+    };
+
 } // defaults
 
 #endif //PICOTEMPLATE_PIDEFAULTCONFIGURATIONPROVIDER_H

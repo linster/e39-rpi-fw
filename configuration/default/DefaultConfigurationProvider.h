@@ -7,18 +7,15 @@
 
 #include <configuration/Configuration.h>
 
-namespace pico {
-    namespace config {
-        namespace defaults {
+namespace pico::config::defaults {
 
-            class DefaultConfigurationProvider {
-            public:
-                DefaultConfigurationProvider() = default;
-                virtual Configuration getDefaultConfiguration() = 0;
-            };
+    class DefaultConfigurationProvider {
+    public:
+        DefaultConfigurationProvider() = default;
 
-        } // pico
-    } // config
+        virtual Configuration getDefaultConfiguration() = 0;
+    };
+
 } // defaults
 
 #endif //PICOTEMPLATE_DEFAULTCONFIGURATIONPROVIDER_H

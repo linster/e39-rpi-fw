@@ -19,24 +19,24 @@ namespace pico::config {
         }
 
         std::unique_ptr<Configuration> ConfigurationManager::getMutableConfiguration() {
-            if (memoryConfigurationStore->canReadConfiguration()) {
+            bool hadMemoryConfig = memoryConfigurationStore->canReadConfiguration();
+            if (hadMemoryConfig) {
                 logger->d("ConfigurationManager", "Using memory configuration store");
-                Configuration memoryConfiguration = memoryConfigurationStore->getConfiguration();
-                return std::unique_ptr<Configuration>(&memoryConfiguration);
+                return std::make_unique<Configuration>(memoryConfigurationStore->getConfiguration());
             }
 
             if (flashConfigurationStore->canReadConfiguration()) {
                 logger->d("ConfigurationManager", "Using flash configuration store");
-                Configuration flashConfiguration = flashConfigurationStore->getConfiguration();
-                return std::unique_ptr<Configuration>(&flashConfiguration);
+                return std::make_unique<Configuration>(flashConfigurationStore->getConfiguration());
             }
 
-            logger->d("ConfigurationManager", "Getting new default configuration and saving it.");
             Configuration newDefault = defaultConfigurationProvider->getDefaultConfiguration();
             memoryConfigurationStore->saveConfiguration(newDefault);
-            flashConfigurationStore->saveConfiguration(newDefault);
-            iBusConfigMessageStore->saveConfiguration(newDefault);
-
+            if (!hadMemoryConfig) {
+                logger->d("ConfigurationManager", "Getting new default configuration and saving it.");
+                flashConfigurationStore->saveConfiguration(newDefault);
+                iBusConfigMessageStore->saveConfiguration(newDefault);
+            }
             return std::make_unique<Configuration>(newDefault);
         }
 

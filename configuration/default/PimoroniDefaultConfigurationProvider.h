@@ -7,18 +7,16 @@
 
 #include "DefaultConfigurationProvider.h"
 #include <proto_generated/ConfigProto.pb.h>
-namespace pico {
-    namespace config {
-        namespace defaults {
 
-            class PimoroniDefaultConfigurationProvider : public DefaultConfigurationProvider {
-            public:
-                PimoroniDefaultConfigurationProvider() = default;
-                Configuration getDefaultConfiguration() override;
-            };
+namespace pico::config::defaults {
 
-        } // pico
-    } // config
+    class PimoroniDefaultConfigurationProvider : public DefaultConfigurationProvider {
+    public:
+        PimoroniDefaultConfigurationProvider() = default;
+
+        Configuration getDefaultConfiguration() override;
+    };
+
 } // defaults
 
 #endif //PICOTEMPLATE_PIMORONIDEFAULTCONFIGURATIONPROVIDER_H
