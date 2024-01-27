@@ -55,20 +55,62 @@ namespace pico {
                     if (iBusPacket->getData()->size() == 2) {
                         if ((*iBusPacket->getData())[0] == 0x11) {
                             uint8_t position = (*iBusPacket->getData())[1];
-                            switch (position) {
-                                case 0x00:
-                                    onIgnitionKeyPosition(0);
-                                    break;
-                                case 0x01:
-                                    onIgnitionKeyPosition(1);
-                                    break;
-                                case 0x03:
-                                    onIgnitionKeyPosition(2);
-                                    break;
-                                case 0x07:
-                                    onIgnitionKeyPosition(3);
-                                    break;
+
+                            if (ignoreFutureRealIgnitionEmissions) {
+                                logger->d(getTag(), fmt::format("Ignoring real ignition status with position %d", position));
+                            } else {
+                                switch (position) {
+                                    case 0x00:
+                                        onIgnitionKeyPosition(0);
+                                        break;
+                                    case 0x01:
+                                        onIgnitionKeyPosition(1);
+                                        break;
+                                    case 0x03:
+                                        onIgnitionKeyPosition(2);
+                                        break;
+                                    case 0x07:
+                                        onIgnitionKeyPosition(3);
+                                        break;
+                                }
                             }
+                        }
+                    }
+                }
+
+                /*
+                 * Also support simulated ignition key.
+                 *
+                 * On the test bench, with only an IKE, and no GM or LCM, the IKE emits a repeated ignition key 0 when
+                 * the switched power (fuse 30?) is on. I tried to inject a message with key position 1, but what
+                 * happens is that it's spammed out from the IKE. Here, we listen for simulated ignition key events,
+                 * then set a flag to ignore real ones until the pico restarts.
+                 */
+
+                if (iBusPacket->getSourceDevice() == PI_VALUE && iBusPacket->getDestinationDevice() == PICO_VALUE) {
+                    messages::PiToPicoMessage decoded = decodePiToPicoMessage(logger, *iBusPacket);
+                    if (decoded.messageType == messages::PiToPicoMessage::MessageType::SimulatedIgnitionPosition0 ||
+                            decoded.messageType == messages::PiToPicoMessage::MessageType::SimulatedIgnitionPosition1 ||
+                            decoded.messageType == messages::PiToPicoMessage::MessageType::SimulatedIgnitionPosition2 ||
+                            decoded.messageType == messages::PiToPicoMessage::MessageType::SimulatedIgnitionPosition3) {
+
+                        logger->i(getTag(), "Received a simulated ignition key message");
+                        ignoreFutureRealIgnitionEmissions = true;
+
+                        switch (decoded.messageType) {
+                            case messages::PiToPicoMessage::MessageType::SimulatedIgnitionPosition0:
+                                onIgnitionKeyPosition(0);
+                                break;
+                            case messages::PiToPicoMessage::MessageType::SimulatedIgnitionPosition1:
+                                onIgnitionKeyPosition(1);
+                                break;
+                            case messages::PiToPicoMessage::MessageType::SimulatedIgnitionPosition2:
+                                onIgnitionKeyPosition(2);
+                                break;
+                            case messages::PiToPicoMessage::MessageType::SimulatedIgnitionPosition3:
+                                onIgnitionKeyPosition(3);
+                                break;
+                            default:
                         }
                     }
                 }
