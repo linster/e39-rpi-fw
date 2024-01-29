@@ -16,6 +16,9 @@ namespace pico::ibus::topology {
                 return BusTopology::SLED_NO_PI;
             #endif
 
+            #ifdef CMAKE_BUS_TOPOLOGY_SLED_LAPTOP_HMI
+                return BusTopology::SLED_LAPTOP_HMI;
+            #endif
         #else
             return BusTopology::SLED_NO_PI;
         #endif

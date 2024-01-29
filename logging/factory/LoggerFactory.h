@@ -27,9 +27,9 @@ namespace pico::logger::factory {
 
         std::shared_ptr<BaseLogger> returnedBaseLogger;
 
-        void buildLoggerForPi();
-        void buildLoggerNoPi();
-
+        void logsToStdioAndUart();
+        void logsToStdio();
+        void logsToUart();
     public:
 
         LoggerFactory(

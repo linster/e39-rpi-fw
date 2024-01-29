@@ -117,13 +117,14 @@ namespace pico::ibus::dma {
         uart_set_format(uart0, 8, 1, UART_PARITY_EVEN); //8E1
 
         switch (busTopologyManager->getBusToplogy()) {
-            case topology::CAR_WITH_PI:
+            case topology::BusTopology::CAR_WITH_PI:
                 //We're 9600 8E1, just like the modbmw interface
                 uart_init(uart1, 9600);
                 uart_set_hw_flow(uart1, false, false);
                 uart_set_format(uart1, 8, 1, UART_PARITY_EVEN); //8E1
                 break;
-            case topology::SLED_NO_PI:
+            case topology::BusTopology::SLED_NO_PI:
+            case topology::BusTopology::SLED_LAPTOP_HMI:
                 uart_init(uart1, 115200);
                 uart_set_hw_flow(uart1, false, false);
                 uart_set_format(uart1, 8, 1, UART_PARITY_NONE); //8N1
@@ -152,7 +153,8 @@ namespace pico::ibus::dma {
         //gpio_put(LIN_ChipSelect, true);
 
 
-        if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
+        if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI ||
+            busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_LAPTOP_HMI) {
             //This will cause printf's from the StdioPrintFlogger to also show up
             //on the UART, as well as writes from this class.
             stdio_uart_init_full(uart1, 115200, UART1_PICOPROBE_TX, UART1_PICOPROBE_RX);
