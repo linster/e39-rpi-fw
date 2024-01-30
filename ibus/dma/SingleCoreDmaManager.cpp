@@ -78,7 +78,7 @@ namespace pico::ibus::dma {
         flushToCarQToUart();
 
 //        if (shouldWriteStatus()) {
-            writeStatus(logger);
+//            writeStatus(logger);
 //        }
     }
 
@@ -269,7 +269,14 @@ namespace pico::ibus::dma {
         outgoingPacketBuffer.fill(0);
 
         if (queue_try_remove(movePacketFrom, outgoingPacketBuffer.data())) {
-            logger->d("DmaManager", fmt::format("We have a packet from {} to write to uart {}", fromName, uartName));
+
+
+            if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
+                //Guard to prevent infinite logging loop on topologies that output log messages over ibus.
+                logger->d("DmaManager",
+                          fmt::format("We have a packet from {} to write to uart {}", fromName, uartName));
+            }
+
             auto* packet = new data::IbusPacket(outgoingPacketBuffer);
             if (packet->isPacketValid()) {
                 //TODO is is right to write out getRawPacket().size? What if it's really big?
@@ -280,8 +287,12 @@ namespace pico::ibus::dma {
                 }
 
                 uart_write_blocking(uart, packet->getRawPacket().data(), packet->getRawPacket().size());
-                logger->d("DmaManager",
-                          fmt::format("Wrote packet from {} to write to uart {}", fromName, uartName));
+
+                if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
+                    //Guard to prevent infinite logging loop on topologies that output log messages over ibus.
+                    logger->d("DmaManager",
+                              fmt::format("Wrote packet from {} to write to uart {}", fromName, uartName));
+                }
             } else {
                 logger->wtf("DmaManager", "Trying to write out an invalid packet??");
                 logger->wtf("DmaManager", fmt::format("Invalid Packet is {}", packet->toString()));
@@ -347,7 +358,7 @@ namespace pico::ibus::dma {
         writeOutgoingQ_toUart(
                 &toPiQ,
                 uart1,
-                "ToCarQ",
+                "ToPiQ",
                 "uart1"
         );
     }
@@ -457,6 +468,8 @@ namespace pico::ibus::dma {
             //What happens on startup is that all the constructors call lots of log messages,
             //and nothing clears out the toPiQ until all the constructors have run.
             //So, what we'll do is just empty the queue.
+            //TODO we need a flag in this class that is set when onCpu0Loop runs for the first time.
+            //TODO don't add messages to the outgoing message queue until we have a message pump.
             while(!queue_is_empty(toQ)){
                 std::array<uint8_t, 255> temp = std::array<uint8_t , 255>();
                 queue_try_remove(toQ, temp.data());

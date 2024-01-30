@@ -232,6 +232,7 @@ namespace pico::di {
         ApplicationContainer* PimoroniFactory::getApplicationContainer() {
             return new ApplicationContainer(
                     logger,
+                    busTopologyManager,
                     watchdogManager,
                     powerSwitchManager,
                     videoSwitch,

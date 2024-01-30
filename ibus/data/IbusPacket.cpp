@@ -105,18 +105,22 @@ namespace pico {
             }
 
             //Typically used in building messages to the car.
-            IbusPacket::IbusPacket(IbusDeviceEnum src, IbusDeviceEnum dest, std::vector<uint8_t> data) {
+            IbusPacket::IbusPacket(IbusDeviceEnum src, IbusDeviceEnum dest, std::vector<uint8_t> body) {
 
                 sourceDevice = src;
                 destinationDevice = dest;
-                this->data = std::vector<uint8_t>(data);
 
-                this->packetLength = data.size() + 4;
+                this->packetLength = body.size() + 4;
 
                 if (packetLength <= 2) {
                     data = std::vector<uint8_t>();
                 } else {
-                    this->data = std::move(data);
+                    this->data = std::vector<uint8_t>(body.size());
+                }
+
+                int dataIndex = 0;
+                for (uint8_t byte : body) {
+                    data[dataIndex++] = byte;
                 }
 
                 //Set complete Raw packet
@@ -126,7 +130,7 @@ namespace pico {
                 completeRawPacket[2] = destinationDevice;
 
                 int completeRawPacketIndex = 3;
-                for (uint8_t byte: data) {
+                for (uint8_t byte: body) {
                     completeRawPacket[completeRawPacketIndex++] = byte;
                 }
 

@@ -29,7 +29,7 @@ namespace pico::ibus::output::writer {
                             data::IbusPacket(
                                     data::IbusDeviceEnum::PICO,
                                     data::IbusDeviceEnum::RPI,
-                                    std::move(bytes)
+                                    bytes
                             ));
 
                 }

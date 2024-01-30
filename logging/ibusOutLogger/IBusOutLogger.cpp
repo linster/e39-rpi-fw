@@ -15,7 +15,7 @@ namespace pico::logger::ibus {
             case Level::WTF : { levelString = "?" ; break; }
             default: { levelString = "" ; break; }
         }
-        loggerOutput->print(fmt::format("{} {}", levelString, message));
+        loggerOutput->print(fmt::format("{} [{}] {}", levelString, tag, message));
     }
 
     IBusOutLogger::IBusOutLogger(std::shared_ptr<pico::ibus::output::writer::IbusLoggerOutput> loggerOutput) {

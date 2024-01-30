@@ -27,6 +27,19 @@ namespace pico {
         dmaManager->cpu0setup();
 
         logger->i("onMain", "Starting Linster OS Automotive");
+
+        switch (busTopologyManager->getBusToplogy()) {
+            case ibus::topology::CAR_WITH_PI:
+                logger->i("onMain", "Bus topology is CAR_WITH_PI");
+                break;
+            case ibus::topology::SLED_NO_PI:
+                logger->i("onMain", "Bus topology is SLED_NO_PI");
+                break;
+            case ibus::topology::SLED_LAPTOP_HMI:
+                logger->i("onMain", "Bus topology is SLED_LAPTOP_HMI");
+                break;
+        }
+
         observerRegistry->printRegisteredObserverTags();
 
 

@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <logging/BaseLogger.h>
+#include <ibus/dma/topology/BusTopologyManager.h>
 #include <hardware/pi4powerswitch/IPi4PowerSwitchManager.h>
 #include <hardware/videoSwitch/VideoSwitch.h>
 #include <configuration/ConfigurationManager.h>
@@ -24,6 +25,8 @@ namespace pico {
 
     private:
         std::shared_ptr<logger::BaseLogger> logger;
+
+        std::shared_ptr<ibus::topology::BusTopologyManager> busTopologyManager;
 
         std::shared_ptr<watchdog::WatchdogManager> watchdogManager;
 
@@ -47,6 +50,7 @@ namespace pico {
 
         ApplicationContainer(
                 std::shared_ptr<logger::BaseLogger> logger,
+                std::shared_ptr<ibus::topology::BusTopologyManager> busTopologyManager,
                 std::shared_ptr<watchdog::WatchdogManager> watchdogManager,
                 std::shared_ptr<hardware::pi4powerswitch::IPi4PowerSwitchManager> pi4PowerSwitchManager,
                 std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch,
@@ -60,6 +64,7 @@ namespace pico {
                 std::shared_ptr<ibus::output::writer::radio::AudioFocusOutputWriter> audioFocusOutputWriter
                 ) {
             this->logger = logger;
+            this->busTopologyManager = busTopologyManager;
             this->watchdogManager = watchdogManager;
             this->pi4PowerSwitchManager = pi4PowerSwitchManager;
             this->videoSwitch = videoSwitch;
