@@ -44,7 +44,7 @@ namespace pico::ibus::observers {
                 //TODO This is some serious bullshit. This is an exercise for me someday to learn
                 //TODO how to take a vector of ints, and convert it into a plain old c_str(), to jam
                 //TODO into NanoPB_CPP's weird input stream type.
-                std::string inputString = std::string(0, '\0');
+                std::string inputString = std::string(ibusPacket.getData()->size(), '\0');
 
                 std::vector<uint8_t> data = *ibusPacket.getData();
 

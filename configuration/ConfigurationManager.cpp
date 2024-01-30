@@ -18,26 +18,25 @@ namespace pico::config {
             this->defaultConfigurationProvider = defaultConfigurationProvider;
         }
 
-        std::unique_ptr<Configuration> ConfigurationManager::getMutableConfiguration() {
-            if (memoryConfigurationStore->canReadConfiguration()) {
+        Configuration* ConfigurationManager::getMutableConfiguration() {
+            bool hadMemoryConfig = memoryConfigurationStore->canReadConfiguration();
+            if (hadMemoryConfig) {
                 logger->d("ConfigurationManager", "Using memory configuration store");
-                Configuration memoryConfiguration = memoryConfigurationStore->getConfiguration();
-                return std::unique_ptr<Configuration>(&memoryConfiguration);
+                return memoryConfigurationStore->getConfiguration();
             }
 
             if (flashConfigurationStore->canReadConfiguration()) {
                 logger->d("ConfigurationManager", "Using flash configuration store");
-                Configuration flashConfiguration = flashConfigurationStore->getConfiguration();
-                return std::unique_ptr<Configuration>(&flashConfiguration);
+                memoryConfigurationStore->saveConfiguration(*flashConfigurationStore->getConfiguration());
+                return memoryConfigurationStore->getConfiguration();
             }
 
-            logger->d("ConfigurationManager", "Getting new default configuration and saving it.");
             Configuration newDefault = defaultConfigurationProvider->getDefaultConfiguration();
             memoryConfigurationStore->saveConfiguration(newDefault);
+            logger->d("ConfigurationManager", "Getting new default configuration and saving it.");
             flashConfigurationStore->saveConfiguration(newDefault);
             iBusConfigMessageStore->saveConfiguration(newDefault);
-
-            return std::make_unique<Configuration>(newDefault);
+            return memoryConfigurationStore->getConfiguration();
         }
 
         void ConfigurationManager::saveConfiguration(std::unique_ptr<Configuration> configuration) {

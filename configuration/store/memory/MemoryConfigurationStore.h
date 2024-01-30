@@ -13,9 +13,9 @@ namespace pico::config {
             Configuration inMemoryConfiguration = Configuration();
             bool hasConfiguration = false;
         public:
-            MemoryConfigurationStore();
+            explicit MemoryConfigurationStore();
             bool canReadConfiguration() override;
-            Configuration getConfiguration() override;
+            Configuration* getConfiguration() override;
             void saveConfiguration(Configuration configuration) override;
         };
 

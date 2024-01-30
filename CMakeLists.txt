@@ -172,6 +172,7 @@ target_sources(
         configuration/store/flash/FlashConfigurationStore.h
         configuration/store/flash/FlashConfigurationStore.cpp
         configuration/store/flash/FlashConfigurationStore.cpp
+        configuration/store/flash/flash_utils.h
         ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.cpp
         ibus/outputWriterApi/PicoToPi/picoConfigurationStatusWriter/ConfigurationStatusWriter.h
         ibus/outputWriterApi/PicoToPi/picoPiSoftPowerRequest/SoftPowerRequestWriter.cpp
@@ -278,6 +279,10 @@ target_include_directories(
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
 #        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ibus>
 )
+
+pico_set_linker_script(PicoTemplate ${CMAKE_SOURCE_DIR}/configuration/store/flash/memmap_persistent.ld)
+
+target_link_libraries(PicoTemplate hardware_flash hardware_sync)
 
 #https://datasheets.raspberrypi.com/pico/raspberry-pi-pico-c-sdk.pdf -- page 36
 #pico_generate_pio_header(PicoTemplate ${CMAKE_SOURCE_DIR}/ibus/dma/pio/FromCarProgram.pio)

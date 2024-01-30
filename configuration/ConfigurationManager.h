@@ -11,8 +11,7 @@
 #include <configuration/store/ibusConfigMessageStore/IBusConfigMessageStore.h>
 #include <configuration/store/memory/MemoryConfigurationStore.h>
 #include <configuration/default/DefaultConfigurationProvider.h>
-namespace pico {
-    namespace config {
+namespace pico::config {
 
         class ConfigurationManager {
 
@@ -35,14 +34,13 @@ namespace pico {
                     std::shared_ptr<defaults::DefaultConfigurationProvider> defaultConfigurationProvider
             );
 
-            std::unique_ptr<Configuration> getMutableConfiguration();
+            Configuration* getMutableConfiguration();
             void saveConfiguration(std::unique_ptr<Configuration> configuration);
 
             Configuration getConfigurationCopy();
 
         };
 
-    } // pico
-} // config
+    } // config
 
 #endif //PICOTEMPLATE_CONFIGURATIONMANAGER_H
