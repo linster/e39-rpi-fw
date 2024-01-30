@@ -374,23 +374,29 @@ target_include_directories(
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/ibus/dma/topology>
 )
 
+message("Does anything work in this shit language???")
+if (${CMAKE_BUS_TOPOLOGY_VALUE} EQUAL CMAKE_BUS_TOPOLOGY_SLED_LAPTOP_HMI)
+message("Does anything work in this shit language?")
+endif()
 
-
+#Why the heck do you need to expand LHS but not the RHS of an equality statement??
 if(CMAKE_BUS_TOPOLOGY_VALUE EQUAL CMAKE_BUS_TOPOLOGY_SLED_NO_PI)
     #Print everything over uart 1 for debugging.
+    message("Setting up stdio for CMAKE_BUS_TOPOLOGY_SLED_NO_PI")
     pico_enable_stdio_usb(PicoTemplate 0)
     pico_enable_stdio_uart(PicoTemplate 1)
 endif()
 
 if(CMAKE_BUS_TOPOLOGY_VALUE EQUAL CMAKE_BUS_TOPOLOGY_SLED_LAPTOP_HMI)
     #Raw IBUS on UART, no stdio logs on uart. Stdio goes on usb.
+    message("Setting up stdio for CMAKE_BUS_TOPOLOGY_SLED_LAPTOP_HMI")
     pico_enable_stdio_usb(PicoTemplate 1)
     pico_enable_stdio_uart(PicoTemplate 0)
 endif()
 
-
 if(CMAKE_BUS_TOPOLOGY_VALUE EQUAL CMAKE_BUS_TOPOLOGY_CAR_WITH_PI)
     #Raw IBUS on UART, no stdio logs on uart. Stdio goes on usb.
+    message("Setting up stdio for CMAKE_BUS_TOPOLOGY_CAR_WITH_PI")
     pico_enable_stdio_usb(PicoTemplate 1)
     pico_enable_stdio_uart(PicoTemplate 0)
 endif()
