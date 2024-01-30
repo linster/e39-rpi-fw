@@ -25,6 +25,7 @@ add_subdirectory(libs/nanopb_cpp)
 #/home/stefan/e39-rpi-fw/libs/nanopb/generator/proto/nanopb.proto_generated: No such file or directory
 
 
+
 #https://jaredrhodes.com/2018/08/24/generate-protocol-buffers-on-build-with-cmake/
 #file(GLOB_RECURSE PROTOBUF_DEFINITION_FILES "*.proto_generated")
 #set(PROTOBUF_INPUT_DIRECTORY "${PROJECT_SOURCE_DIR}")
@@ -52,6 +53,7 @@ add_subdirectory(libs/nanopb_cpp)
 #end proto_generated
 
 
+#stefan@pop-os:~/e39-rpi-fw$ ./libs/nanopb/generator/protoc --plugin=protoc-gen-nanopb=libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=proto_generated proto/PiToPico.proto --proto_path=proto/
 
 
 #https://github.com/google/fruit/issues/62#issuecomment-383369945
@@ -64,6 +66,33 @@ pico_sdk_init()
 add_executable(PicoTemplate)
 
 
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/proto_generated/PiToPico.pb.h
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc --plugin=protoc-gen-nanopb=${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=${CMAKE_CURRENT_SOURCE_DIR}/proto_generated ${CMAKE_CURRENT_SOURCE_DIR}/proto/PiToPico.proto --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto/
+        COMMENT "Generating PiToPico.pb.h"
+)
+
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/proto_generated/PicoToPi.pb.h
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc --plugin=protoc-gen-nanopb=${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=${CMAKE_CURRENT_SOURCE_DIR}/proto_generated ${CMAKE_CURRENT_SOURCE_DIR}/proto/PicoToPi.proto --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto/
+        COMMENT "Generating PicoToPi.pb.h"
+)
+
+add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/proto_generated/ConfigProto.pb.h
+        COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc --plugin=protoc-gen-nanopb=${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=${CMAKE_CURRENT_SOURCE_DIR}/proto_generated ${CMAKE_CURRENT_SOURCE_DIR}/proto/ConfigProto.proto --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto/
+        COMMENT "Generating ConfigProto.pb.h"
+)
+
+add_custom_target(
+        GenerateProtobufHeaders ALL
+        DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/proto_generated/PiToPico.pb.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/proto_generated/PicoToPi.pb.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/proto_generated/ConfigProto.pb.h
+)
+
+add_dependencies(PicoTemplate GenerateProtobufHeaders)
 
 target_sources(
         PicoTemplate PUBLIC
@@ -277,6 +306,7 @@ target_include_directories(
         PicoTemplate
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb>
 #        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ibus>
 )
 

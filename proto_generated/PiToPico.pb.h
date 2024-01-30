@@ -3,7 +3,7 @@
 
 #ifndef PB_CA_STEFANM_E39_PROTO_PITOPICO_PB_H_INCLUDED
 #define PB_CA_STEFANM_E39_PROTO_PITOPICO_PB_H_INCLUDED
-#include "../../../libs/nanopb/pb.h"
+#include <pb.h>
 #include "ConfigProto.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
@@ -11,6 +11,7 @@
 #endif
 
 /* Enum definitions */
+/* TODO Someday this could be a union proto type, but not this release. */
 typedef enum _ca_stefanm_e39_proto_PiToPico_MessageType {
     ca_stefanm_e39_proto_PiToPico_MessageType_HeartbeatRequest = 0,
     ca_stefanm_e39_proto_PiToPico_MessageType_HeartbeatResponse = 1,
@@ -20,8 +21,14 @@ typedef enum _ca_stefanm_e39_proto_PiToPico_MessageType {
     ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestPico = 5, /* Ask the pico to show the debug menu */
     ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestRpi = 6, /* Ask the pico to show the RPi. */
     ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestRVC = 7,
+    /* For test purposes to toggle the power switch for the RPI power supply. */
     ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOn = 8,
-    ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOff = 9
+    ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOff = 9,
+    /* Allow us to simulate ignition events without a GM or LCM or ignition switch */
+    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition0 = 10,
+    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition1 = 11,
+    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition2 = 12,
+    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3 = 13
 } ca_stefanm_e39_proto_PiToPico_MessageType;
 
 /* Struct definitions */
@@ -38,8 +45,8 @@ extern "C" {
 
 /* Helper constants for enums */
 #define _ca_stefanm_e39_proto_PiToPico_MessageType_MIN ca_stefanm_e39_proto_PiToPico_MessageType_HeartbeatRequest
-#define _ca_stefanm_e39_proto_PiToPico_MessageType_MAX ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOff
-#define _ca_stefanm_e39_proto_PiToPico_MessageType_ARRAYSIZE ((ca_stefanm_e39_proto_PiToPico_MessageType)(ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOff+1))
+#define _ca_stefanm_e39_proto_PiToPico_MessageType_MAX ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3
+#define _ca_stefanm_e39_proto_PiToPico_MessageType_ARRAYSIZE ((ca_stefanm_e39_proto_PiToPico_MessageType)(ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3+1))
 
 #define ca_stefanm_e39_proto_PiToPico_messageType_ENUMTYPE ca_stefanm_e39_proto_PiToPico_MessageType
 

@@ -32,6 +32,8 @@ namespace pico {
                 std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager;
                 //https://github.com/piersholt/wilhelm-docs/blob/master/ike/11.md
                 void onIgnitionKeyPosition(int position);
+
+                bool ignoreFutureRealIgnitionEmissions = false;
             protected:
                 std::string getTag() override { return "IgnitionStateObserver"; };
                 void onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) override;
