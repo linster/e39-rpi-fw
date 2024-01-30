@@ -22,7 +22,8 @@ namespace pico::logger::factory {
                 case pico::ibus::topology::SLED_LAPTOP_HMI:
                     //We want only ibus raw on the uart
                     //STDIO is setup to be on USB, not on uart.
-                    logsToStdioAndUart();
+//                    logsToStdioAndUart();
+                    logsToUart();
                     break;
                 case pico::ibus::topology::SLED_NO_PI:
                     //We want to print a bunch of junk to the Uart, all our log

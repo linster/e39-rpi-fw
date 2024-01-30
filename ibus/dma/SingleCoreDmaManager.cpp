@@ -4,6 +4,7 @@
 
 #include "SingleCoreDmaManager.h"
 
+
 namespace pico::ibus::dma {
 
     SingleCoreDmaManager::SingleCoreDmaManager(
@@ -154,14 +155,14 @@ namespace pico::ibus::dma {
         //gpio_put(LIN_ChipSelect, true);
 
 
-        if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI ||
-            busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_LAPTOP_HMI) {
+        if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
             //This will cause printf's from the StdioPrintFlogger to also show up
             //on the UART, as well as writes from this class.
             stdio_uart_init_full(uart1, 115200, UART1_PICOPROBE_TX, UART1_PICOPROBE_RX);
         }
 
-        if (busTopologyManager->getBusToplogy() == topology::BusTopology::CAR_WITH_PI) {
+        if (busTopologyManager->getBusToplogy() == topology::BusTopology::CAR_WITH_PI  ||
+            busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_LAPTOP_HMI) {
             //CMake flags have caused only the USB stdio to be enabled, but we still
             //have to enable stdio on the usb port for debugging.
             stdio_init_all();
