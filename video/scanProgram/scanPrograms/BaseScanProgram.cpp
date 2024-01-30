@@ -22,7 +22,6 @@ namespace video::scanProgram::scanPrograms {
             ) {
 
         this->logger = logger;
-        this->logger->d(getTag(), "Completed init()");
     }
 
     void BaseScanProgram::startScanProgram() {

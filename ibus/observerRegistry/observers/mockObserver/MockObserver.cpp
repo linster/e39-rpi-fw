@@ -13,7 +13,6 @@ namespace pico {
                     std::shared_ptr<pico::ibus::topology::BusTopologyManager> busTopologyManager) {
                 this->logger = logger;
                 this->busTopologyManager = busTopologyManager;
-                logger->d("MockObserver", "Constructed");
             }
 
             void MockObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {

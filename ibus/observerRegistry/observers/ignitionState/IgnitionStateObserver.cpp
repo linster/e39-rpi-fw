@@ -36,8 +36,6 @@ namespace pico {
                 if (this->screenPowerManager == nullptr) {
                     logger->wtf("IgnitionStateObserver", "screenPowerManager is null");
                 }
-
-                logger->d(getTag(), "Constructed");
             }
 
 

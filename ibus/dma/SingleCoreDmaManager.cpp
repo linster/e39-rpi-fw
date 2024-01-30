@@ -454,8 +454,9 @@ namespace pico::ibus::dma {
         bool wasAdded = queue_try_add(toQ, outgoingPacketBuffer.data());
 
         if (!wasAdded) {
-            staticLogger->w("SingleCoreDmaManager", fmt::format("Outgoing Q {} was full, clearing", toQName));
-            writeStatus(logger);
+            //What happens on startup is that all the constructors call lots of log messages,
+            //and nothing clears out the toPiQ until all the constructors have run.
+            //So, what we'll do is just empty the queue.
             while(!queue_is_empty(toQ)){
                 std::array<uint8_t, 255> temp = std::array<uint8_t , 255>();
                 queue_try_remove(toQ, temp.data());

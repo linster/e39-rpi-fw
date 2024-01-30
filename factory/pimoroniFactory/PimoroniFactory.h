@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <factory/ApplicationContainer.h>
+#include <factory/provider/DmaManagerProvider.h>
 #include <logging/StdioPrintFLogger.h>
 #include <logging/factory/LoggerFactory.h>
 #include <hardware/pi4powerswitch/MockPi4PowerSwitchManager.h>
@@ -43,6 +44,7 @@ namespace pico::di {
         private:
 
             std::shared_ptr<pico::ibus::topology::BusTopologyManager> busTopologyManager;
+            std::shared_ptr<provider::DmaManagerProvider> dmaManagerProvider;
             std::shared_ptr<logger::factory::LoggerFactory> loggerFactory;
 
             std::shared_ptr<logger::BaseLogger> logger;

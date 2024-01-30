@@ -15,6 +15,12 @@ namespace pico::ibus::output::writer {
     }
 
     void IbusLoggerOutput::print(std::string message) {
+
+        if (dmaManagerAccessor() == nullptr) {
+            //We cannot log anything here until the dma manager has been set up.
+            return;
+        }
+
         if (splitLogMessagesAtTruncationPoint) {
             //TODO Split into multiple messages and pump them all out.
             //TODO

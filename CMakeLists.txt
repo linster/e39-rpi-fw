@@ -142,6 +142,8 @@ target_sources(
         factory/pimoroniFactory/PimoroniFactory.h
         factory/e39RpiFactory/e39rpiFactory.cpp
         factory/e39RpiFactory/e39rpiFactory.h
+        factory/provider/DmaManagerProvider.cpp
+        factory/provider/DmaManagerProvider.h
         logging/CompositeLogger.cpp
         logging/CompositeLogger.h
         logging/ibusOutLogger/IBusOutLogger.cpp
@@ -351,6 +353,9 @@ pico_add_extra_outputs(PicoTemplate)
 #set(CMAKE_BUS_TOPOLOGY_VALUE CMAKE_BUS_TOPOLOGY_CAR_WITH_PI)
 #set(CMAKE_BUS_TOPOLOGY_VALUE CMAKE_BUS_TOPOLOGY_SLED_NO_PI)
 set(CMAKE_BUS_TOPOLOGY_VALUE CMAKE_BUS_TOPOLOGY_SLED_LAPTOP_HMI)
+
+#This is really dumb, but it needs to be here for #cmakedefine to actually run.
+set(CMAKE_BUS_TOPOLOGY 1)
 
 configure_file(
         ibus/dma/topology/CMakeHeaderFlags.in.h

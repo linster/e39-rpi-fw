@@ -22,7 +22,6 @@ namespace pico::ibus::output::writer {
 
         logger->d("ScreenPowerManager", "Setting isPowerOn to false.");
         isPowerOn = false;
-        logger->d("ScreenPowerManager", "Constructed.");
     }
 
     std::string ScreenPowerManager::getTag() { return "ScreenPowerManager" ; };

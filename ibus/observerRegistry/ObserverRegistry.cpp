@@ -6,7 +6,7 @@
 #include <algorithm>
 namespace pico::ibus::observerRegistry {
             ObserverRegistry::ObserverRegistry(std::shared_ptr<pico::logger::BaseLogger> logger) {
-                this-> logger = logger;
+                this->logger = logger;
                 this->logger->d("ObserverRegistry", "Construction");
             }
 
