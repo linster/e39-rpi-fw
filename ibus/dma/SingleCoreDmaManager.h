@@ -54,6 +54,8 @@ namespace pico::ibus::dma {
             //we must protect a packetizer's state (it is non-reentrant)
             critical_section_t packetizerCs;
 
+            /** Set to true once onCpu0Loop starts running */
+            bool messagePumpRunning = false;
 
             void setupUarts();
 

@@ -67,6 +67,7 @@ namespace pico::ibus::dma {
     }
 
     void SingleCoreDmaManager::onCpu0Loop() {
+        messagePumpRunning = true;
         scanvideo_wait_for_vblank();
         flushUart0ByteBufferToPacketizer();
         flushUart1ByteBufferToPacketizer();
@@ -286,7 +287,12 @@ namespace pico::ibus::dma {
                     logger->d("SingleCoreDmaManager_outgoing", fmt::format("RawPacket Size: {}", packet->getRawPacket().size()));
                 }
 
-                uart_write_blocking(uart, packet->getRawPacket().data(), packet->getRawPacket().size());
+
+                auto rd = packet->getRawPacket().data();
+                auto rs = packet->getRawPacket().size();
+
+//                uart_write_blocking(uart, packet->getRawPacket().data(), packet->getRawPacket().size());
+                uart_write_blocking(uart, rd, rs);
 
                 if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
                     //Guard to prevent infinite logging loop on topologies that output log messages over ibus.
@@ -445,6 +451,13 @@ namespace pico::ibus::dma {
             queue_t *toQ,
             std::string toQName
     ) {
+
+        if (!messagePumpRunning) {
+            //We're not emptying the queues yet, so no point wasting time storing
+            //chatty messages that will get deleted. Our queue depths are memory-constrained,
+            //and we can't get the queues emptying before they're filled up.
+            return;
+        }
 
         bool log_writePacketToQ = false;
 

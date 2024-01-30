@@ -305,6 +305,7 @@ target_sources(
         ibus/dma/topology/PicoBusTopology.h
         ibus/dma/topology/BusTopologyManager.h
         ibus/dma/topology/BusTopologyManager.cpp
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/ibus/dma/topology/CMakeHeaderFlags.h>
 
 )
 
@@ -350,12 +351,18 @@ pico_add_extra_outputs(PicoTemplate)
 # CMAKE_BUS_TOPOLOGY_SLED_NO_PI
 # CMAKE_BUS_TOPOLOGY_SLED_LAPTOP_HMI
 
+set(CMAKE_BUS_TOPOLOGY_CAR_WITH_PI 0)
+set(CMAKE_BUS_TOPOLOGY_SLED_NO_PI 1)
+set(CMAKE_BUS_TOPOLOGY_SLED_LAPTOP_HMI 2)
+
 #set(CMAKE_BUS_TOPOLOGY_VALUE CMAKE_BUS_TOPOLOGY_CAR_WITH_PI)
 #set(CMAKE_BUS_TOPOLOGY_VALUE CMAKE_BUS_TOPOLOGY_SLED_NO_PI)
 set(CMAKE_BUS_TOPOLOGY_VALUE CMAKE_BUS_TOPOLOGY_SLED_LAPTOP_HMI)
 
 #This is really dumb, but it needs to be here for #cmakedefine to actually run.
 set(CMAKE_BUS_TOPOLOGY 1)
+
+message("CMAKE_BUS_TOPOLOGY_VALUE ${CMAKE_BUS_TOPOLOGY_VALUE}")
 
 configure_file(
         ibus/dma/topology/CMakeHeaderFlags.in.h
@@ -366,6 +373,8 @@ target_include_directories(
         PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/ibus/dma/topology>
 )
+
+
 
 if(CMAKE_BUS_TOPOLOGY_VALUE EQUAL CMAKE_BUS_TOPOLOGY_SLED_NO_PI)
     #Print everything over uart 1 for debugging.
