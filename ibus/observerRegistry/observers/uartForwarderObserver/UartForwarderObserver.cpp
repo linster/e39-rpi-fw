@@ -17,7 +17,7 @@ namespace pico::ibus::observers {
     }
 
     void UartForwarderObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {
-        if (busTopologyManager->getBusToplogy() != topology::BusTopology::CAR_WITH_PI) {
+        if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
             return;
         }
 

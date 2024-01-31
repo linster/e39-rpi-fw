@@ -84,12 +84,13 @@ namespace pico {
                 if (packetLength <= 2) {
                     data = std::vector<uint8_t>();
                 } else {
+                    data = std::vector<uint8_t>(raw.size() - 4);
                     // subtract 2 because length includes checksum and dest address
                     auto begin = raw.begin() + 3;
                     auto end = raw.end() - 1;
                     data.insert(data.begin(), begin, end);
                     //TODO resize data to size so we don't have a gigantic vector mostly full of zeros.
-                    data.resize(packetLength - 2);
+                    //data.resize(packetLength - 2);
 
                     completeRawPacket.resize(packetLength + 2);
                 }
@@ -105,32 +106,27 @@ namespace pico {
             }
 
             //Typically used in building messages to the car.
-            IbusPacket::IbusPacket(IbusDeviceEnum src, IbusDeviceEnum dest, std::vector<uint8_t> body) {
+            IbusPacket::IbusPacket(IbusDeviceEnum src, IbusDeviceEnum dest, std::vector<uint8_t> data) {
 
                 sourceDevice = src;
                 destinationDevice = dest;
 
-                this->packetLength = body.size() + 4;
+                this->packetLength = data.size() + 2 /* destDevice + CRC */;
 
                 if (packetLength <= 2) {
-                    data = std::vector<uint8_t>();
+                    this->data = std::vector<uint8_t>();
                 } else {
-                    this->data = std::vector<uint8_t>(body.size());
-                }
-
-                int dataIndex = 0;
-                for (uint8_t byte : body) {
-                    data[dataIndex++] = byte;
+                    this->data = std::vector<uint8_t>(data.begin(), data.end());
                 }
 
                 //Set complete Raw packet
-                completeRawPacket = std::vector<uint8_t>(packetLength);
+                completeRawPacket = std::vector<uint8_t>(packetLength + 2);
                 completeRawPacket[0] = sourceDevice;
                 completeRawPacket[1] = packetLength;
                 completeRawPacket[2] = destinationDevice;
 
                 int completeRawPacketIndex = 3;
-                for (uint8_t byte: body) {
+                for (uint8_t byte: this->data) {
                     completeRawPacket[completeRawPacketIndex++] = byte;
                 }
 
@@ -146,12 +142,12 @@ namespace pico {
                 completeRawPacket[completeRawPacketIndex] = actualCrc;
             }
 
-            IbusPacket::~IbusPacket() {
-                data.clear();
-                data.shrink_to_fit();
-                completeRawPacket.clear();
-                completeRawPacket.shrink_to_fit();
-            }
+//            IbusPacket::~IbusPacket() {
+//                data.clear();
+//                data.shrink_to_fit();
+//                completeRawPacket.clear();
+//                completeRawPacket.shrink_to_fit();
+//            }
 
             void IbusPacket::cloneFrom(IbusPacket other) {
                 this->completeRawPacket = other.completeRawPacket;

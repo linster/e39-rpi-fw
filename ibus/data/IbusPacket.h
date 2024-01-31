@@ -60,7 +60,7 @@ namespace pico::ibus::data {
 
         std::string toString();
 
-        ~IbusPacket();
+        ~IbusPacket() = default;
 
         static std::string IbusDeviceEnumToString(IbusDeviceEnum value);
 

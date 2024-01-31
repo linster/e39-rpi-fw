@@ -273,7 +273,7 @@ namespace pico::ibus::dma {
         std::array<uint8_t, 255> outgoingPacketBuffer = std::array<uint8_t , 255>();
         outgoingPacketBuffer.fill(0);
 
-        if (queue_try_remove(movePacketFrom, outgoingPacketBuffer.data())) {
+        if (queue_try_remove(movePacketFrom, (void*)outgoingPacketBuffer.data())) {
 
 
             if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
@@ -282,31 +282,39 @@ namespace pico::ibus::dma {
                           fmt::format("We have a packet from {} to write to uart {}", fromName, uartName));
             }
 
-            auto* packet = new data::IbusPacket(outgoingPacketBuffer);
-            if (packet->isPacketValid()) {
-                //TODO is is right to write out getRawPacket().size? What if it's really big?
-                //TODO what if we accidentally skip the checksum byte at the end?
-                if (log_outgoingPacket) {
-                    logger->d("SingleCoreDmaManager_outgoing", packet->toString());
-                    logger->d("SingleCoreDmaManager_outgoing", fmt::format("RawPacket Size: {}", packet->getRawPacket().size()));
-                }
+            //TODO what if we don't construct the packet all over again? What if we just copy out the buffer dumbly?
+            uart_write_blocking(uart, outgoingPacketBuffer.data(), outgoingPacketBuffer[1] + 2);
 
 
-                auto rd = packet->getRawPacket().data();
-                auto rs = packet->getRawPacket().size();
-
-//                uart_write_blocking(uart, packet->getRawPacket().data(), packet->getRawPacket().size());
-                uart_write_blocking(uart, rd, rs);
-
-                if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
-                    //Guard to prevent infinite logging loop on topologies that output log messages over ibus.
-                    logger->d("DmaManager",
-                              fmt::format("Wrote packet from {} to write to uart {}", fromName, uartName));
-                }
-            } else {
-                logger->wtf("DmaManager", "Trying to write out an invalid packet??");
-                logger->wtf("DmaManager", fmt::format("Invalid Packet is {}", packet->toString()));
-            }
+//            //TODO this doesn't really make sense. We aren't going to be putting invalid packets in here?
+//            auto* packet = new data::IbusPacket(outgoingPacketBuffer);
+//            if (packet->isPacketValid()) {
+//                //TODO is is right to write out getRawPacket().size? What if it's really big?
+//                //TODO what if we accidentally skip the checksum byte at the end?
+//                if (log_outgoingPacket) {
+//                    logger->d("SingleCoreDmaManager_outgoing", packet->toString());
+//                    logger->d("SingleCoreDmaManager_outgoing", fmt::format("RawPacket Size: {}", packet->getRawPacket().size()));
+//                }
+//
+//
+//                auto rd = packet->getRawPacket().data();
+//                auto rs = packet->getRawPacket().size();
+//
+////                uart_write_blocking(uart, packet->getRawPacket().data(), packet->getRawPacket().size());
+////                uart_write_blocking(uart, rd, rs);
+//
+//                    //TODO what if we don't construct the packet all over again? What if we just copy out the buffer dumbly?
+//                uart_write_blocking(uart, outgoingPacketBuffer.data(), outgoingPacketBuffer[1] + 1);
+//
+//                if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
+//                    //Guard to prevent infinite logging loop on topologies that output log messages over ibus.
+//                    logger->d("DmaManager",
+//                              fmt::format("Wrote packet from {} to write to uart {}", fromName, uartName));
+//                }
+//            } else {
+//                logger->wtf("DmaManager", "Trying to write out an invalid packet??");
+//                logger->wtf("DmaManager", fmt::format("Invalid Packet is {}", packet->toString()));
+//            }
         }
     }
 
@@ -456,12 +464,12 @@ namespace pico::ibus::dma {
             std::string toQName
     ) {
 
-        if (!messagePumpRunning) {
-            //We're not emptying the queues yet, so no point wasting time storing
-            //chatty messages that will get deleted. Our queue depths are memory-constrained,
-            //and we can't get the queues emptying before they're filled up.
-            return;
-        }
+//        if (!messagePumpRunning && packet.getDestinationDevice() == data::RPI) {
+//            //We're not emptying the queues yet, so no point wasting time storing
+//            //chatty messages that will get deleted. Our queue depths are memory-constrained,
+//            //and we can't get the queues emptying before they're filled up.
+//            return;
+//        }
 
         bool log_writePacketToQ = false;
 
