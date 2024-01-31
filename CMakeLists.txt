@@ -385,8 +385,8 @@ endif()
 if(${CMAKE_BUS_TOPOLOGY_VALUE} EQUAL CMAKE_BUS_TOPOLOGY_SLED_LAPTOP_HMI)
     #Raw IBUS on UART, no stdio logs on uart. Stdio goes on usb.
     message("Setting up stdio for CMAKE_BUS_TOPOLOGY_SLED_LAPTOP_HMI")
-    pico_enable_stdio_usb(PicoTemplate 1)
-    pico_enable_stdio_uart(PicoTemplate 1)
+    pico_enable_stdio_usb(PicoTemplate 0)
+    pico_enable_stdio_uart(PicoTemplate 0)
 endif()
 
 if(${CMAKE_BUS_TOPOLOGY_VALUE} EQUAL CMAKE_BUS_TOPOLOGY_CAR_WITH_PI)

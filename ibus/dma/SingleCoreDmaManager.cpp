@@ -158,7 +158,10 @@ namespace pico::ibus::dma {
         if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
             //This will cause printf's from the StdioPrintFlogger to also show up
             //on the UART, as well as writes from this class.
-            stdio_uart_init_full(uart1, 115200, UART1_PICOPROBE_TX, UART1_PICOPROBE_RX);
+
+            #if (CMAKE_BUS_TOPOLOGY == CMAKE_BUS_TOPOLOGY_SLED_NO_PI)
+                stdio_uart_init_full(uart1, 115200, UART1_PICOPROBE_TX, UART1_PICOPROBE_RX);
+            #endif
         }
 
         if (busTopologyManager->getBusToplogy() == topology::BusTopology::CAR_WITH_PI  ||

@@ -7,6 +7,8 @@
 
 #include "IDmaManager.h"
 
+#include <CMakeHeaderFlags.h>
+
 #include <logging/BaseLogger.h>
 #include <ibus/observerRegistry/ObserverRegistry.h>
 #include "pico/util/queue.h"

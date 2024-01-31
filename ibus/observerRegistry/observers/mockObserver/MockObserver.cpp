@@ -16,9 +16,9 @@ namespace pico {
             }
 
             void MockObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {
-                if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
+//                if (busTopologyManager->getBusToplogy() == topology::BusTopology::SLED_NO_PI) {
                     logger->d("MockObserver", iBusPacket->toString());
-                }
+//                }
             }
         } // pico
     } // ibus
