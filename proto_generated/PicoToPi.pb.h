@@ -12,18 +12,19 @@
 
 /* Enum definitions */
 typedef enum _ca_stefanm_e39_proto_PicoToPi_MessageType {
-    ca_stefanm_e39_proto_PicoToPi_MessageType_HeartbeatRequest = 0,
-    ca_stefanm_e39_proto_PicoToPi_MessageType_HeartbeatResponse = 1,
+    ca_stefanm_e39_proto_PicoToPi_MessageType_EmptyMessage = 0,
+    ca_stefanm_e39_proto_PicoToPi_MessageType_HeartbeatRequest = 1,
+    ca_stefanm_e39_proto_PicoToPi_MessageType_HeartbeatResponse = 2,
     /* For the logger on the pico to shuttle to Rpi. */
-    ca_stefanm_e39_proto_PicoToPi_MessageType_LogStatement = 2,
+    ca_stefanm_e39_proto_PicoToPi_MessageType_LogStatement = 3,
     /* Dump the config object */
-    ca_stefanm_e39_proto_PicoToPi_MessageType_ConfigStatusResponse = 3,
+    ca_stefanm_e39_proto_PicoToPi_MessageType_ConfigStatusResponse = 4,
     /* TODO we could have a mechanism where the pi sends to the pico
 TODO the number of ibus events it processed (knob turn messages?)
 TODO and if the pico isn't receiveng this heartbeat often enough,
 TODO it could auto-restart the PI. */
-    ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartX = 4, /* Ask the RPI to restart the X server */
-    ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi = 5 /* Ask the RPI to legit restart */
+    ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartX = 5, /* Ask the RPI to restart the X server */
+    ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi = 6 /* Ask the RPI to legit restart */
 } ca_stefanm_e39_proto_PicoToPi_MessageType;
 
 /* Struct definitions */
@@ -42,7 +43,7 @@ extern "C" {
 #endif
 
 /* Helper constants for enums */
-#define _ca_stefanm_e39_proto_PicoToPi_MessageType_MIN ca_stefanm_e39_proto_PicoToPi_MessageType_HeartbeatRequest
+#define _ca_stefanm_e39_proto_PicoToPi_MessageType_MIN ca_stefanm_e39_proto_PicoToPi_MessageType_EmptyMessage
 #define _ca_stefanm_e39_proto_PicoToPi_MessageType_MAX ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi
 #define _ca_stefanm_e39_proto_PicoToPi_MessageType_ARRAYSIZE ((ca_stefanm_e39_proto_PicoToPi_MessageType)(ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi+1))
 

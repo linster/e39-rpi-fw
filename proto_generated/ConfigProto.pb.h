@@ -11,20 +11,22 @@
 
 /* Enum definitions */
 typedef enum _ca_stefanm_e39_proto_ConfigProto_LoggingLevels {
-    ca_stefanm_e39_proto_ConfigProto_LoggingLevels_DEBUG = 0,
-    ca_stefanm_e39_proto_ConfigProto_LoggingLevels_INFO = 1,
-    ca_stefanm_e39_proto_ConfigProto_LoggingLevels_WARN = 2,
-    ca_stefanm_e39_proto_ConfigProto_LoggingLevels_ERROR = 3,
-    ca_stefanm_e39_proto_ConfigProto_LoggingLevels_WTF = 4
+    ca_stefanm_e39_proto_ConfigProto_LoggingLevels_Logging_NotSet = 0,
+    ca_stefanm_e39_proto_ConfigProto_LoggingLevels_DEBUG = 1,
+    ca_stefanm_e39_proto_ConfigProto_LoggingLevels_INFO = 2,
+    ca_stefanm_e39_proto_ConfigProto_LoggingLevels_WARN = 3,
+    ca_stefanm_e39_proto_ConfigProto_LoggingLevels_ERROR = 4,
+    ca_stefanm_e39_proto_ConfigProto_LoggingLevels_WTF = 5
 } ca_stefanm_e39_proto_ConfigProto_LoggingLevels;
 
 typedef enum _ca_stefanm_e39_proto_ConfigProto_ScanProgram {
-    ca_stefanm_e39_proto_ConfigProto_ScanProgram_NONE = 0,
-    ca_stefanm_e39_proto_ConfigProto_ScanProgram_CLOCK = 1,
-    ca_stefanm_e39_proto_ConfigProto_ScanProgram_LINSTEROS_BOOTSPLASH = 2,
-    ca_stefanm_e39_proto_ConfigProto_ScanProgram_GOOSE_BOOTSPLASH = 3,
-    ca_stefanm_e39_proto_ConfigProto_ScanProgram_BMW_BOOTSPLASH = 4,
-    ca_stefanm_e39_proto_ConfigProto_ScanProgram_MENU = 5
+    ca_stefanm_e39_proto_ConfigProto_ScanProgram_Scan_Program_NotSet = 0,
+    ca_stefanm_e39_proto_ConfigProto_ScanProgram_NONE = 1,
+    ca_stefanm_e39_proto_ConfigProto_ScanProgram_CLOCK = 2,
+    ca_stefanm_e39_proto_ConfigProto_ScanProgram_LINSTEROS_BOOTSPLASH = 3,
+    ca_stefanm_e39_proto_ConfigProto_ScanProgram_GOOSE_BOOTSPLASH = 4,
+    ca_stefanm_e39_proto_ConfigProto_ScanProgram_BMW_BOOTSPLASH = 5,
+    ca_stefanm_e39_proto_ConfigProto_ScanProgram_MENU = 6
 } ca_stefanm_e39_proto_ConfigProto_ScanProgram;
 
 typedef enum _ca_stefanm_e39_proto_ConfigProto_VideoSource {
@@ -70,11 +72,11 @@ extern "C" {
 #endif
 
 /* Helper constants for enums */
-#define _ca_stefanm_e39_proto_ConfigProto_LoggingLevels_MIN ca_stefanm_e39_proto_ConfigProto_LoggingLevels_DEBUG
+#define _ca_stefanm_e39_proto_ConfigProto_LoggingLevels_MIN ca_stefanm_e39_proto_ConfigProto_LoggingLevels_Logging_NotSet
 #define _ca_stefanm_e39_proto_ConfigProto_LoggingLevels_MAX ca_stefanm_e39_proto_ConfigProto_LoggingLevels_WTF
 #define _ca_stefanm_e39_proto_ConfigProto_LoggingLevels_ARRAYSIZE ((ca_stefanm_e39_proto_ConfigProto_LoggingLevels)(ca_stefanm_e39_proto_ConfigProto_LoggingLevels_WTF+1))
 
-#define _ca_stefanm_e39_proto_ConfigProto_ScanProgram_MIN ca_stefanm_e39_proto_ConfigProto_ScanProgram_NONE
+#define _ca_stefanm_e39_proto_ConfigProto_ScanProgram_MIN ca_stefanm_e39_proto_ConfigProto_ScanProgram_Scan_Program_NotSet
 #define _ca_stefanm_e39_proto_ConfigProto_ScanProgram_MAX ca_stefanm_e39_proto_ConfigProto_ScanProgram_MENU
 #define _ca_stefanm_e39_proto_ConfigProto_ScanProgram_ARRAYSIZE ((ca_stefanm_e39_proto_ConfigProto_ScanProgram)(ca_stefanm_e39_proto_ConfigProto_ScanProgram_MENU+1))
 

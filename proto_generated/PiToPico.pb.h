@@ -13,22 +13,23 @@
 /* Enum definitions */
 /* TODO Someday this could be a union proto type, but not this release. */
 typedef enum _ca_stefanm_e39_proto_PiToPico_MessageType {
-    ca_stefanm_e39_proto_PiToPico_MessageType_HeartbeatRequest = 0,
-    ca_stefanm_e39_proto_PiToPico_MessageType_HeartbeatResponse = 1,
-    ca_stefanm_e39_proto_PiToPico_MessageType_ConfigStatusRequest = 2, /* Instruct the pico to tell us what it's config object is */
-    ca_stefanm_e39_proto_PiToPico_MessageType_ConfigPush = 3, /* Tell the pico what it's new config object should be */
-    ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestUpstream = 4, /* Ask the pico to show upstream (for Back to BMW function) */
-    ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestPico = 5, /* Ask the pico to show the debug menu */
-    ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestRpi = 6, /* Ask the pico to show the RPi. */
-    ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestRVC = 7,
+    ca_stefanm_e39_proto_PiToPico_MessageType_EmptyMessage = 0,
+    ca_stefanm_e39_proto_PiToPico_MessageType_HeartbeatRequest = 1,
+    ca_stefanm_e39_proto_PiToPico_MessageType_HeartbeatResponse = 2,
+    ca_stefanm_e39_proto_PiToPico_MessageType_ConfigStatusRequest = 3, /* Instruct the pico to tell us what it's config object is */
+    ca_stefanm_e39_proto_PiToPico_MessageType_ConfigPush = 4, /* Tell the pico what it's new config object should be */
+    ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestUpstream = 5, /* Ask the pico to show upstream (for Back to BMW function) */
+    ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestPico = 6, /* Ask the pico to show the debug menu */
+    ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestRpi = 7, /* Ask the pico to show the RPi. */
+    ca_stefanm_e39_proto_PiToPico_MessageType_PicoVideoRequestRVC = 8,
     /* For test purposes to toggle the power switch for the RPI power supply. */
-    ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOn = 8,
-    ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOff = 9,
+    ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOn = 9,
+    ca_stefanm_e39_proto_PiToPico_MessageType_PicoPowerRequestOff = 10,
     /* Allow us to simulate ignition events without a GM or LCM or ignition switch */
-    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition0 = 10,
-    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition1 = 11,
-    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition2 = 12,
-    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3 = 13
+    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition0 = 11,
+    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition1 = 12,
+    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition2 = 13,
+    ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3 = 14
 } ca_stefanm_e39_proto_PiToPico_MessageType;
 
 /* Struct definitions */
@@ -44,7 +45,7 @@ extern "C" {
 #endif
 
 /* Helper constants for enums */
-#define _ca_stefanm_e39_proto_PiToPico_MessageType_MIN ca_stefanm_e39_proto_PiToPico_MessageType_HeartbeatRequest
+#define _ca_stefanm_e39_proto_PiToPico_MessageType_MIN ca_stefanm_e39_proto_PiToPico_MessageType_EmptyMessage
 #define _ca_stefanm_e39_proto_PiToPico_MessageType_MAX ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3
 #define _ca_stefanm_e39_proto_PiToPico_MessageType_ARRAYSIZE ((ca_stefanm_e39_proto_PiToPico_MessageType)(ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3+1))
 
