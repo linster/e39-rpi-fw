@@ -29,9 +29,11 @@ TODO it could auto-restart the PI. */
 /* Struct definitions */
 typedef struct _ca_stefanm_e39_proto_PicoToPi {
     ca_stefanm_e39_proto_PicoToPi_MessageType messageType;
-    bool has_existingConfig;
-    ca_stefanm_e39_proto_ConfigProto existingConfig;
-    pb_callback_t loggerStatement;
+    pb_size_t which_body;
+    union {
+        ca_stefanm_e39_proto_ConfigProto configMessage;
+        pb_callback_t loggerStatement;
+    } body;
 } ca_stefanm_e39_proto_PicoToPi;
 
 
@@ -48,22 +50,22 @@ extern "C" {
 
 
 /* Initializer values for message structs */
-#define ca_stefanm_e39_proto_PicoToPi_init_default {_ca_stefanm_e39_proto_PicoToPi_MessageType_MIN, false, ca_stefanm_e39_proto_ConfigProto_init_default, {{NULL}, NULL}}
-#define ca_stefanm_e39_proto_PicoToPi_init_zero  {_ca_stefanm_e39_proto_PicoToPi_MessageType_MIN, false, ca_stefanm_e39_proto_ConfigProto_init_zero, {{NULL}, NULL}}
+#define ca_stefanm_e39_proto_PicoToPi_init_default {_ca_stefanm_e39_proto_PicoToPi_MessageType_MIN, 0, {ca_stefanm_e39_proto_ConfigProto_init_default}}
+#define ca_stefanm_e39_proto_PicoToPi_init_zero  {_ca_stefanm_e39_proto_PicoToPi_MessageType_MIN, 0, {ca_stefanm_e39_proto_ConfigProto_init_zero}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define ca_stefanm_e39_proto_PicoToPi_messageType_tag 1
-#define ca_stefanm_e39_proto_PicoToPi_existingConfig_tag 2
+#define ca_stefanm_e39_proto_PicoToPi_configMessage_tag 2
 #define ca_stefanm_e39_proto_PicoToPi_loggerStatement_tag 3
 
 /* Struct field encoding specification for nanopb */
 #define ca_stefanm_e39_proto_PicoToPi_FIELDLIST(X, a) \
 X(a, STATIC,   SINGULAR, UENUM,    messageType,       1) \
-X(a, STATIC,   OPTIONAL, MESSAGE,  existingConfig,    2) \
-X(a, CALLBACK, SINGULAR, STRING,   loggerStatement,   3)
+X(a, STATIC,   ONEOF,    MESSAGE,  (body,configMessage,body.configMessage),   2) \
+X(a, CALLBACK, ONEOF,    STRING,   (body,loggerStatement,body.loggerStatement),   3)
 #define ca_stefanm_e39_proto_PicoToPi_CALLBACK pb_default_field_callback
 #define ca_stefanm_e39_proto_PicoToPi_DEFAULT NULL
-#define ca_stefanm_e39_proto_PicoToPi_existingConfig_MSGTYPE ca_stefanm_e39_proto_ConfigProto
+#define ca_stefanm_e39_proto_PicoToPi_body_configMessage_MSGTYPE ca_stefanm_e39_proto_ConfigProto
 
 extern const pb_msgdesc_t ca_stefanm_e39_proto_PicoToPi_msg;
 

@@ -65,6 +65,14 @@ pico_sdk_init()
 
 add_executable(PicoTemplate)
 
+message("Shell command for generating PiToPico.pb.h")
+message("PiToPico.pb.h: ${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc --plugin=protoc-gen-nanopb=${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=${CMAKE_CURRENT_SOURCE_DIR}/proto_generated ${CMAKE_CURRENT_SOURCE_DIR}/proto/PiToPico.proto --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto/")
+
+message("Shell command for generating PicoToPi.pb.h")
+message("PicoToPi.pb.h: ${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc --plugin=protoc-gen-nanopb=${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=${CMAKE_CURRENT_SOURCE_DIR}/proto_generated ${CMAKE_CURRENT_SOURCE_DIR}/proto/PicoToPi.proto --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto/")
+
+message("Shell command for generating ConfigProto.pb.h")
+message("ConfigProto.pb.h: ${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc --plugin=protoc-gen-nanopb=${CMAKE_CURRENT_SOURCE_DIR}/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=${CMAKE_CURRENT_SOURCE_DIR}/proto_generated ${CMAKE_CURRENT_SOURCE_DIR}/proto/ConfigProto.proto --proto_path=${CMAKE_CURRENT_SOURCE_DIR}/proto/")
 
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/proto_generated/PiToPico.pb.h

@@ -25,7 +25,8 @@ message PicoToPi {
 
   MessageType messageType = 1;
 
-  ConfigProto existingConfig = 2;
-
-  string loggerStatement = 3;
+  oneof body {
+    ca.stefanm.e39.proto.ConfigProto configMessage = 2;
+    string loggerStatement = 3;
+  }
 }

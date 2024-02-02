@@ -24,8 +24,7 @@ namespace pico::ibus::output::writer {
     void ConfigurationStatusWriter::scheduleEmit(messages::ConfigMessage configMessage) {
         this->schedulePicoToPiMessageForWrite(messages::PicoToPiMessage{
                 .messageType = messages::PicoToPiMessage::MessageType::ConfigStatusResponse,
-                .existingConfig = configMessage,
-                .loggerStatement = ""
+                .existingConfig = configMessage
         });
     }
 } // writer

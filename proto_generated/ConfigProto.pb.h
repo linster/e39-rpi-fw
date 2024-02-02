@@ -47,6 +47,7 @@ typedef enum _ca_stefanm_e39_proto_ConfigProto_AspectRatio {
 
 /* Struct definitions */
 typedef struct _ca_stefanm_e39_proto_ConfigProto {
+    /* * Because this makes the message variable length we need options to say this is a callback message */
     pb_callback_t rpiFwGitCommitHash;
     bool isIbusLogOutputEnabled;
     ca_stefanm_e39_proto_ConfigProto_LoggingLevels enabledMaxLogLevelForIbusLog;

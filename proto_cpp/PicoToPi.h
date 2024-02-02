@@ -8,8 +8,7 @@
 #include "ConfigMessage.h"
 #include <proto_generated/PicoToPi.pb.h>
 
-namespace pico {
-    namespace messages {
+namespace pico::messages {
 
         class PicoToPiMessage {
         public:
@@ -23,11 +22,13 @@ namespace pico {
             };
 
             MessageType messageType;
+
             ConfigMessage existingConfig;
-            std::string loggerStatement;
+            std::string loggerMessage;
+
         };
 
-        class PicoToPiMessageConverter : public NanoPb::Converter::MessageConverter<
+        class PicoToPiMessageConverter : public NanoPb::Converter::UnionMessageConverter<
                 PicoToPiMessageConverter,
                 PicoToPiMessage,
                 ca_stefanm_e39_proto_PicoToPi,
@@ -54,6 +55,7 @@ namespace pico {
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_HeartbeatRequest: return PicoToPiMessage::MessageType::HeartbeatRequest;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_HeartbeatResponse: return PicoToPiMessage::MessageType::HeartbeatResponse;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_LogStatement: return PicoToPiMessage::MessageType::LogStatement;
+                        case ca_stefanm_e39_proto_PicoToPi_MessageType_ConfigStatusResponse: return PicoToPiMessage::ConfigStatusResponse;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartX: return PicoToPiMessage::MessageType::PiSoftPowerRestartX;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi: return PicoToPiMessage::MessageType::PiSoftPowerRestartPi;
                     }
@@ -61,30 +63,68 @@ namespace pico {
             };
         public:
             static ProtoType encoderInit(const LocalType& local) {
-                return ProtoType {
+
+                ProtoType ret {
                     .messageType = PicoToPiMessageTypeConverter::encoderInit(local.messageType),
-                    .existingConfig = ConfigMessageConverter::encoderInit(local.existingConfig),
-                    .loggerStatement = NanoPb::Converter::StringConverter::encoderInit(local.loggerStatement)
                 };
+
+                if (local.messageType == PicoToPiMessage::ConfigStatusResponse) {
+                    ret.which_body = ca_stefanm_e39_proto_PicoToPi_configMessage_tag;
+                    ret.body.configMessage = ConfigMessageConverter::encoderInit(local.existingConfig);
+                }
+
+                if (local.messageType == PicoToPiMessage::LogStatement) {
+                    ret.which_body = ca_stefanm_e39_proto_PicoToPi_loggerStatement_tag;
+                    ret.body.loggerStatement = NanoPb::Converter::StringConverter::encoderInit(local.loggerMessage);
+                }
+
+                return ret;
             };
             static ProtoType decoderInit(LocalType& local) {
                 return ProtoType {
-                    .messageType = PicoToPiMessageTypeConverter::decoderInit(local.messageType),
-                    .existingConfig = ConfigMessageConverter::encoderInit(local.existingConfig),
-                    .loggerStatement = NanoPb::Converter::StringConverter::decoderInit(local.loggerStatement)
+                    .messageType = PicoToPiMessageTypeConverter::decoderInit(local.messageType)
+                    //.body = unionDecoderInit(local)
                 };
             };
 
+            static bool unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local){
+//                if (field->tag == ca_stefanm_e39_proto_PicoToPi_messageType_tag) {
+//
+//                }
+//                if (field->tag == ca_stefanm_e39_proto_PicoToPi_configMessage_tag) {
+//                    auto* msg = static_cast<ca_stefanm_e39_proto_ConfigProto *>(field->pData);
+//
+//                    ConfigMessageConverter::decoderInit()
+//
+//                    local.existingConfig = ConfigMessage(msg)
+//
+//                }
+//                if (field->tag == ca_stefanm_e39_proto_PicoToPi_loggerStatement_tag) {
+//
+//                }
+
+//What if we just dont support decoding these messages?
+                return true;
+            }
+
             static bool decoderApply(const ProtoType& proto, LocalType& local) {
                 local.messageType = PicoToPiMessageTypeConverter::decode(proto.messageType);
-                if (proto.has_existingConfig) {
-                    ConfigMessageConverter::decoderApply(proto.existingConfig, local.existingConfig);
+
+                if (local.messageType == PicoToPiMessage::ConfigStatusResponse) {
+                    if (proto.which_body == ca_stefanm_e39_proto_PicoToPi_configMessage_tag) {
+                        ConfigMessageConverter::decoderApply(proto.body.configMessage, local.existingConfig);
+                    }
+                }
+
+                if (local.messageType == PicoToPiMessage::LogStatement) {
+                    if (proto.which_body == ca_stefanm_e39_proto_PicoToPi_loggerStatement_tag) {
+                        NanoPb::Converter::StringConverter::decoderApply(proto.body.loggerStatement, local.loggerMessage);
+                    }
                 }
                 return true;
             }
 
         };
-    } // pico
-} // messages
+    } // messages
 
 #endif //PICOTEMPLATE_PICOTOPI_H
