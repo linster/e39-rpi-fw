@@ -27,7 +27,7 @@ namespace pico::ibus::output::writer {
         } else {
             //Just take the first part of the message and print one out.
             std::string shortened = message.substr(0, std::min((int)message.size(), truncateLogMessagesToCharacters));
-
+//
 //            schedulePicoToPiMessageForWrite(messages::PicoToPiMessage {
 //                .messageType = messages::PicoToPiMessage::MessageType::LogStatement,
 //                .loggerStatement = shortened

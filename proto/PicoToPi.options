@@ -1,0 +1,2 @@
+ca.stefanm.e39.proto.PiToPico.newConfig type:FT_CALLBACK
+ca.stefanm.e39.proto.PicoToPi.existingConfig type:FT_CALLBACK

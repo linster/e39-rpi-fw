@@ -19,7 +19,7 @@ namespace pico::ibus::output::writer {
 //                    p->length();
 
                     //TODO might have to trim null terminator when looping through the string?
-
+//
                     auto bytes = std::vector<uint8_t>();
                     for (char c: *p) {
                         bytes.push_back(c);

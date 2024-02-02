@@ -14,7 +14,7 @@ namespace pico::ibus::output::writer {
 
         //Notably, don't log anything here to prevent an infinite loop.
     private:
-        int truncateLogMessagesToCharacters = 80;
+        int truncateLogMessagesToCharacters = 128;
         //If false, drop the remainder after truncation.
         bool splitLogMessagesAtTruncationPoint = false;
 

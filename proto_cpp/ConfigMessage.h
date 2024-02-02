@@ -15,6 +15,7 @@ namespace pico::messages {
         class ConfigMessage {
 
         public:
+            std::string rpiFwGitCommitHash;
             bool isIbusLogOutputEnabled;
             //Confusing naming, but max means "max number of log lines" --> minimum severity
             pico::logger::BaseLogger::Level enabledMaxLogLevelForIbusLog;
@@ -173,6 +174,7 @@ namespace pico::messages {
         public:
             static ProtoType encoderInit(const LocalType& local) {
                 return ProtoType {
+                    .rpiFwGitCommitHash = NanoPb::Converter::StringConverter::encoderInit(local.rpiFwGitCommitHash),
                     .isIbusLogOutputEnabled = NanoPb::Converter::BoolConverter::encoderInit(local.isIbusLogOutputEnabled),
                     .enabledMaxLogLevelForIbusLog = LogLevelConverter::encoderInit(local.enabledMaxLogLevelForIbusLog),
                     .enabledMaxLogLevelForPrintfLog = LogLevelConverter::encoderInit(local.enabledMaxLogLevelForPrintfLog),
@@ -186,6 +188,7 @@ namespace pico::messages {
             };
             static ProtoType decoderInit(LocalType& local) {
                 return ProtoType {
+                    .rpiFwGitCommitHash = NanoPb::Converter::StringConverter::decoderInit(local.rpiFwGitCommitHash),
                     .isIbusLogOutputEnabled = NanoPb::Converter::BoolConverter::decoderInit(local.isIbusLogOutputEnabled),
                     .enabledMaxLogLevelForIbusLog = LogLevelConverter::decoderInit(local.enabledMaxLogLevelForIbusLog),
                     .enabledMaxLogLevelForPrintfLog = LogLevelConverter::decoderInit(local.enabledMaxLogLevelForPrintfLog),
@@ -198,9 +201,28 @@ namespace pico::messages {
                 };
             };
             static bool decoderApply(const ProtoType& proto, LocalType& local) {
-                //TODO?? Should I do something here?
-                //TODO STEFAN this is the visitor pattern, and I think I need to call
-                //TODO all the things. use both params as out-parameters.
+
+                //TODO we will never get a working PiToPico config push until we write this.
+                //TODO also, save and store wouldn't work locally lol
+
+                NanoPb::Converter::StringConverter::decoderApply(proto.rpiFwGitCommitHash, local.rpiFwGitCommitHash);
+
+                local.isIbusLogOutputEnabled = proto.isIbusLogOutputEnabled;
+
+                local.enabledMaxLogLevelForIbusLog = ConfigMessageConverter::LogLevelConverter::decode(proto.enabledMaxLogLevelForIbusLog);
+                local.enabledMaxLogLevelForPrintfLog = ConfigMessageConverter::LogLevelConverter::decode(proto.enabledMaxLogLevelForPrintfLog);
+
+                local.alwaysTurnOnRpiOnStatup = proto.alwaysTurnOnRpiOnStatup;
+                local.alwaysTurnOnScreenOnIbusActivity = proto.alwaysTurnOnScreenOnIbusActivity;
+
+                local.scanProgramOnBoot = ConfigMessageConverter::ScanProgramConverter::decode(proto.scanProgramOnBoot);
+
+                local.videoSourceOnBoot = ConfigMessageConverter::VideoSourceConverter::decode(proto.videoSourceOnBoot);
+
+                local.aspectRatio = ConfigMessageConverter::AspectRatioConverter::decode(proto.aspectRatio);
+                local.videoEncoding = ConfigMessageConverter::VideoEncodingConverter::decode(proto.videoEncoding);
+                local.sendBMBTEncodingPacketOnBootup = proto.sendBMBTEncodingPacketOnBootup;
+
                 return true;
             };
         };

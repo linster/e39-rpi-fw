@@ -9,6 +9,7 @@ namespace pico::config::defaults {
     Configuration PimoroniDefaultConfigurationProvider::getDefaultConfiguration() {
         return Configuration(
                 messages::ConfigMessage{
+                        .rpiFwGitCommitHash = "lalalalalalala",
                         .isIbusLogOutputEnabled = false,
                         .enabledMaxLogLevelForIbusLog = logger::BaseLogger::Level::WTF,
                         .enabledMaxLogLevelForPrintfLog = logger::BaseLogger::Level::DEBUG,

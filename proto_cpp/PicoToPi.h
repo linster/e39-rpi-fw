@@ -70,10 +70,19 @@ namespace pico {
             static ProtoType decoderInit(LocalType& local) {
                 return ProtoType {
                     .messageType = PicoToPiMessageTypeConverter::decoderInit(local.messageType),
-                    .existingConfig = ConfigMessageConverter::decoderInit(local.existingConfig),
+                    .existingConfig = ConfigMessageConverter::encoderInit(local.existingConfig),
                     .loggerStatement = NanoPb::Converter::StringConverter::decoderInit(local.loggerStatement)
                 };
             };
+
+            static bool decoderApply(const ProtoType& proto, LocalType& local) {
+                local.messageType = PicoToPiMessageTypeConverter::decode(proto.messageType);
+                if (proto.has_existingConfig) {
+                    ConfigMessageConverter::decoderApply(proto.existingConfig, local.existingConfig);
+                }
+                return true;
+            }
+
         };
     } // pico
 } // messages

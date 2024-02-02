@@ -3,6 +3,7 @@ syntax = "proto3";
 package ca.stefanm.e39.proto;
 
 message ConfigProto {
+  /** Because this makes the message variable length we need options to say this is a callback message */
   string rpiFwGitCommitHash = 1;
 
   bool isIbusLogOutputEnabled = 2;
