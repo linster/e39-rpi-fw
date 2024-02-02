@@ -12,6 +12,7 @@ namespace pico::config {
     }
 
     bool FlashConfigurationStore::canReadConfiguration() {
+        return false; //We're not fixing config right now
         std::pair<bool, Configuration> result = decodeConfiguration();
         return result.first;
     }
@@ -25,6 +26,7 @@ namespace pico::config {
 
     void FlashConfigurationStore::saveConfiguration(Configuration configuration) {
 
+        return;
         std::pair<bool, std::vector<uint8_t>> encodeResult = encodeConfiguration(configuration);
 
         if (!encodeResult.first) {
