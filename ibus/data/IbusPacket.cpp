@@ -63,7 +63,10 @@ namespace pico {
 //                    std::vector<uint8_t> bytes = std::vector<uint8_t>(raw.begin(), raw.begin() + 2 + len);
 
                     //We already have the raw bytes for the complete packet, just change the type of the container.
-                    std::vector<uint8_t> bytes = std::vector<uint8_t>(raw.begin(), raw.end());
+                    std::vector<uint8_t> bytes = std::vector<uint8_t>(raw.begin(), raw.end()); //TODO we are just making a max size packet??
+
+
+                    //TODO TODO resize the array here
 
                     //TODO this is really dumb too. We should have a private method that takes in an interable
                     //TODO that sets everything up. CloneFrom isn't smart enough because it doesn't set all the fields.

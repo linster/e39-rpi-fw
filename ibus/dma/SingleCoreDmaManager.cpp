@@ -188,7 +188,7 @@ namespace pico::ibus::dma {
     }
 
     void SingleCoreDmaManager::on_uart1_rx() {
-        //handleRxInterruptServiceRoutine(uart1, &uart1rxByteQ);
+        handleRxInterruptServiceRoutine(uart1, &uart1rxByteQ);
     }
 
     void SingleCoreDmaManager::flushUart0ByteBufferToPacketizer() {

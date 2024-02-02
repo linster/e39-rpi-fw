@@ -24,13 +24,18 @@ namespace pico::ibus::output::writer {
                     for (char c: *p) {
                         bytes.push_back(c);
                     }
+//
+//                    for (auto iterator = p->begin(); iterator != (p->end() - 1); ++iterator) {
+//                        bytes.push_back(*iterator);
+//                    }
 
-                    getDmaManager()->cpu0scheduleOutgoingProbeOnlyMessage(
-                            data::IbusPacket(
-                                    data::IbusDeviceEnum::PICO,
-                                    data::IbusDeviceEnum::RPI,
-                                    bytes
-                            ));
+                    data::IbusPacket outgoingPacket = data::IbusPacket(
+                            data::IbusDeviceEnum::PICO,
+                            data::IbusDeviceEnum::RPI,
+                            bytes
+                    );
+
+                    getDmaManager()->cpu0scheduleOutgoingProbeOnlyMessage(outgoingPacket);
 
                 }
 

@@ -44,14 +44,34 @@ namespace pico::ibus::observers {
                 //TODO This is some serious bullshit. This is an exercise for me someday to learn
                 //TODO how to take a vector of ints, and convert it into a plain old c_str(), to jam
                 //TODO into NanoPB_CPP's weird input stream type.
-                std::string inputString = std::string(ibusPacket.getData()->size(), '\0');
 
-                std::vector<uint8_t> data = *ibusPacket.getData();
+                auto rawPacketSize = ibusPacket.getRawPacket().size();
 
-                for (const uint8_t item: data) {
-                    inputString.push_back(item);
+                std::stringstream inputStringStream;
+
+                std::string inputString = std::string(rawPacketSize - 4, '\0');
+
+                for (int i = 3; i < rawPacketSize - 1; i++) {
+                    inputStringStream << (char)ibusPacket.getRawPacket()[i];
+//                    inputString[i] = ibusPacket.getRawPacket()[i];
                 }
+
+                inputString = inputStringStream.str();
+//
+//                for (auto iterator = ibusPacket.getRawPacket().begin() + 3; iterator != (ibusPacket.getRawPacket().end() - 1); ++iterator) {
+//                    inputString.push_back((char)*iterator);
+//                }
+
+//                for (const uint8_t item: *ibusPacket.getData()) {
+//                    inputString.push_back(item);
+//                }
                 auto inputStream = NanoPb::StringInputStream(std::make_unique<std::string>(inputString.c_str()));
+//                auto inputStream = NanoPb::StringInputStream(
+//                        std::make_unique<std::string>(
+//                                std::basic_stringbuf
+//                                ibusPacket.getData()->data()
+//                                )
+//                                );
 
                 messages::PiToPicoMessage decoded;
                 if(!NanoPb::decode<messages::PiToPicoMessageConverter>(inputStream, decoded)) {
