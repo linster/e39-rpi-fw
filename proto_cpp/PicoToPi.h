@@ -65,7 +65,7 @@ namespace pico::messages {
             static ProtoType encoderInit(const LocalType& local) {
 
                 ProtoType ret {
-                    .messageType = PicoToPiMessageTypeConverter::encoderInit(local.messageType),
+                    .messageType = PicoToPiMessageTypeConverter::encoderInit(local.messageType)
                 };
 
                 if (local.messageType == PicoToPiMessage::ConfigStatusResponse) {
@@ -81,30 +81,27 @@ namespace pico::messages {
                 return ret;
             };
             static ProtoType decoderInit(LocalType& local) {
-                return ProtoType {
+                return ProtoType{
                     .messageType = PicoToPiMessageTypeConverter::decoderInit(local.messageType)
-                    //.body = unionDecoderInit(local)
+//                    .cb_body = unionDecoderInit(local)
                 };
             };
 
             static bool unionDecodeCallback(pb_istream_t *stream, const pb_field_t *field, LocalType &local){
 //                if (field->tag == ca_stefanm_e39_proto_PicoToPi_messageType_tag) {
 //
-//                }
+////                }
 //                if (field->tag == ca_stefanm_e39_proto_PicoToPi_configMessage_tag) {
-//                    auto* msg = static_cast<ca_stefanm_e39_proto_ConfigProto *>(field->pData);
-//
-//                    ConfigMessageConverter::decoderInit()
-//
-//                    local.existingConfig = ConfigMessage(msg)
+////                    auto* msg = static_cast<ca_stefanm_e39_proto_ConfigProto *>(field->pData);
+////                    ConfigMessageConverter::decoderInit()
+////                    local.existingConfig = ConfigMessage(msg)
 //
 //                }
 //                if (field->tag == ca_stefanm_e39_proto_PicoToPi_loggerStatement_tag) {
-//
+//                    NanoPb::Converter::StringConverter::decoderCallbackInit(field->pData);
 //                }
 
-//What if we just dont support decoding these messages?
-                return true;
+                return false;
             }
 
             static bool decoderApply(const ProtoType& proto, LocalType& local) {

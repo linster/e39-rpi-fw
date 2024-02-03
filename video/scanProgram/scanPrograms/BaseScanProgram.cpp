@@ -22,6 +22,7 @@ namespace video::scanProgram::scanPrograms {
             ) {
 
         this->logger = logger;
+        critical_section_init(&renderCs);
     }
 
     void BaseScanProgram::startScanProgram() {
@@ -69,7 +70,9 @@ namespace video::scanProgram::scanPrograms {
 
     void BaseScanProgram::callRender() {
         scanvideo_scanline_buffer_t *scanlineBuffer = scanvideo_begin_scanline_generation(true);
+        critical_section_enter_blocking(&renderCs);
         render(scanlineBuffer);
+        critical_section_exit(&renderCs);
         scanvideo_end_scanline_generation(scanlineBuffer);
     }
 

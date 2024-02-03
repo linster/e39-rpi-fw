@@ -16,6 +16,7 @@
 #include "pico/scanvideo/composable_scanline.h"
 
 #include "fmt/format.h"
+#include "pico/sync.h"
 
 //Un-comment this if you want to test on a VGA monitor
 //and not on the real BMBT screen. Remove the VGA-RGsB board
@@ -199,6 +200,7 @@ namespace video::scanProgram::scanPrograms {
 
             private:
 
+                critical_section_t renderCs;
                 std::shared_ptr<pico::logger::BaseLogger> logger;
 
                 scanvideo_timing_t getScanProgramTiming();
