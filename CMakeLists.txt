@@ -228,8 +228,6 @@ target_sources(
         ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h
         ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.cpp
         ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h
-        ibus/dma/DmaManager.cpp
-        ibus/dma/DmaManager.h
         ibus/dma/PioPins.h
         ibus/dma/Packetizer.cpp
         ibus/dma/Packetizer.h

@@ -35,11 +35,9 @@ namespace pico::ibus::data {
         PacketSource packetSource = NOT_SET;
     public:
 
-        IbusPacket(std::array<uint8_t, 255> raw);
+        explicit IbusPacket(std::array<uint8_t, 255> raw);
 
         explicit IbusPacket(std::vector<uint8_t> raw);
-
-        explicit IbusPacket(void * packetStart);
 
         IbusPacket(
                 IbusDeviceEnum src,
