@@ -25,18 +25,28 @@ namespace pico::ibus::data {
         IbusDeviceEnum sourceDevice;
         IbusDeviceEnum destinationDevice;
 
+        /**
+         * The IBUS len field
+         */
         uint8_t packetLength;
-        std::vector<uint8_t> data;
+
         uint8_t givenCrc;
         uint8_t actualCrc;
 
-        void cloneFrom(IbusPacket other);
-
         PacketSource packetSource = NOT_SET;
+
+        /**
+         * Used in constructors to make a packet of minimal length that doesn't explode
+         * array access operators.
+         */
+        void populateEmptyPacket();
+
+        void calculateActualCrc();
     public:
 
-        explicit IbusPacket(std::array<uint8_t, 255> raw);
+        static const uint8_t DATA_START = 3;
 
+        explicit IbusPacket(std::unique_ptr<std::array<uint8_t, 255>> raw);
         explicit IbusPacket(std::vector<uint8_t> raw);
 
         IbusPacket(
@@ -45,9 +55,18 @@ namespace pico::ibus::data {
                 std::vector<uint8_t> data
                 );
 
+
+        ~IbusPacket() = default;
+
         IbusDeviceEnum getSourceDevice();
         IbusDeviceEnum getDestinationDevice();
-        std::shared_ptr<std::vector<uint8_t>> getData();
+
+        /**
+         * Get the length of the data portion of the raw packet
+         * @return
+         */
+        uint8_t getDataLength();
+
         //The CRC in the packet when it's assembled from a stream.
         uint8_t getGivenCrc();
         //The CRC in the packet after assembly.
@@ -58,7 +77,6 @@ namespace pico::ibus::data {
 
         std::string toString();
 
-        ~IbusPacket() = default;
 
         static std::string IbusDeviceEnumToString(IbusDeviceEnum value);
 

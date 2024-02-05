@@ -43,15 +43,15 @@ namespace pico::ibus::observers {
         if (iBusPacket->getSourceDevice() == data::IbusDeviceEnum::BOARDMONITOR_BUTTONS &&
             iBusPacket->getDestinationDevice() == data::NAV_VIDEOMODULE) {
 
-            if (iBusPacket->getData()->size() >= 2) {
+            if (iBusPacket->getDataLength() >= 2) {
                 //PushData = 0x48, 0x05
-                if ((*iBusPacket->getData())[0] == 0x48) {
-                    if ((*iBusPacket->getData())[1] == 0x05) {
+                if (iBusPacket->getRawPacket()[data::IbusPacket::DATA_START + 0] == 0x48) {
+                    if (iBusPacket->getRawPacket()[data::IbusPacket::DATA_START + 1] == 0x05) {
                         isKnobTurnOrClick = true;
                     }
                 }
-                if ((*iBusPacket->getData())[0] == 0x49) {
-                    uint8_t rotation = (*iBusPacket->getData())[1];
+                if (iBusPacket->getRawPacket()[data::IbusPacket::DATA_START + 0] == 0x49) {
+                    uint8_t rotation = iBusPacket->getRawPacket()[data::IbusPacket::DATA_START + 1];
                     if (rotation - 0x0 >= 1 && rotation - 0x00 <= 9) {
                         isKnobTurnOrClick = true;
                     }

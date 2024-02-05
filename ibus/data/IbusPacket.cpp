@@ -7,69 +7,45 @@
 
 namespace pico::ibus::data {
 
-    IbusPacket::IbusPacket(std::array<uint8_t, 255> raw) {
-
-        uint8_t len = raw[1];
+    IbusPacket::IbusPacket(std::unique_ptr<std::array<uint8_t, 255>> raw) {
+        
+        uint8_t len = (*raw)[1]; //Always a safe access because we get passed in a fixed size array.
         if (len == 0 || len > 255) { //TODO Can len > 255 happen irl?
-            //We have a malformed packet. Just return the smallest possible packet.
-            std::vector<uint8_t> bytes = std::vector<uint8_t>();
-            bytes.push_back(0x00);
-            bytes.push_back(00);
-            bytes.push_back(00);
-            bytes.push_back(00);
-
-            auto newPacketByConstructor = IbusPacket((std::vector<uint8_t>) bytes);
-            cloneFrom(newPacketByConstructor);
+            populateEmptyPacket();
             return;
         } else {
-            //TODO STEFAN that's the bug. We have to loop over the whole array and not run past it.
-//                    std::vector<uint8_t> bytes = std::vector<uint8_t>(raw.begin(), raw.begin() + 2 + len);
 
-            //We already have the raw bytes for the complete packet, just change the type of the container.
-            std::vector<uint8_t> bytes = std::vector<uint8_t>(raw.begin(),
-                                                              raw.end()); //TODO we are just making a max size packet??
+            sourceDevice = static_cast<IbusDeviceEnum>((*raw)[0]);
+            packetLength = (*raw)[1]; //TODO this should never be bigger than raw.length()
+            destinationDevice = static_cast<IbusDeviceEnum>((*raw)[2]);
 
+            completeRawPacket = std::vector<uint8_t>(raw->begin(), raw->begin() + packetLength + 2);
 
-            //TODO TODO resize the array here
-
-            //TODO this is really dumb too. We should have a private method that takes in an interable
-            //TODO that sets everything up. CloneFrom isn't smart enough because it doesn't set all the fields.
-            auto newPacketByConstructor = IbusPacket((std::vector<uint8_t>) bytes);
-            cloneFrom(newPacketByConstructor);
+            givenCrc = (*raw)[packetLength + 2];
+            calculateActualCrc();
             return;
         }
 
     }
 
     IbusPacket::IbusPacket(std::vector<uint8_t> raw) {
+
+        if (raw.size() < 4) {
+            populateEmptyPacket();
+            return;
+        }
+
         sourceDevice = static_cast<IbusDeviceEnum>(raw[0]);
         packetLength = raw[1]; //TODO this should never be bigger than raw.length()
         destinationDevice = static_cast<IbusDeviceEnum>(raw[2]);
 
         completeRawPacket = raw;
 
-        if (packetLength <= 2) {
-            data = std::vector<uint8_t>();
-        } else {
-            data = std::vector<uint8_t>(raw.size() - 4);
-            // subtract 2 because length includes checksum and dest address
-            auto begin = raw.begin() + 3;
-            auto end = raw.end() - 1;
-            data.insert(data.begin(), begin, end);
-            //TODO resize data to size so we don't have a gigantic vector mostly full of zeros.
-            //data.resize(packetLength - 2);
-
-            completeRawPacket.resize(packetLength + 2);
-        }
+        completeRawPacket = std::vector<uint8_t>(raw.begin(), raw.end());
 
         givenCrc = raw.back();
 
-        //Now calculate the actual CRC.
-        actualCrc = 0;
-        for (auto iterator = raw.begin(); iterator != (raw.end() - 1); ++iterator) {
-            //Skip the CRC byte at the end
-            actualCrc = actualCrc ^ *iterator;
-        }
+        calculateActualCrc();
     }
 
     //Typically used in building messages to the car.
@@ -78,32 +54,21 @@ namespace pico::ibus::data {
         sourceDevice = src;
         destinationDevice = dest;
 
+        //This is the len field in the packet
         this->packetLength = data.size() + 2 /* destDevice + CRC */;
 
-        if (packetLength <= 2) {
-            this->data = std::vector<uint8_t>();
-        } else {
-            this->data = std::vector<uint8_t>(data.begin(), data.end());
-        }
-
         //Set complete Raw packet
-        completeRawPacket = std::vector<uint8_t>(packetLength + 2);
+        completeRawPacket = std::vector<uint8_t>(data.size() + 4 /* source, len, dest, crc */);
         completeRawPacket[0] = sourceDevice;
-        completeRawPacket[1] = packetLength;
+        completeRawPacket[1] = data.size() + 2;
         completeRawPacket[2] = destinationDevice;
 
         int completeRawPacketIndex = 3;
-        for (uint8_t byte: this->data) {
+        for (uint8_t byte: data) {
             completeRawPacket[completeRawPacketIndex++] = byte;
         }
 
-        //Now calculate the actual CRC.
-        //TODO STEFAN make sure this works because this constructor won't make valid packets on outgoing (pico origin)
-        actualCrc = 0;
-        for (auto iterator = completeRawPacket.begin(); iterator != (completeRawPacket.end() - 1); ++iterator) {
-            //Skip the CRC byte at the end
-            actualCrc = actualCrc ^ *iterator;
-        }
+        calculateActualCrc();
         givenCrc = actualCrc;
 
         completeRawPacket[completeRawPacketIndex] = actualCrc;
@@ -116,14 +81,27 @@ namespace pico::ibus::data {
 //                completeRawPacket.shrink_to_fit();
 //            }
 
-    void IbusPacket::cloneFrom(IbusPacket other) {
-        this->completeRawPacket = other.completeRawPacket;
-        this->actualCrc = other.actualCrc;
-        this->data = other.data;
-        this->packetLength = other.packetLength;
-        this->destinationDevice = other.destinationDevice;
-        this->sourceDevice = other.sourceDevice;
-        this->givenCrc = other.givenCrc;
+
+    void IbusPacket::populateEmptyPacket() {
+        completeRawPacket = std::vector<uint8_t>(4);
+        completeRawPacket[0] = 0x00;
+        completeRawPacket[1] = 0x00;
+        completeRawPacket[2] = 0x00;
+        completeRawPacket[3] = 0x00;
+
+        sourceDevice = IbusDeviceEnum::BODY_MODULE; //0x0
+        destinationDevice = IbusDeviceEnum::BODY_MODULE; //0x0
+        packetLength = 2;
+        givenCrc = 0x0;
+        actualCrc = 0x0;
+    }
+
+    void IbusPacket::calculateActualCrc() {
+        actualCrc = 0;
+        for (auto iterator = completeRawPacket.begin(); iterator != (completeRawPacket.end() - 1); ++iterator) {
+            //Skip the CRC byte at the end
+            actualCrc = actualCrc ^ *iterator;
+        }
     }
 
     IbusDeviceEnum IbusPacket::getSourceDevice() {
@@ -134,8 +112,8 @@ namespace pico::ibus::data {
         return destinationDevice;
     }
 
-    std::shared_ptr<std::vector<uint8_t>> IbusPacket::getData() {
-        return std::make_shared<std::vector<uint8_t>>(data);
+    uint8_t IbusPacket::getDataLength() {
+        return completeRawPacket.size() - 4;
     }
 
     uint8_t IbusPacket::getGivenCrc() {
@@ -156,13 +134,8 @@ namespace pico::ibus::data {
         std::string sourceDeviceString = IbusDeviceEnumToString(sourceDevice);
         std::string destinationDeviceString = IbusDeviceEnumToString(destinationDevice);
 
-        //TODO do this with a join as it was.
-        std::string dataString = std::string();
 
-        for (auto byte: data) {
-            dataString += fmt::format(" {0:#x}", byte);
-        }
-
+        //TODO this is a lot of allocations....
         std::string rawPacketString = std::string();
 
         for (auto byte: completeRawPacket) {
@@ -173,12 +146,10 @@ namespace pico::ibus::data {
                                       "SourceDevice: {} "
                                       "DestDevice: {} ,"
                                       "Len field: {} ,"
-                                      "Data: {} ,"
                                       "RawPacket: {})",
                                       sourceDeviceString,
                                       destinationDeviceString,
                                       packetLength,
-                                      dataString,
 //                                   fmt::join(completeRawPacket, ",")
                                       rawPacketString
         );

@@ -303,6 +303,8 @@ namespace pico::ibus::dma {
         std::array<uint8_t, 255> buffer = std::array<uint8_t , 255>();
         buffer.fill(0); //Fill the buffer with zeros so the .data() below dereferences validly.
 
+        std::unique_ptr<std::array<uint8_t, 255>> bufferptr = std::make_unique<std::array<uint8_t, 255>>(buffer);
+
         bool havePacket = queue_try_remove(queue, (void*) buffer.data());
         if (havePacket) {
             //A packet came into the pico for processing.
@@ -311,7 +313,7 @@ namespace pico::ibus::dma {
                           fmt::format("Dispatching packet from Q {} to cpu0 observers", queue_name));
             }
 
-            data::IbusPacket packetFromArray = data::IbusPacket(buffer);
+            data::IbusPacket packetFromArray = data::IbusPacket(std::move(bufferptr));
 
             if (queue == &fromCarQ) {
                 packetFromArray.setPacketSource(data::PacketSource::FROM_CAR);

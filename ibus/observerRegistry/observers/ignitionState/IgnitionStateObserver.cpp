@@ -50,9 +50,9 @@ namespace pico {
 
                 if (iBusPacket->getSourceDevice() == data::IbusDeviceEnum::IKE && iBusPacket->getDestinationDevice() == 0xBF) {
 
-                    if (iBusPacket->getData()->size() == 2) {
-                        if ((*iBusPacket->getData())[0] == 0x11) {
-                            uint8_t position = (*iBusPacket->getData())[1];
+                    if (iBusPacket->getDataLength() >= 2) {
+                        if (iBusPacket->getRawPacket()[data::IbusPacket::DATA_START + 0] == 0x11) {
+                            uint8_t position = iBusPacket->getRawPacket()[data::IbusPacket::DATA_START + 1];
 
                             if (ignoreFutureRealIgnitionEmissions) {
                                 logger->d(getTag(), fmt::format("Ignoring real ignition status with position %d", position));
@@ -70,6 +70,7 @@ namespace pico {
                                     case 0x07:
                                         onIgnitionKeyPosition(3);
                                         break;
+                                    default: break;
                                 }
                             }
                         }

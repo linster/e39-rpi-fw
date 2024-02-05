@@ -39,10 +39,10 @@ namespace pico::ibus::observers {
                 if (iBusPacket->getSourceDevice() == data::IbusDeviceEnum::BOARDMONITOR_BUTTONS
                     && iBusPacket->getDestinationDevice() == data::IbusDeviceEnum::BROADCAST) {
 
-                    if (iBusPacket->getData()->size() >= 2) {
+                    if (iBusPacket->getDataLength() >= 2) {
 
-                        if ((*iBusPacket->getData())[0] == 0x48) {
-                            uint8_t command = (*iBusPacket->getData())[1];
+                        if (iBusPacket->getRawPacket()[data::IbusPacket::DATA_START + 0] == 0x48) {
+                            uint8_t command = iBusPacket->getRawPacket()[data::IbusPacket::DATA_START + 1];
 
                             if (command == 0x08) {
                                 logger->d(getTag(), "Telephone pressed");
