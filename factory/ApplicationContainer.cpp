@@ -44,16 +44,16 @@ namespace pico {
 
 
         pi4PowerSwitchManager->setPower(false);
-//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PICO);
-        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
+        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PICO);
+//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
 
         logger->d("onMain",
                   fmt::format("ScanProgramManager not setup. Current Scan Program is {:x} ",
                               (int)scanProgramManager->getCurrentScanProgram()));
 
         scanProgramManager->cpu0setup();
-//        scanProgramManager->swapTo(ScanProgram::BOOT_SPLASH);
-        scanProgramManager->swapTo(ScanProgram::NOOP);
+        scanProgramManager->swapTo(ScanProgram::BOOT_SPLASH);
+//        scanProgramManager->swapTo(ScanProgram::NOOP);
 
         logger->d("onMain",
                   fmt::format("ScanProgramManager is setup. Current Scan Program is {:x} ",

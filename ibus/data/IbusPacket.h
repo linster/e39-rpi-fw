@@ -16,7 +16,7 @@ namespace pico::ibus::data {
     ///can be forwarded to other UARTS
     enum PacketSource { NOT_SET, FROM_CAR, FROM_PI };
 
-    class IbusPacket : std::enable_shared_from_this<IbusPacket>{
+    class IbusPacket {
 
     private:
         //The complete raw packet that the other fields are made of, including CRC.
@@ -46,6 +46,7 @@ namespace pico::ibus::data {
 
         static const uint8_t DATA_START = 3;
 
+        explicit IbusPacket(std::array<uint8_t, 255> raw);
         explicit IbusPacket(std::unique_ptr<std::array<uint8_t, 255>> raw);
         explicit IbusPacket(std::vector<uint8_t> raw);
 
