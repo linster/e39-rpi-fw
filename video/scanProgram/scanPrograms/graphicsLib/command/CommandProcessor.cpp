@@ -17,7 +17,14 @@ namespace video::scanVideo::graphics::command {
 
     //Called from CPU0
     void CommandProcessor::addCommand(std::unique_ptr<BaseCommand> baseCommand) {
-        commandsToProcess.push_back(std::move(baseCommand));
+        for (const auto g : baseCommand->getRleRunsForShape()) {
+            if (rleRunsToProcess.count(g.first) == 0) {
+                rleRunsToProcess[g.first] = std::vector<RleRun>();
+            }
+            for (const auto gp : g.second) {
+                rleRunsToProcess[g.first].push_back(gp);
+            }
+        }
 
         if (isImmediateMode) {
             computeFrame();
@@ -47,7 +54,7 @@ namespace video::scanVideo::graphics::command {
         isFrameComputed = false; //Stop rendering while we're deleting the data structures.
 //        mutex_exit(&isFrameComputedMutex);
 
-        commandsToProcess.clear();
+        clearCommandsToProcess();
 
 //        mutex_enter_blocking(&isFrameComputedMutex);
         rleRunsForLine.clear();
@@ -56,6 +63,15 @@ namespace video::scanVideo::graphics::command {
         isFrameComputed = true;
         //isFrameComputed = false; //Optimization to quick-skip frames until an object is added.
 //        mutex_exit(&isFrameComputedMutex);
+    }
+
+    void CommandProcessor::clearCommandsToProcess() {
+//        for (auto &command: commandsToProcess) {
+//
+//            command->
+//        }
+
+        commandsToProcess.clear();
     }
 
     //Called from CPU1
@@ -138,28 +154,14 @@ namespace video::scanVideo::graphics::command {
     //Called from CPU0
     void CommandProcessor::computeFrame() {
 
-        std::map<uint16_t, std::vector<RleRun>> unsortedRleRuns = std::map<uint16_t, std::vector<RleRun>>();
-        for (const auto &command: commandsToProcess) {
 
-            auto generated = command->getRleRunsForShape();
-            //For every generated run,
-            for (const auto g : generated) {
-                if (unsortedRleRuns.count(g.first) == 0) {
-                    unsortedRleRuns[g.first] = std::vector<RleRun>();
-                }
-                for (const auto gp : g.second) {
-                    unsortedRleRuns[g.first].push_back(gp);
-                }
-            }
-        }
-        
         //Mark the frame as not computed while we are computing it. (CPU1 will daw
 //        mutex_enter_blocking(&isFrameComputedMutex);
         isFrameComputed = false;
 //        mutex_exit(&isFrameComputedMutex);
 
 //        mutex_enter_blocking(&isFrameComputedMutex);
-        for (const auto &g : unsortedRleRuns) {
+        for (const auto &g : rleRunsToProcess) {
             std::unique_ptr<std::vector<RleRun>> runs = std::make_unique<std::vector<RleRun>>(g.second);
             rleRunsForLine[g.first] = mergeRuns(std::move(runs));
         }
@@ -168,6 +170,8 @@ namespace video::scanVideo::graphics::command {
 //        mutex_enter_blocking(&isFrameComputedMutex);
         isFrameComputed = true;
 //        mutex_exit(&isFrameComputedMutex);
+
+        rleRunsToProcess.clear();
     }
 
     //Called from CPU0

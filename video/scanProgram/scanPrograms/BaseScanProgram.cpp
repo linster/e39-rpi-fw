@@ -74,6 +74,7 @@ namespace video::scanProgram::scanPrograms {
         render(scanlineBuffer);
         critical_section_exit(&renderCs);
         scanvideo_end_scanline_generation(scanlineBuffer);
+//        critical_section_exit(&renderCs);
     }
 
 

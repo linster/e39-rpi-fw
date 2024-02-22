@@ -23,6 +23,8 @@ namespace video::scanVideo::graphics::command {
 
         std::vector<std::unique_ptr<BaseCommand>> commandsToProcess;
 
+        std::map<uint16_t, std::vector<RleRun>> rleRunsToProcess;
+
         /**
          * Key is scanline number.
          * Value is a vector<RleRun> where no runs overlap, all runs sorted in ascending order
@@ -62,6 +64,13 @@ namespace video::scanVideo::graphics::command {
         void drawSolidColorScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour);
 
         bool isImmediateMode = true;
+
+        /** Used to reduce memory footprint in real-life. Set to False for debugging. *
+         *
+         */
+        bool clearCommandsOnFrameComputed = true;
+
+        void clearCommandsToProcess();
     public:
 
         explicit CommandProcessor(
