@@ -5,9 +5,7 @@
 #include "IgnitionStateObserver.h"
 #include "fmt/format.h"
 
-namespace pico {
-    namespace ibus {
-        namespace observers {
+namespace pico::ibus::observers {
 
             IgnitionStateObserver::IgnitionStateObserver(
                     std::shared_ptr<logger::BaseLogger> baseLogger,
@@ -150,6 +148,4 @@ namespace pico {
 
 
 
-        } // pico
-    } // ibus
-} // observers
+        } // observers

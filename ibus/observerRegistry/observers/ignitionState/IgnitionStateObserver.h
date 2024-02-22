@@ -10,9 +10,7 @@
 #include <hardware/videoSwitch/VideoSwitch.h>
 #include <video/scanProgram/ScanProgramSwapper.h>
 #include <ibus/outputWriterApi/screenPowerManager/ScreenPowerManager.h>
-namespace pico {
-    namespace ibus {
-        namespace observers {
+namespace pico::ibus::observers {
 
             class IgnitionStateObserver : public BaseObserver{
 
@@ -39,8 +37,6 @@ namespace pico {
                 void onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) override;
             };
 
-        } // pico
-    } // ibus
-} // observers
+        } // observers
 
 #endif //PICOTEMPLATE_IGNITIONSTATEOBSERVER_H

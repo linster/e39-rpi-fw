@@ -2,12 +2,12 @@
 // Created by stefan on 12/2/22.
 //
 
-#include "ApplicationContainer.h"
+#include "ApplicationContainerNoVideo.h"
 #include <libs/fmt/include/fmt/format.h>
 #include "pico/time.h"
 
 namespace pico {
-    void ApplicationContainer::onMain() {
+    void ApplicationContainerNoVideo::onMain() {
 
         logger->d("onMain", "onMain");
 
@@ -43,45 +43,26 @@ namespace pico {
         observerRegistry->printRegisteredObserverTags();
 
         pi4PowerSwitchManager->setPower(false);
-        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PICO);
-//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
 
-        logger->d("onMain",
-                  fmt::format("ScanProgramManager not setup. Current Scan Program is {:x} ",
-                              (int)scanProgramManager->getCurrentScanProgram()));
-
-        scanProgramManager->cpu0setup();
-        scanProgramManager->swapTo(ScanProgram::BOOT_SPLASH);
-//        scanProgramManager->swapTo(ScanProgram::NOOP);
-
-        logger->d("onMain",
-                  fmt::format("ScanProgramManager is setup. Current Scan Program is {:x} ",
-                              (int)scanProgramManager->getCurrentScanProgram()));
+        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
 
         logger->d("onMain", "Finished onMain()");
-
     }
 
-    void ApplicationContainer::onLoop() {
+    void ApplicationContainerNoVideo::onLoop() {
         watchdogManager->onCpu0Loop();
         dmaManager->onCpu0Loop();
-        scanProgramManager->onCpu0Loop();
     }
 
-    void ApplicationContainer::onCpu1Main() {
+    void ApplicationContainerNoVideo::onCpu1Main() {
         logger->i("onCpu1Main", "onCpu1Main");
         watchdogManager->cpu1Setup();
         dmaManager->cpu1Setup(); //NOOP with SingleCoreDmaManager
         logger->i("onCpu1Main", "dmaManager->cpu1Setup() done");
-
-        logger->i("onCpu1Main", "scanProgramManager->cpu1setup()");
-        scanProgramManager->cpu1setup();
-        logger->i("onCpu1Main", "scanProgramManager->cpu1setup() done");
     }
 
-    void ApplicationContainer::onCpu1Loop() {
+    void ApplicationContainerNoVideo::onCpu1Loop() {
         watchdogManager->onCpu1Loop();
-        dmaManager->onCpu1Loop(); //NOOP with SingleCoreDmaManager
-        scanProgramManager->onCpu1Loop();
+        dmaManager->onCpu1Loop();
     }
 } // pico
