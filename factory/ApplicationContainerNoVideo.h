@@ -11,8 +11,6 @@
 #include <hardware/pi4powerswitch/IPi4PowerSwitchManager.h>
 #include <hardware/videoSwitch/VideoSwitch.h>
 #include <configuration/ConfigurationManager.h>
-#include <video/scanProgram/ScanProgramManager.h>
-#include <video/scanProgram/ScanProgramSwapper.h>
 #include <ibus/observerRegistry/ObserverRegistry.h>
 #include <ibus/dma/IDmaManager.h>
 #include <ibus/outputWriterApi/PicoToPi/heartbeatResponseWriter/HeartbeatResponseWriter.h>

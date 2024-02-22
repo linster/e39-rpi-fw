@@ -71,7 +71,8 @@ namespace video::scanVideo::graphics::command {
 //            command->
 //        }
 
-        commandsToProcess.clear();
+//        commandsToProcess.clear();
+        rleRunsToProcess.clear();
     }
 
     //Called from CPU1

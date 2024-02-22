@@ -114,13 +114,11 @@ target_sources(
         libs/nanopb/pb_encode.c
         libs/nanopb_cpp/nanopb_cpp.h
         libs/nanopb_cpp/nanopb_cpp.cpp
-        VGADemo.cpp
-        VGADemo.h
         logging/BaseLogger.cpp
         logging/BaseLogger.h
         logging/StdioPrintFLogger.cpp
         logging/StdioPrintFLogger.h
-        video/scanProgram/scanPrograms/BaseScanProgram.cpp
+
         configuration/store/IConfigurationStore.cpp
         configuration/store/IConfigurationStore.h
         configuration/store/IConfigurationStore.cpp
@@ -144,14 +142,7 @@ target_sources(
         hardware/videoSwitch/max4314/Max4314VideoSwitch.h
         hardware/videoSwitch/mock/MockVideoSwitch.cpp
         hardware/videoSwitch/mock/MockVideoSwitch.h
-        factory/ApplicationContainer.cpp
-        factory/ApplicationContainer.h
-        factory/pimoroniFactory/PimoroniFactory.cpp
-        factory/pimoroniFactory/PimoroniFactory.h
-        factory/e39RpiFactory/e39rpiFactory.cpp
-        factory/e39RpiFactory/e39rpiFactory.h
-        factory/provider/DmaManagerProvider.cpp
-        factory/provider/DmaManagerProvider.h
+
         logging/CompositeLogger.cpp
         logging/CompositeLogger.h
         logging/ibusOutLogger/IBusOutLogger.cpp
@@ -171,13 +162,10 @@ target_sources(
         ibus/outputWriterApi/BaseOutputWriter.h
         ibus/observerRegistry/observers/mockObserver/MockObserver.cpp
         ibus/observerRegistry/observers/mockObserver/MockObserver.h
-        ibus/observerRegistry/observers/knobListener/KnobListenerObserver.cpp
-        ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h
-        ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.cpp
-        ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.h
+
+
         main.cpp
-        ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.cpp
-        ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h
+
         ibus/observerRegistry/observers/uartForwarderObserver/UartForwarderObserver.cpp
         ibus/observerRegistry/observers/uartForwarderObserver/UartForwarderObserver.h
         ibus/outputWriterApi/uartForwarderWriter/UartForwarderWriter.cpp
@@ -231,71 +219,7 @@ target_sources(
         ibus/dma/PioPins.h
         ibus/dma/Packetizer.cpp
         ibus/dma/Packetizer.h
-        video/screenManager/ScreenItem.cpp video/screenManager/ScreenItem.h
-        video/screenManager/Screen.cpp video/screenManager/Screen.h
-        video/screenManager/ScreenManager.cpp
-        video/screenManager/ScreenManager.h
-        video/screenManager/mainScreen/MainScreen.cpp
-        video/screenManager/mainScreen/MainScreen.h
-        video/screenManager/mainScreen/TurnOnPi4MenuItem.cpp
-        video/screenManager/mainScreen/TurnOnPi4MenuItem.h
-        video/screenManager/mainScreen/SafePi4PowerOffMenuItem.cpp
-        video/screenManager/mainScreen/SafePi4PowerOffMenuItem.h
-        video/screenManager/mainScreen/HardPi4PowerOffMenuItem.cpp
-        video/screenManager/mainScreen/HardPi4PowerOffMenuItem.h
-        video/screenManager/mainScreen/RestartXMenuItem.cpp
-        video/screenManager/mainScreen/RestartXMenuItem.h
-        video/screenManager/mainScreen/VideoToRvcMenuItem.cpp
-        video/screenManager/mainScreen/VideoToRvcMenuItem.h
-        video/screenManager/mainScreen/VideoToUpstreamMenuItem.cpp
-        video/screenManager/mainScreen/VideoToUpstreamMenuItem.h
-        video/screenManager/mainScreen/VideoToPiMenuItem.cpp
-        video/screenManager/mainScreen/VideoToPiMenuItem.h
-        video/screenManager/mainScreen/ConfigPushMenuItem.cpp
-        video/screenManager/mainScreen/ConfigPushMenuItem.h
-        video/scanProgram/ScanProgram.h
-        video/scanProgram/scanPrograms/demo/DemoScanProgram.cpp
-        video/scanProgram/scanPrograms/demo/DemoScanProgram.h
-        video/scanProgram/scanPrograms/demo/DemoScanProgram.h
-        video/scanProgram/scanPrograms/demo/DemoScanProgram.h
-        video/scanProgram/scanPrograms/clock/ClockScanProgram.cpp
-        video/scanProgram/scanPrograms/clock/ClockScanProgram.h
-        video/scanProgram/scanPrograms/bootsplash/BootsplashScanProgram.cpp
-        video/scanProgram/scanPrograms/bootsplash/BootsplashScanProgram.h
-        video/scanProgram/scanPrograms/menu/MenuScanProgram.cpp
-        video/scanProgram/scanPrograms/menu/MenuScanProgram.h
-        video/scanProgram/scanPrograms/noop/NoopScanProgram.cpp
-        video/scanProgram/scanPrograms/noop/NoopScanProgram.h
-        video/scanProgram/ScanProgramSwapper.cpp
-        video/scanProgram/ScanProgramSwapper.cpp
-        ibus/observerRegistry/observers/PiToPico/ScanProgramRequest/ScanProgramRequestObserver.cpp
-        ibus/observerRegistry/observers/PiToPico/ScanProgramRequest/ScanProgramRequestObserver.h
-        video/scanProgram/ScanProgramManager.cpp
-        video/scanProgram/scanPrograms/graphicsLib/graphicsLib.cpp
-        video/scanProgram/scanPrograms/graphicsLib/graphicsLib.h
-        video/scanProgram/scanPrograms/graphicsLib/DisplayMetrics.cpp
-        video/scanProgram/scanPrograms/graphicsLib/DisplayMetrics.h
-        video/scanProgram/scanPrograms/graphicsLib/command/BaseCommand.cpp
-        video/scanProgram/scanPrograms/graphicsLib/command/BaseCommand.h
-        video/scanProgram/scanPrograms/graphicsLib/command/LineCommand.cpp
-        video/scanProgram/scanPrograms/graphicsLib/command/LineCommand.h
-        video/scanProgram/scanPrograms/graphicsLib/command/FilledRectangleCommand.cpp
-        video/scanProgram/scanPrograms/graphicsLib/command/FilledRectangleCommand.h
-        video/scanProgram/scanPrograms/graphicsLib/command/EmptyRectangleCommand.cpp
-        video/scanProgram/scanPrograms/graphicsLib/command/EmptyRectangleCommand.h
-        video/scanProgram/scanPrograms/graphicsLib/command/TextCommand.cpp
-        video/scanProgram/scanPrograms/graphicsLib/command/TextCommand.h
-        video/scanProgram/scanPrograms/graphicsLib/command/PxCoord.cpp
-        video/scanProgram/scanPrograms/graphicsLib/command/PxCoord.h
-        video/scanProgram/scanPrograms/graphicsLib/command/CommandProcessor.cpp
-        video/scanProgram/scanPrograms/graphicsLib/command/CommandProcessor.h
-        video/scanProgram/scanPrograms/graphicsLib/command/RleRun.cpp
-        video/scanProgram/scanPrograms/graphicsLib/command/RleRun.h
-        video/scanProgram/scanPrograms/graphicsLib/command/RleRunContainerCommand.cpp
-        video/scanProgram/scanPrograms/graphicsLib/command/RleRunContainerCommand.h
-        video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h
-        video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.cpp
-        video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h
+
         ibus/dma/IDmaManager.h
         ibus/dma/IDmaManager.cpp
         ibus/dma/SingleCoreDmaManager.cpp
@@ -312,7 +236,7 @@ target_sources(
         ibus/dma/topology/BusTopologyManager.h
         ibus/dma/topology/BusTopologyManager.cpp
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/ibus/dma/topology/CMakeHeaderFlags.h>
-
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/video/CMakeHasVideoFlags.h>
 )
 
 target_include_directories(
@@ -341,10 +265,149 @@ target_link_libraries(PicoTemplate
         hardware_pio
         pico_multicore
         pico_stdlib
-        pico_scanvideo_dpi)
+        )
 
 # Create map/bin/hex/uf2 files
 pico_add_extra_outputs(PicoTemplate)
+
+# Support for video on Pico
+# Disabled to allow the software to be stable enough to run in a real car (because the clock speed cause DMA starvation,
+# which causes isr_hardfaults)
+set(CMAKE_VIDEO_SUPPORT_NO_VIDEO 0)
+set(CMAKE_VIDEO_SUPPORT_HAS_VIDEO 1)
+
+set(CMAKE_HAS_VIDEO_VALUE CMAKE_VIDEO_SUPPORT_NO_VIDEO)
+#set(CMAKE_BUS_HAS_VIDEO_VALUE CMAKE_VIDEO_SUPPORT_HAS_VIDEO)
+
+#This is really dumb, but it needs to be here for #cmakedefine to actually run.
+set(CMAKE_HAS_VIDEO_SUPPORT 1)
+
+configure_file(
+        video/CMakeHasVideoFlags.in.h
+        video/CMakeHasVideoFlags.h
+)
+target_include_directories(
+        PicoTemplate
+        PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/video>
+)
+
+if(${CMAKE_HAS_VIDEO_VALUE} EQUAL CMAKE_VIDEO_SUPPORT_NO_VIDEO)
+    message("Setting up video support for CMAKE_VIDEO_SUPPORT_NO_VIDEO")
+
+
+    target_sources(
+            PicoTemplate PUBLIC
+
+            factory/ApplicationContainerNoVideo.cpp
+            factory/ApplicationContainerNoVideo.h
+            factory/noVideoFactory/NoVideoFactory.cpp
+            factory/noVideoFactory/NoVideoFactory.h
+
+            ibus/observerRegistry/observers/ignitionStateNoVideo/IgnitionStateNoVideoObserver.cpp
+            ibus/observerRegistry/observers/ignitionStateNoVideo/IgnitionStateNoVideoObserver.h
+
+            ibus/observerRegistry/observers/telephonePressNoVideo/TelephonePressNoVideo.cpp
+            ibus/observerRegistry/observers/telephonePressNoVideo/TelephonePressNoVideo.h
+    )
+
+endif()
+
+if(${CMAKE_HAS_VIDEO_VALUE} EQUAL CMAKE_VIDEO_SUPPORT_HAS_VIDEO)
+    message("Setting up video support for CMAKE_VIDEO_SUPPORT_HAS_VIDEO")
+
+
+    target_link_libraries(PicoTemplate pico_scanvideo_dpi)
+
+
+    target_sources(
+            PicoTemplate PUBLIC
+
+            factory/ApplicationContainer.cpp
+            factory/ApplicationContainer.h
+            factory/pimoroniFactory/PimoroniFactory.cpp
+            factory/pimoroniFactory/PimoroniFactory.h
+            factory/e39RpiFactory/e39rpiFactory.cpp
+            factory/e39RpiFactory/e39rpiFactory.h
+
+            ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.cpp
+            ibus/observerRegistry/observers/ignitionState/IgnitionStateObserver.h
+
+            ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.cpp
+            ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h
+
+            ibus/observerRegistry/observers/knobListener/KnobListenerObserver.cpp
+            ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h
+
+            video/screenManager/ScreenItem.cpp
+            video/screenManager/ScreenItem.h
+            video/screenManager/Screen.cpp
+            video/screenManager/Screen.h
+            video/screenManager/ScreenManager.cpp
+            video/screenManager/ScreenManager.h
+            video/screenManager/mainScreen/MainScreen.cpp
+            video/screenManager/mainScreen/MainScreen.h
+            video/screenManager/mainScreen/TurnOnPi4MenuItem.cpp
+            video/screenManager/mainScreen/TurnOnPi4MenuItem.h
+            video/screenManager/mainScreen/SafePi4PowerOffMenuItem.cpp
+            video/screenManager/mainScreen/SafePi4PowerOffMenuItem.h
+            video/screenManager/mainScreen/HardPi4PowerOffMenuItem.cpp
+            video/screenManager/mainScreen/HardPi4PowerOffMenuItem.h
+            video/screenManager/mainScreen/RestartXMenuItem.cpp
+            video/screenManager/mainScreen/RestartXMenuItem.h
+            video/screenManager/mainScreen/VideoToRvcMenuItem.cpp
+            video/screenManager/mainScreen/VideoToRvcMenuItem.h
+            video/screenManager/mainScreen/VideoToUpstreamMenuItem.cpp
+            video/screenManager/mainScreen/VideoToUpstreamMenuItem.h
+            video/screenManager/mainScreen/VideoToPiMenuItem.cpp
+            video/screenManager/mainScreen/VideoToPiMenuItem.h
+            video/screenManager/mainScreen/ConfigPushMenuItem.cpp
+            video/screenManager/mainScreen/ConfigPushMenuItem.h
+            video/scanProgram/ScanProgram.h
+            video/scanProgram/scanPrograms/BaseScanProgram.cpp
+            video/scanProgram/scanPrograms/demo/DemoScanProgram.cpp
+            video/scanProgram/scanPrograms/demo/DemoScanProgram.h
+            video/scanProgram/scanPrograms/demo/DemoScanProgram.h
+            video/scanProgram/scanPrograms/demo/DemoScanProgram.h
+            video/scanProgram/scanPrograms/clock/ClockScanProgram.cpp
+            video/scanProgram/scanPrograms/clock/ClockScanProgram.h
+            video/scanProgram/scanPrograms/bootsplash/BootsplashScanProgram.cpp
+            video/scanProgram/scanPrograms/bootsplash/BootsplashScanProgram.h
+            video/scanProgram/scanPrograms/menu/MenuScanProgram.cpp
+            video/scanProgram/scanPrograms/menu/MenuScanProgram.h
+            video/scanProgram/scanPrograms/noop/NoopScanProgram.cpp
+            video/scanProgram/scanPrograms/noop/NoopScanProgram.h
+            video/scanProgram/ScanProgramSwapper.cpp
+            video/scanProgram/ScanProgramSwapper.cpp
+            video/scanProgram/ScanProgramManager.cpp
+            video/scanProgram/scanPrograms/graphicsLib/graphicsLib.cpp
+            video/scanProgram/scanPrograms/graphicsLib/graphicsLib.h
+            video/scanProgram/scanPrograms/graphicsLib/DisplayMetrics.cpp
+            video/scanProgram/scanPrograms/graphicsLib/DisplayMetrics.h
+            video/scanProgram/scanPrograms/graphicsLib/command/BaseCommand.cpp
+            video/scanProgram/scanPrograms/graphicsLib/command/BaseCommand.h
+            video/scanProgram/scanPrograms/graphicsLib/command/LineCommand.cpp
+            video/scanProgram/scanPrograms/graphicsLib/command/LineCommand.h
+            video/scanProgram/scanPrograms/graphicsLib/command/FilledRectangleCommand.cpp
+            video/scanProgram/scanPrograms/graphicsLib/command/FilledRectangleCommand.h
+            video/scanProgram/scanPrograms/graphicsLib/command/EmptyRectangleCommand.cpp
+            video/scanProgram/scanPrograms/graphicsLib/command/EmptyRectangleCommand.h
+            video/scanProgram/scanPrograms/graphicsLib/command/TextCommand.cpp
+            video/scanProgram/scanPrograms/graphicsLib/command/TextCommand.h
+            video/scanProgram/scanPrograms/graphicsLib/command/PxCoord.cpp
+            video/scanProgram/scanPrograms/graphicsLib/command/PxCoord.h
+            video/scanProgram/scanPrograms/graphicsLib/command/CommandProcessor.cpp
+            video/scanProgram/scanPrograms/graphicsLib/command/CommandProcessor.h
+            video/scanProgram/scanPrograms/graphicsLib/command/RleRun.cpp
+            video/scanProgram/scanPrograms/graphicsLib/command/RleRun.h
+            video/scanProgram/scanPrograms/graphicsLib/command/RleRunContainerCommand.cpp
+            video/scanProgram/scanPrograms/graphicsLib/command/RleRunContainerCommand.h
+            video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h
+            video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.cpp
+            video/scanProgram/scanPrograms/graphicsLib/fonts/FontProvider.h
+    )
+
+endif()
 
 
 #https://discourse.cmake.org/t/how-to-get-access-cmake-variable-in-a-header-file/7125

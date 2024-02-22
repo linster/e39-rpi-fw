@@ -20,7 +20,7 @@
 #include <ibus/observerRegistry/observers/BaseObserver.h>
 #include <ibus/observerRegistry/observers/mockObserver/MockObserver.h>
 #include <ibus/observerRegistry/observers/ignitionStateNoVideo/IgnitionStateNoVideoObserver.h>
-#include <ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h>
+
 #include <ibus/observerRegistry/observers/PiToPico/heartbeatRequest/HeatbeatRequestObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/picoConfigurationReadRequest/PicoConfigurationReadRequestObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/PiPowerRequest/PiPowerRequestObserver.h>

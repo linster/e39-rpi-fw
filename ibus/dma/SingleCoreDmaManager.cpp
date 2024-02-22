@@ -69,11 +69,14 @@ namespace pico::ibus::dma {
 
     void SingleCoreDmaManager::onCpu0Loop() {
         messagePumpRunning = true;
+
+    #if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
 //        scanvideo_wait_for_vblank();
         if (!scanvideo_in_vblank()) {
             //Safer alternative to waiting for a semaphore?
             return;
         }
+    #endif
         flushUart0ByteBufferToPacketizer();
         flushUart1ByteBufferToPacketizer();
         flushFromPiQToLogic();

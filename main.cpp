@@ -1,15 +1,25 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 #include "hardware/adc.h"
-#include "pico/scanvideo.h"
-#include "pico/scanvideo/composable_scanline.h"
+
+#include <CMakeHasVideoFlags.h>
+
 #include "pico/multicore.h"
 #include "pico/sync.h"
 #include "pico/stdlib.h"
-#include "VGADemo.h"
+
 #include "logging/BaseLogger.h"
 #include "logging/StdioPrintFLogger.h"
+
+
+#if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
 #include "factory/pimoroniFactory/PimoroniFactory.h"
+#endif
+
+#if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_NO_VIDEO
+#include "factory/noVideoFactory/NoVideoFactory.h"
+#endif
+
 
 // The built in LED
 #define LED_PIN 25
@@ -18,7 +28,13 @@
 
 void core1_entry() {
     //The very first thing we get on startup wait and block for a pointer to the application container.
-    auto* applicationContainer = (pico::ApplicationContainer*) multicore_fifo_pop_blocking();
+    #if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
+        auto* applicationContainer = (pico::ApplicationContainer*) multicore_fifo_pop_blocking();
+    #endif
+
+    #if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_NO_VIDEO
+        auto* applicationContainer = (pico::ApplicationContainerNoVideo*) multicore_fifo_pop_blocking();
+    #endif
 
     //One-time setup on the second core.
     applicationContainer->onCpu1Main();
@@ -46,9 +62,15 @@ int main() {
 //    adc_set_temp_sensor_enabled(true);
 //    adc_select_input(TEMP_ADC);
 
-    auto* factory = new pico::di::PimoroniFactory();
+    #if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
+        auto* factory = new pico::di::PimoroniFactory();
+        pico::ApplicationContainer* applicationContainer = factory->getApplicationContainer();
+    #endif
 
-    pico::ApplicationContainer* applicationContainer = factory->getApplicationContainer();
+    #if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_NO_VIDEO
+        auto* factory = new pico::di::NoVideoFactory();
+        pico::ApplicationContainerNoVideo* applicationContainer = factory->getApplicationContainer();
+    #endif
 
     applicationContainer->onMain(); //Run main one-time setup code.
 
@@ -62,13 +84,6 @@ int main() {
 
 
     while (true) {
-
         applicationContainer->onLoop();
-//        sleep_ms(50);
-
-//        const float voltage = adc_read() * conversion_factor;
-//        const float temperature = 27 - (voltage - 0.706) / 0.001721;
-//
-//        printf("Hello, world! The temperature is: %fc\n", temperature);
     }
 }

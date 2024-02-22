@@ -8,6 +8,8 @@
 #include "IDmaManager.h"
 
 #include <CMakeHeaderFlags.h>
+#include <CMakeHasVideoFlags.h>
+
 
 #include <logging/BaseLogger.h>
 #include <ibus/observerRegistry/ObserverRegistry.h>
@@ -24,7 +26,12 @@
 #include "pico/stdlib.h"
 #include "hardware/pio.h"
 #include "pico/sync.h"
+
+#if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
 #include "pico/scanvideo.h"
+#endif
+
+
 #include "ibus/dma/topology/BusTopologyManager.h"
 
 

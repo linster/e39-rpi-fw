@@ -2,8 +2,8 @@
 // Created by stefan on 2/22/24.
 //
 
-#include <sys/unistd.h>
 #include "TelephonePressNoVideo.h"
+
 
 namespace pico::ibus::observers {
     TelephonePressNoVideo::TelephonePressNoVideo(
@@ -22,7 +22,7 @@ namespace pico::ibus::observers {
 
     void TelephonePressNoVideo::restartRpi() {
         pi4PowerSwitchManager->setPower(false);
-        sleep(5);
+        sleep_ms(500);
         pi4PowerSwitchManager->setPower(true);
     }
 

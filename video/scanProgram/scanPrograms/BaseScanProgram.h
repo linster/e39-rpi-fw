@@ -15,6 +15,12 @@
 #include <logging/BaseLogger.h>
 #include "pico/scanvideo/composable_scanline.h"
 
+
+#include "pico.h"
+#include "pico/multicore.h"
+#include "pico/sync.h"
+#include "pico/stdlib.h"
+
 #include "fmt/format.h"
 #include "pico/sync.h"
 

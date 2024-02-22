@@ -5,6 +5,8 @@
 #ifndef PICOTEMPLATE_TELEPHONEPRESSNOVIDEO_H
 #define PICOTEMPLATE_TELEPHONEPRESSNOVIDEO_H
 
+#include <sys/unistd.h>
+#include "pico/time.h"
 #include <ibus/observerRegistry/observers/BaseObserver.h>
 #include <hardware/videoSwitch/VideoSwitch.h>
 #include <ibus/outputWriterApi/screenPowerManager/ScreenPowerManager.h>
