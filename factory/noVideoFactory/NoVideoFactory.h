@@ -23,6 +23,7 @@
 
 #include <ibus/observerRegistry/observers/PiToPico/heartbeatRequest/HeatbeatRequestObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/picoConfigurationReadRequest/PicoConfigurationReadRequestObserver.h>
+#include <ibus/observerRegistry/observers/PiToPico/ConfigPush/PicoConfigPushObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/PiPowerRequest/PiPowerRequestObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h>
 #include <ibus/observerRegistry/observers/telephonePressNoVideo/TelephonePressNoVideo.h>
@@ -70,6 +71,7 @@ namespace pico::di {
 
             std::shared_ptr<ibus::observers::HeatbeatRequestObserver> heatbeatRequestObserver;
             std::shared_ptr<ibus::observers::PicoConfigurationReadRequestObserver> picoConfigurationReadRequestObserver;
+            std::shared_ptr<ibus::observers::PicoConfigPushObserver> picoConfigPushObserver;
             std::shared_ptr<ibus::observers::PiPowerRequestObserver> piPowerRequestObserver;
             std::shared_ptr<ibus::observers::PicoVideoRequestObserver> picoVideoRequestObserver;
             std::shared_ptr<ibus::observers::TelephonePressNoVideo> telephonePressNoVideoObserver;
