@@ -163,6 +163,9 @@ target_sources(
         ibus/observerRegistry/observers/mockObserver/MockObserver.cpp
         ibus/observerRegistry/observers/mockObserver/MockObserver.h
 
+        ibus/observerRegistry/observers/PiToPico/ConfigPush/PicoConfigPushObserver.cpp
+        ibus/observerRegistry/observers/PiToPico/ConfigPush/PicoConfigPushObserver.h
+
 
         main.cpp
 
