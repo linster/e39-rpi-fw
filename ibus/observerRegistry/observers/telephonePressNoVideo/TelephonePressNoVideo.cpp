@@ -64,14 +64,12 @@ namespace pico::ibus::observers {
                     uint8_t command = iBusPacket->getRawPacket()[data::IbusPacket::DATA_START + 1];
 
                     if (command == 0x08) {
-                        logger->d(getTag(), "Telephone pressed");
                         onTelephonePressed();
                         return;
                     }
 
 
                     if (command == 0x88) {
-                        logger->d(getTag(), "Telephone released");
                         return;
                     }
 

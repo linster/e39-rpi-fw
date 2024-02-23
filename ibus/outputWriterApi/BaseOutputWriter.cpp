@@ -7,7 +7,7 @@ namespace pico::ibus::output::writer {
 
                 void BaseOutputWriter::schedulePicoToPiMessageForWrite(messages::PicoToPiMessage message) {
 
-                    NanoPb::StringOutputStream outputStream = NanoPb::StringOutputStream();
+                    NanoPb::StringOutputStream outputStream = NanoPb::StringOutputStream(255);
                     if (!NanoPb::encode<messages::PicoToPiMessageConverter>(outputStream, message)) {
                         //TODO WTF
                         //TODO can't log here, sooooo?

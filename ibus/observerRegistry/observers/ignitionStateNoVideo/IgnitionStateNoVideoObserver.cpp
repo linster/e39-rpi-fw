@@ -18,7 +18,7 @@ namespace pico::ibus::observers {
     }
 
     void IgnitionStateNoVideoObserver::onIgnitionKeyPosition(int position) {
-        logger->d(getTag(), fmt::format("onIgnitionKeyPosition() position {:d}", position));
+        //logger->d(getTag(), fmt::format("onIgnitionKeyPosition() position {:x}", position));
         switch (position) {
             case 0:
                 //Turn the pi off
@@ -57,7 +57,7 @@ namespace pico::ibus::observers {
                     uint8_t position = iBusPacket->getRawPacket()[data::IbusPacket::DATA_START + 1];
 
                     if (ignoreFutureRealIgnitionEmissions) {
-                        logger->d(getTag(), fmt::format("Ignoring real ignition status with position %d", position));
+                        //logger->i(getTag(), fmt::format("Ignoring real ignition status with position {:x}", position));
                     } else {
                         switch (position) {
                             case 0x00:
@@ -95,7 +95,7 @@ namespace pico::ibus::observers {
                 decoded.messageType == messages::PiToPicoMessage::MessageType::SimulatedIgnitionPosition2 ||
                 decoded.messageType == messages::PiToPicoMessage::MessageType::SimulatedIgnitionPosition3) {
 
-                logger->i(getTag(), "Received a simulated ignition key message");
+                //logger->i(getTag(), "Received a simulated ignition key message");
                 ignoreFutureRealIgnitionEmissions = true;
 
                 switch (decoded.messageType) {

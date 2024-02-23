@@ -14,13 +14,13 @@ namespace pico::ibus::output::writer {
 
         //Notably, don't log anything here to prevent an infinite loop.
     private:
-        int truncateLogMessagesToCharacters = 32;
+        int truncateLogMessagesToCharacters = 64;
         //If false, drop the remainder after truncation.
         bool splitLogMessagesAtTruncationPoint = false;
 
         std::function<std::shared_ptr<dma::IDmaManager>()> dmaManagerAccessor;
     public:
-        IbusLoggerOutput(
+        explicit IbusLoggerOutput(
                 std::function<std::shared_ptr<dma::IDmaManager>()> dmaManagerAccessor
         );
         void print(std::string message);
