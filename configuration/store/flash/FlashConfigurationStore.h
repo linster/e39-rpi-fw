@@ -5,6 +5,8 @@
 #ifndef PICOTEMPLATE_FLASHCONFIGURATIONSTORE_H
 #define PICOTEMPLATE_FLASHCONFIGURATIONSTORE_H
 
+
+#include <CMakeHasVideoFlags.h>
 #include <vector>
 #include <configuration/store/IConfigurationStore.h>
 #include "flash_utils.h"

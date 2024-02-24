@@ -74,6 +74,7 @@ int main() {
 
     applicationContainer->onMain(); //Run main one-time setup code.
 
+#if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
     multicore_reset_core1();
     multicore_launch_core1(core1_entry); //Launch the coprocessor and have it block.
 //    Push the pointer to the application container to the second core. This unblocks the co-processor.
@@ -81,7 +82,7 @@ int main() {
 
     //Wait for the CPU1 setup to complete.
     sleep_ms(3000);
-
+#endif
 
     while (true) {
         applicationContainer->onLoop();

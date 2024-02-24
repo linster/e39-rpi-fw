@@ -55,6 +55,7 @@ namespace pico {
     }
 
     void ApplicationContainerNoVideo::onCpu1Main() {
+//        multicore_lockout_victim_init();
         logger->i("onCpu1Main", "onCpu1Main");
         watchdogManager->cpu1Setup();
         dmaManager->cpu1Setup(); //NOOP with SingleCoreDmaManager
