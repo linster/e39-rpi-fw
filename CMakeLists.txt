@@ -12,6 +12,9 @@ add_subdirectory(libs/fmt)
 add_subdirectory(libs/nanopb)
 add_subdirectory(libs/nanopb_cpp)
 
+#???
+#stefan@pop-os:~/e39-rpi-fw$ ./libs/nanopb/generator/protoc --plugin=protoc-gen-nanopb=libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=proto_generated proto/PiToPico.proto --proto_path=proto/
+#stefan@pop-os:~/e39-rpi-fw$
 
 #stefan@pop-os:~/pico/protobuf$
 #./protoc --plugin=protoc-gen-nanopb=/home/stefan/e39-rpi-fw/libs/nanopb/generator/protoc-gen-nanopb --nanopb_out=/home/stefan/e39-rpi-fw/proto_generated /home/stefan/e39-rpi-fw/configuration/ConfigProto.proto_generated --proto_path=/home/stefan/e39-rpi-fw
@@ -279,11 +282,11 @@ pico_add_extra_outputs(PicoTemplate)
 set(CMAKE_VIDEO_SUPPORT_NO_VIDEO 0)
 set(CMAKE_VIDEO_SUPPORT_HAS_VIDEO 1)
 
-set(CMAKE_HAS_VIDEO_VALUE CMAKE_VIDEO_SUPPORT_NO_VIDEO)
-#set(CMAKE_BUS_HAS_VIDEO_VALUE CMAKE_VIDEO_SUPPORT_HAS_VIDEO)
+#set(CMAKE_HAS_VIDEO_VALUE CMAKE_VIDEO_SUPPORT_NO_VIDEO)
+set(CMAKE_BUS_HAS_VIDEO_VALUE CMAKE_VIDEO_SUPPORT_HAS_VIDEO)
 
 #This is really dumb, but it needs to be here for #cmakedefine to actually run.
-set(CMAKE_HAS_VIDEO_SUPPORT 1)
+set(CMAKE_HAS_VIDEO_SUPPORT 0)
 
 configure_file(
         video/CMakeHasVideoFlags.in.h
@@ -295,7 +298,8 @@ target_include_directories(
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/video>
 )
 
-if(${CMAKE_HAS_VIDEO_VALUE} EQUAL CMAKE_VIDEO_SUPPORT_NO_VIDEO)
+#if(NOT CMAKE_HAS_VIDEO_VALUE EQUAL 0)
+if(NOT CMAKE_HAS_VIDEO_SUPPORT)
     message("Setting up video support for CMAKE_VIDEO_SUPPORT_NO_VIDEO")
 
 
@@ -316,7 +320,7 @@ if(${CMAKE_HAS_VIDEO_VALUE} EQUAL CMAKE_VIDEO_SUPPORT_NO_VIDEO)
 
 endif()
 
-if(${CMAKE_HAS_VIDEO_VALUE} EQUAL CMAKE_VIDEO_SUPPORT_HAS_VIDEO)
+if(CMAKE_HAS_VIDEO_SUPPORT)
     message("Setting up video support for CMAKE_VIDEO_SUPPORT_HAS_VIDEO")
 
 

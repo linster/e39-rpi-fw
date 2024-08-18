@@ -53,12 +53,15 @@ namespace pico::config {
         }
 
         std::unique_ptr<std::basic_string<char>> p = outputStream.release();
-        auto bytes = std::vector<uint8_t>();
-        for (char c: *p) {
-            bytes.push_back(c);
-        }
 
-        //TODO here we need to make sure that bytes.size() is a multiple of 256 so that the flash write works.
+
+        //Make bytes 256 bytes in size so that when we write it with flash_range_program,
+        //it is page-aligned.
+        auto bytes = std::vector<uint8_t>(256);
+        uint8_t bytesIndex = 0;
+        for (char c: *p) {
+            bytes[bytesIndex++] = c;
+        }
 
         return {true, bytes};
     }

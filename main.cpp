@@ -12,13 +12,12 @@
 #include "logging/StdioPrintFLogger.h"
 
 
-#if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
+#ifdef CMAKE_HAS_VIDEO_SUPPORT
 #include "factory/pimoroniFactory/PimoroniFactory.h"
-#endif
-
-#if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_NO_VIDEO
+#else
 #include "factory/noVideoFactory/NoVideoFactory.h"
 #endif
+
 
 
 // The built in LED
@@ -28,12 +27,10 @@
 
 void core1_entry() {
     //The very first thing we get on startup wait and block for a pointer to the application container.
-    #if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
+    #ifdef CMAKE_HAS_VIDEO_SUPPORT
         auto* applicationContainer = (pico::ApplicationContainer*) multicore_fifo_pop_blocking();
-    #endif
-
-    #if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_NO_VIDEO
-        auto* applicationContainer = (pico::ApplicationContainerNoVideo*) multicore_fifo_pop_blocking();
+    #else
+    auto* applicationContainer = (pico::ApplicationContainerNoVideo*) multicore_fifo_pop_blocking();
     #endif
 
     //One-time setup on the second core.
@@ -62,19 +59,17 @@ int main() {
 //    adc_set_temp_sensor_enabled(true);
 //    adc_select_input(TEMP_ADC);
 
-    #if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
+    #ifdef CMAKE_HAS_VIDEO_SUPPORT
         auto* factory = new pico::di::PimoroniFactory();
         pico::ApplicationContainer* applicationContainer = factory->getApplicationContainer();
-    #endif
-
-    #if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_NO_VIDEO
+    #else
         auto* factory = new pico::di::NoVideoFactory();
         pico::ApplicationContainerNoVideo* applicationContainer = factory->getApplicationContainer();
     #endif
 
     applicationContainer->onMain(); //Run main one-time setup code.
 
-#if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
+#ifdef CMAKE_HAS_VIDEO_SUPPORT
     multicore_reset_core1();
     multicore_launch_core1(core1_entry); //Launch the coprocessor and have it block.
 //    Push the pointer to the application container to the second core. This unblocks the co-processor.
