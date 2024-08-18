@@ -18,7 +18,8 @@ namespace pico::messages {
                 LogStatement,
                 ConfigStatusResponse,
                 PiSoftPowerRestartX,
-                PiSoftPowerRestartPi
+                PiSoftPowerRestartPi,
+                PiSoftPowerShutdown
             };
 
             MessageType messageType;
@@ -48,6 +49,7 @@ namespace pico::messages {
                         case PicoToPiMessage::MessageType::ConfigStatusResponse: return ca_stefanm_e39_proto_PicoToPi_MessageType_ConfigStatusResponse;
                         case PicoToPiMessage::MessageType::PiSoftPowerRestartX: return ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartX;
                         case PicoToPiMessage::MessageType::PiSoftPowerRestartPi: return ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi;
+                        case PicoToPiMessage::MessageType::PiSoftPowerShutdown: return ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerShutdown;
                     }
                 }
                 static LocalType decode(const ProtoType& proto) {
@@ -58,6 +60,7 @@ namespace pico::messages {
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_ConfigStatusResponse: return PicoToPiMessage::ConfigStatusResponse;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartX: return PicoToPiMessage::MessageType::PiSoftPowerRestartX;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi: return PicoToPiMessage::MessageType::PiSoftPowerRestartPi;
+                        case ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerShutdown: return PicoToPiMessage::MessageType::PiSoftPowerShutdown;
                     }
                 }
             };

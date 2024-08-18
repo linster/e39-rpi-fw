@@ -34,5 +34,11 @@ namespace pico::ibus::output::writer {
         });
     }
 
+    void SoftPowerRequestWriter::requestRpiShutdown() { {
+        logger->d(getTag(), "Requesting rpi shutdown");
+            schedulePicoToPiMessageForWrite(messages::PicoToPiMessage{
+                    .messageType = messages::PicoToPiMessage::MessageType::PiSoftPowerShutdown
+            });
+    }}
 
 } // writer

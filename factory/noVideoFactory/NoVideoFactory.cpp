@@ -92,7 +92,8 @@ namespace pico::di {
                      logger,
                      powerSwitchManager,
                      videoSwitch,
-                     screenPowerManager
+                     screenPowerManager,
+                     softPowerRequestWriter
                      );
 
              this->heatbeatRequestObserver = std::make_shared<ibus::observers::HeatbeatRequestObserver>(

@@ -19,12 +19,9 @@ typedef enum _ca_stefanm_e39_proto_PicoToPi_MessageType {
     ca_stefanm_e39_proto_PicoToPi_MessageType_LogStatement = 3,
     /* Dump the config object */
     ca_stefanm_e39_proto_PicoToPi_MessageType_ConfigStatusResponse = 4,
-    /* TODO we could have a mechanism where the pi sends to the pico
-TODO the number of ibus events it processed (knob turn messages?)
-TODO and if the pico isn't receiveng this heartbeat often enough,
-TODO it could auto-restart the PI. */
     ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartX = 5, /* Ask the RPI to restart the X server */
-    ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi = 6 /* Ask the RPI to legit restart */
+    ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi = 6, /* Ask the RPI to legit restart */
+    ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerShutdown = 7
 } ca_stefanm_e39_proto_PicoToPi_MessageType;
 
 /* Struct definitions */
@@ -44,8 +41,8 @@ extern "C" {
 
 /* Helper constants for enums */
 #define _ca_stefanm_e39_proto_PicoToPi_MessageType_MIN ca_stefanm_e39_proto_PicoToPi_MessageType_EmptyMessage
-#define _ca_stefanm_e39_proto_PicoToPi_MessageType_MAX ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi
-#define _ca_stefanm_e39_proto_PicoToPi_MessageType_ARRAYSIZE ((ca_stefanm_e39_proto_PicoToPi_MessageType)(ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi+1))
+#define _ca_stefanm_e39_proto_PicoToPi_MessageType_MAX ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerShutdown
+#define _ca_stefanm_e39_proto_PicoToPi_MessageType_ARRAYSIZE ((ca_stefanm_e39_proto_PicoToPi_MessageType)(ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerShutdown+1))
 
 #define ca_stefanm_e39_proto_PicoToPi_messageType_ENUMTYPE ca_stefanm_e39_proto_PicoToPi_MessageType
 

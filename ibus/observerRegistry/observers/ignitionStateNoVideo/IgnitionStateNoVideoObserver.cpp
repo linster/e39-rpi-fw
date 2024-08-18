@@ -9,45 +9,62 @@ namespace pico::ibus::observers {
             std::shared_ptr<logger::BaseLogger> baseLogger,
             std::shared_ptr<hardware::pi4powerswitch::IPi4PowerSwitchManager> pi4PowerSwitchManager,
             std::shared_ptr<hardware::videoSwitch::VideoSwitch> videoSwitch,
-            std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager) {
+            std::shared_ptr<pico::ibus::output::writer::ScreenPowerManager> screenPowerManager,
+            std::shared_ptr<output::writer::SoftPowerRequestWriter> softPowerRequestWriter) {
 
         this->logger = baseLogger;
         this->pi4PowerSwitchManager = pi4PowerSwitchManager;
         this->videoSwitch = videoSwitch;
         this->screenPowerManager = screenPowerManager;
+        this->softPowerRequestWriter = softPowerRequestWriter;
     }
 
     void IgnitionStateNoVideoObserver::onIgnitionKeyPosition(int position) {
-        //logger->d(getTag(), fmt::format("onIgnitionKeyPosition() position {:x}", position));
-        switch (position) {
-            case 0:
-                //Turn the pi off
-                // (but this is a hard-shutdown, so the pi also needs to start shutting down on position 1)
-                //TODO maybe put a delay here?
-                pi4PowerSwitchManager->setPower(false);
+        logger->d(getTag(), fmt::format("onIgnitionKeyPosition() position {:x}", position));
+        logger->d(getTag(), fmt::format("current position {:x}", currentKeyPosition));
+        onIgnitionKeyPositionUpdates(currentKeyPosition, position);
+        currentKeyPosition = position;
+    }
 
-                videoSwitch->switchTo(hardware::videoSwitch::VideoSource::UPSTREAM);
-                screenPowerManager->sendScreenPowerMessage(false);
-                break;
-            case 1:
-                //Turn the pi on
-                pi4PowerSwitchManager->setPower(true);
-                videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
-                break;
-            case 2:
-                //The user is in a hurry to bootup, so show them the pi loading.
-                videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
-                break;
+    void IgnitionStateNoVideoObserver::onIgnitionKeyPositionUpdates(int oldPosition, int newPosition) {
+        if (newPosition > oldPosition) {
+            logger->d(getTag(), "Car is starting up");
+            // Starting up the car
+            switch (newPosition) {
+                case 1:
+                    //Turn the pi on in accessory if we were off
+                    pi4PowerSwitchManager->setPower(true);
+                    //Set the video to the factory system since the pi will be booting up
+                    videoSwitch->switchTo(hardware::videoSwitch::UPSTREAM);
+                    screenPowerManager->sendScreenPowerMessage(true);
+                    break;
+                case 2:
+                    videoSwitch->switchTo(hardware::videoSwitch::PI);
+                    break;
+            }
+        } else {
+            logger->d(getTag(), "Car is shutting down");
+            // Shutting down the car
+            switch (newPosition) {
+                case 1:
+                    videoSwitch->switchTo(hardware::videoSwitch::PI);
+                    softPowerRequestWriter->requestRpiShutdown();
+                    break;
+                case 0:
+                    pi4PowerSwitchManager->setPower(false);
+                    break;
+            }
         }
     }
 
     void IgnitionStateNoVideoObserver::onNewPacket(std::shared_ptr<pico::ibus::data::IbusPacket> iBusPacket) {
 
         //https://github.com/piersholt/wilhelm-docs/blob/master/ike/11.md
-        //80 04 BF 11 00 2A   # KL-30  -- position 0
-        //80 04 BF 11 01 2B   # KL-R   -- position 1
-        //80 04 BF 11 03 29   # KL-15  -- position 2
-        //80 04 BF 11 07 2D   # KL-50  -- position 3
+        //http://www.bimmerboard.com/forums/posts/860334
+        //80 04 BF 11 00 2A   # KL-30  -- position 0 (always hot?)
+        //80 04 BF 11 01 2B   # KL-R   -- position 1 (accessory)
+        //80 04 BF 11 03 29   # KL-15  -- position 2 (on)
+        //80 04 BF 11 07 2D   # KL-50  -- position 3 (start)
 
 
         if (iBusPacket->getSourceDevice() == data::IbusDeviceEnum::IKE && iBusPacket->getDestinationDevice() == 0xBF) {
