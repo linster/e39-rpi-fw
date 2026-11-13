@@ -163,11 +163,7 @@ namespace video::scanProgram::scanPrograms {
 
 
             constexpr static const scanvideo_timing_t vga_timing_bmbt = {
-                            //125MHz / 16 exactly. The Pi's 7867500 can't be divided evenly
-                            //from clk_sys, and scanvideo silently rounded it to 8333333.
-                            //See video/Readme.md.
-                            .clock_freq = 7812500,
-//                            .clock_freq = 7867500, //Original, from the Pi's hdmi_timings.
+                            .clock_freq = 7867500, //Original.
 //                            .clock_freq = 15625000, //CPU needs to go up to 126MHz.
 
                             //TODO Almost works. We can make the same active width as
