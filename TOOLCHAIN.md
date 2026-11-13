@@ -36,33 +36,29 @@ The old cache points at GCC 10.3 and CLion 2022.3.1's bundled cmake/ninja in `~/
 - CLion: Tools > CMake > Reset Cache and Reload Project.
 - Command line: `rm -rf cmake-build-debug && cmake -S . -B cmake-build-debug -G Ninja && ninja -C cmake-build-debug`
 
-## GCC 13 fixes still needed
+## GCC 13 fixes (done on branch `video-crash-fix`)
 
 GCC 13's headers no longer pull in other headers by accident the way GCC 10's did.
-With the library installed, these are the only remaining failures (checked 2026-11-13):
 
-1. **pico-sdk 1.4.0 `pioasm`** (built with the host `g++` 13):
-   `pio_disassembler.h: 'uint16_t' was not declared`. Upstream fixed this in pico-sdk 1.5.1
-   by adding `#include <cstdint>`. Either upgrade the submodule, or patch it locally
-   (local change inside the submodule, so it has to be redone after a fresh clone):
-   ```bash
-   sed -i 's|#include <string>|#include <string>\n#include <cstdint>|' pico-sdk/tools/pioasm/pio_disassembler.h
-   ```
-2. **Missing `#include <array>`**: `ibus/data/IbusPacket.h`, `ibus/dma/SingleCoreDmaManager.h`
-3. **Missing `#include <functional>`** (video build only): `video/screenManager/ScreenManager.h`,
-   `video/scanProgram/scanPrograms/menu/MenuScanProgram.cpp`
+1. **pico-sdk `pioasm`** (built with the host `g++` 13) failed with
+   `pio_disassembler.h: 'uint16_t' was not declared`. Fixed by updating pico-sdk 1.4.0 -> 1.5.1 (`78208ca`).
+   After pulling, run `git submodule update --init --recursive` (1.5.1 adds btstack, mbedtls and a newer tinyusb).
+2. **Missing `#include <array>` / `<functional>`** in a few project files. Fixed in `cddaf0a`.
 
-The alternative is Arm's GCC 10.3-2021.10 tarball (it bundles newlib and libstdc++) via
-`PICO_TOOLCHAIN_PATH`. That avoids items 2 and 3, but not item 1, because `pioasm` uses the host compiler.
+The stray `proto` -> `proto_generated` rename edits inside `pico-sdk/lib/lwip` and `pico-sdk/lib/tinyusb`
+were stashed (`git -C pico-sdk/lib/lwip stash list`) before the SDK update. They look like an accidental
+IDE refactor and are safe to drop.
 
-## Video build is broken regardless of toolchain
+## Video build (fixed on branch `video-crash-fix`)
 
-With `set(CMAKE_HAS_VIDEO_SUPPORT 1)` in `CMakeLists.txt`, the build also fails on:
+Video is switched by `set(CMAKE_HAS_VIDEO_SUPPORT 0|1)` in `CMakeLists.txt`. The video build had been broken
+since `ee4aeaf` (2024-02-22, "video support compiled out"):
 
-1. `factory/pimoroniFactory/PimoroniFactory.h` includes `factory/provider/DmaManagerProvider.h`,
-   which was deleted in `c67bc27` (2024-01-29).
-2. `video/CMakeHasVideoFlags.in.h` uses `@CMAKE_HAS_VIDEO_VALUE@`, but `set(CMAKE_HAS_VIDEO_VALUE ...)`
-   is commented out in `CMakeLists.txt`. The header then becomes `#define CMAKE_HAS_VIDEO_SUPPORT` (empty),
-   and every `#if CMAKE_HAS_VIDEO_SUPPORT == ...` fails with "operator '==' has no left operand"
-   (`configuration/store/flash/FlashConfigurationStore.cpp`, `ibus/dma/SingleCoreDmaManager.h`).
-   With video off it's `#undef`, so those `#if`s quietly evaluate as "no video".
+1. `PimoroniFactory` still included `factory/provider/DmaManagerProvider.h`, which `ee4aeaf` deleted.
+   The provider was never used, so it was removed from `PimoroniFactory` (as `NoVideoFactory` already does).
+2. `video/CMakeHasVideoFlags.in.h` used `@CMAKE_HAS_VIDEO_VALUE@`, which is never set, so the header became
+   `#define CMAKE_HAS_VIDEO_SUPPORT` (empty) and every `#if CMAKE_HAS_VIDEO_SUPPORT == ...` failed to compile.
+   It now defines `CMAKE_HAS_VIDEO_SUPPORT` as `CMAKE_VIDEO_SUPPORT_HAS_VIDEO` when video is on, and leaves it
+   undefined when off.
+
+Both `CMAKE_HAS_VIDEO_SUPPORT 0` and `1` build and link with GCC 13.2.1 + pico-sdk 1.5.1 (checked 2026-11-13).

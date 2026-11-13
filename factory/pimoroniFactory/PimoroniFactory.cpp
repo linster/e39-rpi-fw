@@ -12,8 +12,6 @@ namespace pico::di {
 
             this->busTopologyManager = std::make_shared<pico::ibus::topology::BusTopologyManager>();
 
-            this->dmaManagerProvider = std::make_shared<provider::DmaManagerProvider>();
-
 
             //TODO we might want to make this a class variable so it isn't popped off the stack when
             //TODO this method completes.
