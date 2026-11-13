@@ -227,8 +227,11 @@ namespace pico::ibus::dma {
 
         uint8_t byte;
 
-        //Drain everything the ISR has buffered so the byte queue can't back up.
-        while (queue_try_remove(fromByteQ, &byte)) {
+        //We're going to depend on the application container loop here so that we don't block here a bunch.
+        //We will add one byte at a time to the packetizer.
+
+        bool haveByte = queue_try_remove(fromByteQ, &byte);
+        if (haveByte) {
             critical_section_enter_blocking(&packetizerCs);
                 packetizer->addByte(byte);
                 if (packetizer->isPacketComplete()) {
@@ -255,10 +258,8 @@ namespace pico::ibus::dma {
             //uart_getc(uart) in the standard library casts to `char`, which might be signed.
 //            uart_read_blocking(uart, &ch, 1);
             if (!queue_try_add(toQ, &ch)) {
-                //Queue is full. Drop the byte; the packetizer will resync.
-                //Never queue_free() here: it frees the backing storage while
-                //the queue is still in use, which corrupts the heap.
-                rxBytesDropped = rxBytesDropped + 1;
+                //We couldn't write the queue?
+                queue_free(toQ);
             }
         }
     }
@@ -309,9 +310,8 @@ namespace pico::ibus::dma {
         std::array<uint8_t, 255> buffer = std::array<uint8_t , 255>();
         buffer.fill(0); //Fill the buffer with zeros so the .data() below dereferences validly.
 
-        //Drain all complete packets, since draining the byte queues fully can
-        //produce several packets in one loop iteration.
-        while (queue_try_remove(queue, (void*) buffer.data())) {
+        bool havePacket = queue_try_remove(queue, (void*) buffer.data());
+        if (havePacket) {
             //A packet came into the pico for processing.
             if (log_dispatch_trace) {
                 logger->d("SingleCoreDmaManager",
@@ -408,15 +408,13 @@ namespace pico::ibus::dma {
                         "fromPiQ: {:d}, "
                         "fromCarQ: {:d}, "
                         "uart0rxByteQ: {:d}, "
-                        "uart1rxByteQ: {:d}, "
-                        "rxBytesDropped: {:d} ",
+                        "uart1rxByteQ: {:d} ",
                         toPiQ_level,
                         toCarQ_level,
                         fromPiQ_level,
                         fromCarQ_level,
                         uart0rxByteQ_level,
-                        uart1rxByteQ_level,
-                        (uint32_t)rxBytesDropped
+                        uart1rxByteQ_level
                 ));
     }
 
