@@ -20,9 +20,11 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   decode. Block is now framed as magic `E39C` + 2-byte length + payload
   (`FlashConfigurationFraming.h`); decode reads only the payload. Host
   round-trip test passes under ASan; firmware builds.
-- [ ] **1.2 Defaults overwrite flash on every boot.** Because 1.1 always fails,
+- [x] **1.2 Defaults overwrite flash on every boot.** Because 1.1 always fails,
   `ConfigurationManager.cpp:34-37` saves the default config to flash, so
   anything the Pi pushed is lost on the next power cycle.
+  **Resolved by 1.1 + 1.4:** a stored config now loads, so defaults are only
+  written when flash has no valid frame (first boot / blank flash).
 - [x] **1.3 Flash erase/program breaks SDK rules.**
   - `flash_range_erase(flash_offset, 1)` (line 126): count must be a multiple
     of `FLASH_SECTOR_SIZE` (4096).
@@ -42,10 +44,12 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   longer depends on the video `#if`, which removes 1.6's impact here.
   Not yet tested on hardware; video build not compiled (current config is
   no-video).
-- [ ] **1.4 Load requires a commit hash.** A config is only "loaded" if
+- [x] **1.4 Load requires a commit hash.** A config is only "loaded" if
   `rpiFwGitCommitHash` is non-empty (line 101). Only
   `PimoroniDefaultConfigurationProvider` sets it (`"lalalalalalala"`), so a
   Pi-pushed config without a hash never loads.
+  **Done:** `decodeConfiguration()` now treats frame + successful decode as
+  valid; the hash is no longer required.
 - [x] **1.5 Large configs wrap silently.** `encodeConfiguration` uses a
   `uint8_t bytesIndex` into a 256-byte vector; encodings > 256 bytes wrap and
   overwrite the start instead of failing.

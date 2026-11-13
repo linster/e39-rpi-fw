@@ -96,7 +96,10 @@ namespace pico::config {
         if (!decodeSuccess) {
             return {false, Configuration()};
         }
-        return {!decoded.rpiFwGitCommitHash.empty(), Configuration(decoded)};
+        //The E39C frame + a successful decode is what marks a stored config as valid.
+        //Don't require rpiFwGitCommitHash: configs pushed by the Pi may leave it empty,
+        //and an all-defaults config is still a legitimate saved config.
+        return {true, Configuration(decoded)};
     }
 
     void FlashConfigurationStore::saveConfigurationBytes(std::vector<uint8_t> config) {
