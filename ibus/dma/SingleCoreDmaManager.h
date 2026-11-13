@@ -7,6 +7,8 @@
 
 #include "IDmaManager.h"
 
+#include <array>
+
 #include <CMakeHeaderFlags.h>
 #include <CMakeHasVideoFlags.h>
 

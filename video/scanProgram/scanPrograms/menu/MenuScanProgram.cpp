@@ -4,6 +4,8 @@
 
 #include "MenuScanProgram.h"
 
+#include <functional>
+
 namespace video::scanProgram::scanPrograms::menu {
 
 

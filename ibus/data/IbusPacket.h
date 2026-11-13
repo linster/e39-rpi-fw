@@ -5,6 +5,7 @@
 #ifndef PICOTEMPLATE_IBUSPACKET_H
 #define PICOTEMPLATE_IBUSPACKET_H
 
+#include <array>
 #include <memory>
 #include <vector>
 #include <cstddef>

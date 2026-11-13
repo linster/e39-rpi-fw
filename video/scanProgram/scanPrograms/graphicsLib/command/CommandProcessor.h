@@ -5,6 +5,7 @@
 #ifndef PICOTEMPLATE_COMMANDPROCESSOR_H
 #define PICOTEMPLATE_COMMANDPROCESSOR_H
 
+#include <array>
 #include <memory>
 #include <vector>
 #include <logging/BaseLogger.h>
