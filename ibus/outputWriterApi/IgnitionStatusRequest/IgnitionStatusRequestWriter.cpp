@@ -18,8 +18,8 @@ namespace pico::ibus::output::writer::ignition {
 
     void IgnitionStatusRequestWriter::sendIgnitionStatusRequest() {
         logger->d(getTag(), "sendIgnitionStatusRequest()");
-        auto data = std::vector<uint8_t>(1);
-        data.push_back(0x10);
+        //Payload is just the request command; std::vector<uint8_t>(1) would add a stray 0x00.
+        auto data = std::vector<uint8_t>{0x10};
 
         auto iBusPacket = data::IbusPacket(
                 data::IbusDeviceEnum::PICO,

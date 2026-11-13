@@ -113,8 +113,9 @@ the heap on every boot), then the cross-core map race (most likely video crash).
 - [ ] **4.1** `BaseObserver::decodePiToPicoMessage` builds input via
   `std::make_unique<std::string>(inputString.c_str())`, which truncates the
   protobuf at the first `0x00`. Pass `inputString` itself.
-- [ ] **4.2** `IgnitionStatusRequestWriter.cpp:21`: `std::vector<uint8_t>(1)`
+- [x] **4.2** `IgnitionStatusRequestWriter.cpp:21`: `std::vector<uint8_t>(1)`
   then `push_back(0x10)` sends `{0x00, 0x10}`; probably want `{0x10}`.
+  **Done:** payload is now `std::vector<uint8_t>{0x10}`.
 
 ## 5. Unit-test repo (`~/e39-rpi-fw-unittest`)
 
