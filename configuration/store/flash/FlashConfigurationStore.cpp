@@ -54,16 +54,16 @@ namespace pico::config {
 
         std::unique_ptr<std::basic_string<char>> p = outputStream.release();
 
-
-        //Make bytes 256 bytes in size so that when we write it with flash_range_program,
-        //it is page-aligned.
-        auto bytes = std::vector<uint8_t>(256);
-        uint8_t bytesIndex = 0;
-        for (char c: *p) {
-            bytes[bytesIndex++] = c;
+        //Prefix with magic + length (so decode knows where the message ends) and
+        //pad to a multiple of 256 bytes so flash_range_program gets whole pages.
+        std::optional<std::vector<uint8_t>> framed = flash::frameConfiguration(*p);
+        if (!framed.has_value()) {
+            logger->w("FlashConfigurationStore",
+                      fmt::format("encodeConfiguration message too large: {} bytes", p->size()));
+            return {false, std::vector<uint8_t>()};
         }
 
-        return {true, bytes};
+        return {true, framed.value()};
     }
 
     uint8_t* FlashConfigurationStore::getPointerToConfigurationStorageInFlash() {
@@ -83,15 +83,13 @@ namespace pico::config {
 
         bool decodeSuccess = false;
 
-        //A buffer to that backs the stream that NanoPB uses.
-        std::vector<uint8_t> flashBytes = std::vector<uint8_t>();
-        for (int i = 0; i < 4096; i++) {
-            flashBytes[i] = flashPtr[i];
+        //Only copy out the framed payload; erased flash or an old-format block has no valid frame.
+        std::optional<std::string> payload = flash::unframeConfiguration(flashPtr, flash::FRAME_REGION_SIZE);
+        if (!payload.has_value()) {
+            return {false, Configuration()};
         }
 
-        //Another copy, sadly. RIP 4kb of memory.
-        std::string flashString = std::string(flashBytes.begin(), flashBytes.end());
-        auto inputStream = NanoPb::StringInputStream(std::make_unique<std::string>(flashString));
+        auto inputStream = NanoPb::StringInputStream(std::make_unique<std::string>(std::move(payload.value())));
 
         messages::ConfigMessage decoded;
         decodeSuccess = NanoPb::decode<messages::ConfigMessageConverter>(inputStream, decoded);
