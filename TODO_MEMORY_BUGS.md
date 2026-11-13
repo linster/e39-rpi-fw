@@ -63,7 +63,7 @@ the heap on every boot), then the cross-core map race (most likely video crash).
 
 ## 2. Video (likely causes of the video crash)
 
-- [ ] **2.1 Cross-core data race → use-after-free** (`CommandProcessor.cpp`).
+- [x] **2.1 Cross-core data race → use-after-free** (`CommandProcessor.cpp`).
   Core 0 `clear()`s and reassigns `rleRunsForLine` (`std::map`) in
   `clearFrame()`, `computeFrame()`, `clearScanlines()` while core 1 reads it in
   `render_computed()` (including `rleRunsForLine[line_num]`, which can insert,
@@ -71,6 +71,14 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   checked once then trusted; mutex calls are commented out.
   Fix: real lock around the map, or double-buffer (build a new map on core 0,
   swap a pointer atomically).
+  **Done:** mutators run on both cores (scan program start/stop on core 1,
+  IBus menu redraws on core 0), so two locks: `pendingMutex` serializes all
+  mutators; short `renderMutex` guards only what render reads
+  (`rleRunsForLine`, `isFrameComputed`, `baseColour`). Merging happens outside
+  `renderMutex`; results are swapped in one scanline at a time and old data is
+  freed after release. `render_computed` uses `find()` (no insert) and no
+  longer copies the vector (no allocation inside `renderCs`). Video and
+  no-video builds compile; not yet tested on hardware.
 - [ ] **2.2 Scanline buffer overflow** (`CommandProcessor::drawScanline`).
   Buffer is `PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS` = 180 words (360
   halfwords); each run writes 2–3 halfwords and a 400 px line can produce
@@ -79,6 +87,12 @@ the heap on every boot), then the cross-core map race (most likely video crash).
 - [ ] **2.3 Font table OOB read** (`TextCommand.cpp:51-57`). Missing `else`:
   for characters >= 128, `font8x8_basic[ord]` reads past the 128-entry table.
   `char` is unsigned on ARM, so any non-ASCII byte triggers it.
+- [ ] **2.4 `commandsToProcess` grows forever** (`CommandProcessor::addRleRuns`).
+  `graphicsLib::drawTextSpecialCharacter` → `addRleRuns` pushes a
+  `RleRunContainerCommand` into `commandsToProcess`, but nothing ever processes
+  or clears it (the `clear()` is commented out). Each call leaks, and the
+  special character never renders. Likely fix: merge the runs into
+  `rleRunsToProcess` like `addCommand` does.
 
 ## 3. IBus receive / transmit
 

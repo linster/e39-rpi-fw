@@ -22,6 +22,23 @@ namespace video::scanVideo::graphics::command {
     private:
         std::shared_ptr<pico::logger::BaseLogger> logger;
 
+        /*
+         * Locking (mutators run on BOTH cores: scan program start/stop on core 1,
+         * IBus-driven menu redraws on core 0; render_computed runs on core 1):
+         *
+         *  pendingMutex - "mutator lock". Held for the whole of any public method that
+         *                 changes drawing state. Guards commandsToProcess, rleRunsToProcess,
+         *                 lineBuffer, isImmediateMode. Never taken by render_computed.
+         *  renderMutex  - short lock shared with render_computed. Guards rleRunsForLine,
+         *                 isFrameComputed, baseColour. Writers only swap prepared data in
+         *                 under it, one scanline at a time, and free old data after release.
+         *
+         * Lock order: pendingMutex, then renderMutex. render_computed takes only renderMutex
+         * and must not allocate while holding it.
+         */
+        mutex_t pendingMutex;
+        mutex_t renderMutex;
+
         std::vector<std::unique_ptr<BaseCommand>> commandsToProcess;
 
         std::map<uint16_t, std::vector<RleRun>> rleRunsToProcess;
@@ -32,11 +49,6 @@ namespace video::scanVideo::graphics::command {
          * of startX. Can be looped over in drawScanline
          */
         std::map<uint16_t, std::vector<RleRun>> rleRunsForLine;
-
-
-        //Guards: isFrameComputedMutex, rleRunsForLine
-        mutex_t isFrameComputedMutex;
-        //End Guard: isFrameComputedMutex, rleRunsForLine
 
         bool isFrameComputed = false;
 
@@ -58,7 +70,7 @@ namespace video::scanVideo::graphics::command {
         std::vector<RleRun> mergeRuns(std::unique_ptr<std::vector<RleRun>> runs);
 
 
-        void drawScanline(scanvideo_scanline_buffer_t *scanline_buffer, std::vector<RleRun> merged);
+        void drawScanline(scanvideo_scanline_buffer_t *scanline_buffer, const std::vector<RleRun> &merged);
         void skipScanline(scanvideo_scanline_buffer_t *scanline_buffer);
 
         //Finish this (without depending on display metrics) to fill the screen with baseColour.
@@ -72,6 +84,10 @@ namespace video::scanVideo::graphics::command {
         bool clearCommandsOnFrameComputed = true;
 
         void clearCommandsToProcess();
+
+        //Bodies of the public mutators; caller must hold pendingMutex.
+        void clearFrameLocked();
+        void computeFrameLocked();
     public:
 
         explicit CommandProcessor(
