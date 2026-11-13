@@ -29,6 +29,7 @@ namespace pico::ibus::output::writer::radio {
         logger->d(getTag(), "Request Audio Source NAV/TV.");
 
         std::vector<uint8_t> raw = std::vector<uint8_t>();
+        // 3B 05 68 4E 01 00 19
         raw.push_back(0x3B);
         raw.push_back(0x05);
         raw.push_back(0x68);
