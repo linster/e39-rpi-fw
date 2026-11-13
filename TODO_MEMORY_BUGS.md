@@ -23,7 +23,7 @@ the heap on every boot), then the cross-core map race (most likely video crash).
 - [ ] **1.2 Defaults overwrite flash on every boot.** Because 1.1 always fails,
   `ConfigurationManager.cpp:34-37` saves the default config to flash, so
   anything the Pi pushed is lost on the next power cycle.
-- [ ] **1.3 Flash erase/program breaks SDK rules.**
+- [x] **1.3 Flash erase/program breaks SDK rules.**
   - `flash_range_erase(flash_offset, 1)` (line 126): count must be a multiple
     of `FLASH_SECTOR_SIZE` (4096).
   - Interrupts aren't disabled during erase/program; the UART RX ISR running
@@ -33,6 +33,15 @@ the heap on every boot), then the cross-core map race (most likely video crash).
     called `multicore_lockout_victim_init()`; nothing does (commented out in
     `ApplicationContainerNoVideo.cpp:58`). The first save also happens in
     `onMain()` before core 1 is launched. Either way it blocks forever.
+  **Done:** erase a full `FLASH_SECTOR_SIZE`; interrupts disabled around
+  erase/program; size checked (non-empty, <= 4096, multiple of 256). Core 1
+  calls `multicore_lockout_victim_init()` in `core1_entry` right after the FIFO
+  pop. The store locks out core 1 only if it registered (500 ms timeout, then
+  refuse to write); otherwise core 1 is not running our code (no-video build,
+  or still in bootrom during `onMain()`), so interrupts-off is enough. No
+  longer depends on the video `#if`, which removes 1.6's impact here.
+  Not yet tested on hardware; video build not compiled (current config is
+  no-video).
 - [ ] **1.4 Load requires a commit hash.** A config is only "loaded" if
   `rpiFwGitCommitHash` is non-empty (line 101). Only
   `PimoroniDefaultConfigurationProvider` sets it (`"lalalalalalala"`), so a
