@@ -127,10 +127,18 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   `reset()`. The unit-test repo's `Packetizer_Test.cpp`, built against current
   code with ASan + `_GLIBCXX_ASSERTIONS`, aborted on its first `addByte`; now
   7/7 non-recycle tests pass. `RecycleNoInterleave` still aborts: that's 3.3.
-- [ ] **3.2 `Packetizer` with length byte 254/255:** `uint8_t position`
+- [x] **3.2 `Packetizer` with length byte 254/255:** `uint8_t position`
   indexing a 255-byte buffer. Length 254 writes `packetBytes[255]`; with 255 the
   end-of-packet and reset checks can never be true and `position` wraps
   forever. One bad byte on the bus triggers it.
+  **Done:** length bytes > 253 (`Packetizer::MAX_LENGTH_FIELD`; total packet
+  must fit the 255-byte buffers/queues downstream) are rejected with a reset.
+  A checksum mismatch now resets immediately; before, it kept accepting bytes
+  until `position > len + 2`, which swallowed the start of the next packet and,
+  for len 253, wrote `packetBytes[255]`. Added a final bounds check before the
+  write. New host tests (len 253/254/255, bad checksum + recovery, 200k random
+  bytes) pass under ASan + `_GLIBCXX_ASSERTIONS`; old code overflows in 3 of
+  them and loses the following valid packet in 3. No-video build compiles.
 - [ ] **3.3 `Packetizer::recycle()`** (line 180): loop tests
   `position < size()` instead of `i` → reads past the end forever. Unused today.
 - [ ] **3.4 `IbusPacket(std::array…)` constructors** (`IbusPacket.cpp:115-117,

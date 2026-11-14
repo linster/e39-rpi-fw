@@ -47,6 +47,12 @@ namespace pico::ibus::dma {
                 }
 
                 if (position == 1) {
+                    if (byte > MAX_LENGTH_FIELD) {
+                        //A 256/257-byte packet can't fit our buffer (or anything downstream).
+                        //Treat it as line noise and start over.
+                        reset();
+                        return;
+                    }
                     expectedLength = byte;
                 }
 
@@ -54,6 +60,12 @@ namespace pico::ibus::dma {
                     destinationId = byte;
                 }
 
+                if (position >= packetBytes.size()) {
+                    //Shouldn't be reachable now that len is capped and bad checksums reset,
+                    //but never write past the buffer.
+                    reset();
+                    return;
+                }
                 packetBytes[position] = byte;
 
                 if (position == expectedLength + 1) {
@@ -70,6 +82,12 @@ namespace pico::ibus::dma {
                         packetOk = true;
                         return;
                     }
+
+                    //Checksum mismatch: this packet can never become valid, so start over now.
+                    //(Previously we kept accepting bytes until position > len + 2, which ate
+                    //the start of the next packet and, for len = 253, wrote packetBytes[255].)
+                    reset();
+                    return;
                 } else {
                     //Update the checksum.
                     currentChecksum = currentChecksum ^ byte;

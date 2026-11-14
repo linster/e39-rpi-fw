@@ -16,6 +16,12 @@ namespace pico {
 
             class Packetizer {
 
+            public:
+                //Whole packet is src, len, dest, data..., crc = len + 2 bytes. Packets travel through
+                //255-byte buffers/queue items everywhere downstream, so the largest len we accept is 253.
+                static constexpr uint8_t MAX_PACKET_BYTES = 255;
+                static constexpr uint8_t MAX_LENGTH_FIELD = MAX_PACKET_BYTES - 2;
+
             private:
                 std::vector<uint8_t> packetBytes;
 
