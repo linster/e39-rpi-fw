@@ -27,23 +27,27 @@ namespace pico::ibus::observers {
                     pico::ibus::data::IbusPacket ibusPacket
                     ) {
 
-                auto rawPacketSize = ibusPacket.getRawPacket().size();
-
-                std::stringstream inputStringStream;
-
-                std::string inputString = std::string(rawPacketSize - 4, '\0');
-
-                for (int i = 3; i < rawPacketSize - 1; i++) {
-                    inputStringStream << (char)ibusPacket.getRawPacket()[i];
+                //Payload is raw[DATA_START .. size - 1): skip src, len, dest; drop the trailing CRC.
+                //Build the string from the byte range. This used to go through
+                //std::string(inputString.c_str()), which stops at the first 0x00 byte and so cut
+                //off any protobuf containing one (e.g. an empty sub-message is encoded "12 00").
+                std::vector<uint8_t> raw = ibusPacket.getRawPacket(); //one copy, not one per byte
+                if (raw.size() < data::IbusPacket::DATA_START + 1) {
+                    logger->w(getTag(), "Packet too short to hold a PiToPicoMessage");
+                    return messages::PiToPicoMessage{}; //messageType = EmptyMessage
                 }
 
-                inputString = inputStringStream.str();
+                auto payload = std::make_unique<std::string>(
+                        raw.begin() + data::IbusPacket::DATA_START,
+                        raw.end() - 1);
 
-                auto inputStream = NanoPb::StringInputStream(std::make_unique<std::string>(inputString.c_str()));
+                auto inputStream = NanoPb::StringInputStream(std::move(payload));
 
                 messages::PiToPicoMessage decoded;
                 if(!NanoPb::decode<messages::PiToPicoMessageConverter>(inputStream, decoded)) {
                     logger->w(getTag(), "Failed to decode PiToPicoMessage");
+                    //Never hand observers a half-decoded message: they act on messageType.
+                    return messages::PiToPicoMessage{}; //messageType = EmptyMessage
                 }
 
                 return decoded;

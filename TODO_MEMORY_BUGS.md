@@ -187,9 +187,29 @@ the heap on every boot), then the cross-core map race (most likely video crash).
 
 ## 4. Lower severity (logic, not memory)
 
-- [ ] **4.1** `BaseObserver::decodePiToPicoMessage` builds input via
+- [x] **4.1** `BaseObserver::decodePiToPicoMessage` builds input via
   `std::make_unique<std::string>(inputString.c_str())`, which truncates the
   protobuf at the first `0x00`. Pass `inputString` itself.
+  **Done**, plus two related bugs in the same path:
+  - Truncation: payload is now built from the packet's byte range. In practice
+    (proto3, protobuf-java on the Pi, no NUL in strings) a `0x00` byte appears
+    only for an empty sub-message, e.g. a ConfigPush whose config is all
+    defaults (`08 04 12 00`), which the old code lost.
+  - **Uninitialized `messageType` on decode failure** (more serious): the
+    function returned a default-initialized `PiToPicoMessage`, so observers
+    acted on leftover memory. Host test: the same corrupt input came back as
+    `ConfigPush` (with a full config) or `HeartbeatRequest` depending on what
+    was on the stack. Now `messageType` defaults to a new `EmptyMessage`
+    enumerator and failures return it explicitly; observers ignore it.
+  - `MessageType` decode had no case for proto value 0 or unknown values and
+    fell off the end of the function (UB). Same for `VideoSource` and
+    `AspectRatio` in `ConfigMessage.h` (unknown values only). All now return a
+    fallback.
+  Also stopped calling `getRawPacket()` (a full copy) once per byte. Both
+  builds compile; all observer switches on `messageType` have `default`.
+- [ ] **4.3** `proto_cpp/PicoToPi.h`: `MessageType` encode/decode also lack a
+  fallback and `messageType` is uninitialized by default. Low risk: the Pico
+  only encodes these, always with an explicit type.
 - [x] **4.2** `IgnitionStatusRequestWriter.cpp:21`: `std::vector<uint8_t>(1)`
   then `push_back(0x10)` sends `{0x00, 0x10}`; probably want `{0x10}`.
   **Done:** payload is now `std::vector<uint8_t>{0x10}`.

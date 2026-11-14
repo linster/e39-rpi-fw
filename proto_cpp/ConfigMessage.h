@@ -70,6 +70,8 @@ namespace pico::messages {
                         case ca_stefanm_e39_proto_ConfigProto_VideoSource_RVC: return pico::hardware::videoSwitch::VideoSource::RVC;
                         case ca_stefanm_e39_proto_ConfigProto_VideoSource_UPSTREAM: return pico::hardware::videoSwitch::VideoSource::UPSTREAM;
                     }
+                    //Unknown value (e.g. newer Pi build): use the proto3 zero value. Used to fall off the end.
+                    return pico::hardware::videoSwitch::VideoSource::RVC;
                 }
             };
             class VideoEncodingConverter : public NanoPb::Converter::EnumConverter<
@@ -114,6 +116,8 @@ namespace pico::messages {
                         case ca_stefanm_e39_proto_ConfigProto_AspectRatio_SixteenNine: return ConfigMessage::AspectRatio::SixteenNine;
                         case ca_stefanm_e39_proto_ConfigProto_AspectRatio_Zoom: return ConfigMessage::AspectRatio::Zoom;
                     }
+                    //Unknown value (e.g. newer Pi build): use the proto3 zero value. Used to fall off the end.
+                    return ConfigMessage::AspectRatio::FourThree;
                 }
             };
             class ScanProgramConverter : public NanoPb::Converter::EnumConverter<

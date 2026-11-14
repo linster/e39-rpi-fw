@@ -32,9 +32,13 @@ namespace pico::messages {
                 SimulatedIgnitionPosition0,
                 SimulatedIgnitionPosition1,
                 SimulatedIgnitionPosition2,
-                SimulatedIgnitionPosition3
+                SimulatedIgnitionPosition3,
+
+                //Proto value 0 (not sent on the wire in proto3), unknown values, and failed decodes.
+                //Observers only act on specific types, so this is ignored.
+                EmptyMessage
             };
-            MessageType messageType;
+            MessageType messageType = MessageType::EmptyMessage; //was uninitialized
             ConfigMessage newConfig;
         };
 
@@ -65,7 +69,9 @@ namespace pico::messages {
                         case PiToPicoMessage::SimulatedIgnitionPosition1: return ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition1;
                         case PiToPicoMessage::SimulatedIgnitionPosition2: return ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition2;
                         case PiToPicoMessage::SimulatedIgnitionPosition3: return ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3;
+                        case PiToPicoMessage::EmptyMessage: return ca_stefanm_e39_proto_PiToPico_MessageType_EmptyMessage;
                     }
+                    return ca_stefanm_e39_proto_PiToPico_MessageType_EmptyMessage;
                 };
                 static LocalType decode(const ProtoType& proto) {
                     switch (proto) {
@@ -83,7 +89,10 @@ namespace pico::messages {
                         case ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition1: return PiToPicoMessage::SimulatedIgnitionPosition1;
                         case ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition2: return PiToPicoMessage::SimulatedIgnitionPosition2;
                         case ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3: return PiToPicoMessage::SimulatedIgnitionPosition3;
+                        case ca_stefanm_e39_proto_PiToPico_MessageType_EmptyMessage: return PiToPicoMessage::EmptyMessage;
                     }
+                    //Unknown value (e.g. a newer Pi build). Used to fall off the end of the function.
+                    return PiToPicoMessage::EmptyMessage;
                 }
             };
         public:
