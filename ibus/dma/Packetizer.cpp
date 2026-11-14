@@ -8,8 +8,9 @@ namespace pico::ibus::dma {
 
             Packetizer::Packetizer() {
                 //TODO we can change this to an array since we never resize it.
-                packetBytes = std::vector<uint8_t>(255);
-                packetBytes.clear();
+                //Must have size 255 (not just capacity): addByte() writes packetBytes[position].
+                //This used to clear() right after, leaving size 0 until the first reset().
+                packetBytes = std::vector<uint8_t>(255, 0);
                 position = 0;
                 sourceId = 0;
                 expectedLength = 0;

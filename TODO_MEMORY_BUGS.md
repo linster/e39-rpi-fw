@@ -119,10 +119,14 @@ the heap on every boot), then the cross-core map race (most likely video crash).
 
 ## 3. IBus receive / transmit
 
-- [ ] **3.1 `Packetizer` constructor** (`Packetizer.cpp:77-78`): builds a
+- [x] **3.1 `Packetizer` constructor** (`Packetizer.cpp:77-78`): builds a
   255-byte vector then `clear()`s it, so size is 0 until the first `reset()`;
   every `packetBytes[position] = byte` before that is out of bounds.
   **[ASan-confirmed]** (`Assertion '__n < this->size()' failed`).
+  **Done:** constructor now sizes the buffer to 255 zeros (no `clear()`), like
+  `reset()`. The unit-test repo's `Packetizer_Test.cpp`, built against current
+  code with ASan + `_GLIBCXX_ASSERTIONS`, aborted on its first `addByte`; now
+  7/7 non-recycle tests pass. `RecycleNoInterleave` still aborts: that's 3.3.
 - [ ] **3.2 `Packetizer` with length byte 254/255:** `uint8_t position`
   indexing a 255-byte buffer. Length 254 writes `packetBytes[255]`; with 255 the
   end-of-packet and reset checks can never be true and `position` wraps
