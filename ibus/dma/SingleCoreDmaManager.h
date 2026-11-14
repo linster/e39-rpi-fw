@@ -7,6 +7,8 @@
 
 #include "IDmaManager.h"
 
+#include <array>
+
 #include <CMakeHeaderFlags.h>
 #include <CMakeHasVideoFlags.h>
 
@@ -78,6 +80,9 @@ namespace pico::ibus::dma {
 
             inline static queue_t uart0rxByteQ;
             inline static queue_t uart1rxByteQ;
+
+            /** Bytes the RX ISR had to drop because the byte queue was full. */
+            inline static volatile uint32_t rxBytesDropped = 0;
 
             void flushUart0ByteBufferToPacketizer();
             void flushUart1ByteBufferToPacketizer();

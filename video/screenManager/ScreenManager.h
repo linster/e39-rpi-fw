@@ -5,6 +5,7 @@
 #ifndef PICOTEMPLATE_SCREENMANAGER_H
 #define PICOTEMPLATE_SCREENMANAGER_H
 
+#include <functional>
 #include "Screen.h"
 
 namespace video::ScreenManager {
