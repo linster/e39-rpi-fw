@@ -177,8 +177,13 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   protobuf payload at 251 bytes, so oversized Pico->Pi messages fail to encode
   instead (host check: largest that encodes is a 255-byte packet). Both builds
   compile. Can't host-test `writePacketToQ` itself (Pico queue API).
-- [ ] **3.6 `writeOutgoingQ_toUart`** (line 436): sends `buf[1] + 2` bytes from
+- [x] **3.6 `writeOutgoingQ_toUart`** (line 436): sends `buf[1] + 2` bytes from
   a 255-byte stack array → reads up to 2 bytes past the end for length 254/255.
+  **Done:** only sends when the length byte is 2..253 (same range as 3.4);
+  others are counted in `malformedOutgoingPacketsDropped` (shown by
+  `writeStatus()`). The lower bound also stops an empty/unparseable packet
+  (length byte 0) from putting a bare `00 00` on the car's bus. Both builds
+  compile. Can't host-test (Pico UART/queue API).
 
 ## 4. Lower severity (logic, not memory)
 

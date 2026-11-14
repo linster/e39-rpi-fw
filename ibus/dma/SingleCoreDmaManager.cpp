@@ -282,8 +282,18 @@ namespace pico::ibus::dma {
                           fmt::format("We have a packet from {} to write to uart {}", fromName, uartName));
             }
 
+            //Packet is src, len, dest, data..., crc = len + 2 bytes. Only send it if that fits the
+            //buffer (len 254/255 used to read 1-2 bytes past this stack array onto the bus) and
+            //covers at least dest + crc (len 0, e.g. an empty/unparseable IbusPacket, used to
+            //put a bare "00 00" on the bus).
+            uint8_t len = outgoingPacketBuffer[1];
+            if (len < data::IbusPacket::MIN_LENGTH_FIELD || len > data::IbusPacket::MAX_LENGTH_FIELD) {
+                malformedOutgoingPacketsDropped = malformedOutgoingPacketsDropped + 1;
+                return;
+            }
+
             //TODO what if we don't construct the packet all over again? What if we just copy out the buffer dumbly?
-            uart_write_blocking(uart, outgoingPacketBuffer.data(), outgoingPacketBuffer[1] + 2);
+            uart_write_blocking(uart, outgoingPacketBuffer.data(), (size_t) len + 2);
         }
     }
 
@@ -404,7 +414,8 @@ namespace pico::ibus::dma {
                         "uart0rxByteQ: {:d}, "
                         "uart1rxByteQ: {:d}, "
                         "rxBytesDropped: {:d}, "
-                        "oversizedPacketsDropped: {:d} ",
+                        "oversizedPacketsDropped: {:d}, "
+                        "malformedOutgoingPacketsDropped: {:d} ",
                         toPiQ_level,
                         toCarQ_level,
                         fromPiQ_level,
@@ -412,7 +423,8 @@ namespace pico::ibus::dma {
                         uart0rxByteQ_level,
                         uart1rxByteQ_level,
                         (uint32_t)rxBytesDropped,
-                        (uint32_t)oversizedPacketsDropped
+                        (uint32_t)oversizedPacketsDropped,
+                        (uint32_t)malformedOutgoingPacketsDropped
                 ));
     }
 
