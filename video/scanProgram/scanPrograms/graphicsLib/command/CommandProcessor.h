@@ -28,7 +28,7 @@ namespace video::scanVideo::graphics::command {
          * IBus-driven menu redraws on core 0; render_computed runs on core 1):
          *
          *  pendingMutex - "mutator lock". Held for the whole of any public method that
-         *                 changes drawing state. Guards commandsToProcess, rleRunsToProcess,
+         *                 changes drawing state. Guards rleRunsToProcess,
          *                 lineBuffer, isImmediateMode. Never taken by render_computed.
          *  renderMutex  - short lock shared with render_computed. Guards rleRunsForLine,
          *                 isFrameComputed, baseColour. Writers only swap prepared data in
@@ -39,8 +39,6 @@ namespace video::scanVideo::graphics::command {
          */
         mutex_t pendingMutex;
         mutex_t renderMutex;
-
-        std::vector<std::unique_ptr<BaseCommand>> commandsToProcess;
 
         std::map<uint16_t, std::vector<RleRun>> rleRunsToProcess;
 

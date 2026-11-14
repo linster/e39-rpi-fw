@@ -35,17 +35,10 @@ namespace video::scanVideo::graphics::command {
     //Called from either core.
     void CommandProcessor::addRleRuns(
             std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs) {
-
-        std::unique_ptr<BaseCommand> ptr = std::make_unique<RleRunContainerCommand>(RleRunContainerCommand(runs));
-
-        mutex_enter_blocking(&pendingMutex);
-        //TODO (TODO_MEMORY_BUGS.md 2.4) commandsToProcess is never processed or cleared.
-        commandsToProcess.push_back(std::move(ptr));
-
-        if (isImmediateMode) {
-            computeFrameLocked();
-        }
-        mutex_exit(&pendingMutex);
+        //Same path as any other command: rasterized into rleRunsToProcess in call order,
+        //so drawing order is preserved. (Previously these went into commandsToProcess,
+        //which computeFrame stopped reading in 123f0b3: they leaked and never rendered.)
+        addCommand(std::make_unique<RleRunContainerCommand>(std::move(runs)));
     }
 
     void CommandProcessor::clearFrame() {

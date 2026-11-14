@@ -111,3 +111,50 @@ on the host it's signed, so `ord` is -128..-1 and the read goes before the table
 
 Strings are probably UTF-8, so a multi-byte character draws one glyph per byte: a
 UTF-8 "©" (`C2 A9`) draws two copyright glyphs.
+
+## `addRleRuns` leak and runs that never rendered (TODO 2.4)
+
+Branch `fix-memory-bugs`.
+
+### The bug
+
+`graphicsLib::contributeRleRuns` and `drawTextSpecialCharacter` call
+`CommandProcessor::addRleRuns`, which pushed a `RleRunContainerCommand` into
+`commandsToProcess`. Nothing has read `commandsToProcess` since commit `123f0b3`
+("Seems to be more stable, but video still dies after pressing things"): that commit
+changed `addCommand` to rasterize straight into `rleRunsToProcess` and made
+`computeFrame` read only that, but `addRleRuns` was missed. Its `clear()` was later
+commented out. So every call leaked a command (and a copy of its runs), and the runs
+never appeared on screen.
+
+Affected callers:
+
+- `BootsplashScanProgram::onScanProgramStart_Goose`: the whole goose image.
+- The LinsterOS bootsplash: the copyright symbol before "Stefan Martynkiw 2019-2024".
+
+Separately, the `RleRunContainerCommand` constructor read `runs.end()->first`
+(dereferencing the end iterator: undefined behaviour on every call), assigned
+`topLine` twice, and never set `bottomLine`. An empty map would also have made
+`begin()->first` invalid.
+
+### Fix
+
+- `addRleRuns` now calls `addCommand(std::make_unique<RleRunContainerCommand>(runs))`,
+  so the runs are rasterized into `rleRunsToProcess` in call order (drawing order is
+  preserved, as the container's comment intends) and freed by `computeFrame`.
+- Removed the unused `commandsToProcess` member.
+- Constructor: `topLine = begin()->first`, `bottomLine = rbegin()->first`, both 0 for
+  an empty map.
+
+### Testing
+
+- Host test under AddressSanitizer of the container constructor (normal and empty
+  maps).
+- Video firmware build compiles.
+- **Not yet tested on hardware.**
+
+### What to check on hardware
+
+- The goose now appears on the Goose bootsplash, and the copyright symbol appears on
+  the LinsterOS bootsplash. Neither could render before, so check their position and
+  colour look right.

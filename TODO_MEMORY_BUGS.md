@@ -104,12 +104,18 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   host behave the same. Non-ASCII bytes draw the copyright glyph as intended.
   Host test of all 256 byte values passes under ASan; video build compiles.
   See `SCANPROGRAM_FIXES.md`.
-- [ ] **2.4 `commandsToProcess` grows forever** (`CommandProcessor::addRleRuns`).
+- [x] **2.4 `commandsToProcess` grows forever** (`CommandProcessor::addRleRuns`).
   `graphicsLib::drawTextSpecialCharacter` → `addRleRuns` pushes a
   `RleRunContainerCommand` into `commandsToProcess`, but nothing ever processes
   or clears it (the `clear()` is commented out). Each call leaks, and the
   special character never renders. Likely fix: merge the runs into
   `rleRunsToProcess` like `addCommand` does.
+  **Done:** leftover from `123f0b3`, which moved `addCommand` to rasterize
+  straight into `rleRunsToProcess` but missed `addRleRuns`. `addRleRuns` now goes
+  through `addCommand`; `commandsToProcess` removed. Also fixed the
+  `RleRunContainerCommand` constructor (dereferenced `end()`, never set
+  `bottomLine`). Goose bootsplash and the bootsplash copyright symbol will now
+  actually render. See `SCANPROGRAM_FIXES.md`.
 
 ## 3. IBus receive / transmit
 
