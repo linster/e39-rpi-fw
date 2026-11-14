@@ -5,6 +5,8 @@
 #ifndef PICOTEMPLATE_PICOTOPI_H
 #define PICOTEMPLATE_PICOTOPI_H
 
+#include "ProtoEnum.h"
+
 #include "ConfigMessage.h"
 #include <proto_generated/PicoToPi.pb.h>
 
@@ -60,7 +62,7 @@ namespace pico::messages {
                     return ca_stefanm_e39_proto_PicoToPi_MessageType_EmptyMessage;
                 }
                 static LocalType decode(const ProtoType& proto) {
-                    switch (proto) {
+                    switch (protoEnumRawValue(proto)) { //not switch (proto): see ProtoEnum.h
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_HeartbeatRequest: return PicoToPiMessage::MessageType::HeartbeatRequest;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_HeartbeatResponse: return PicoToPiMessage::MessageType::HeartbeatResponse;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_LogStatement: return PicoToPiMessage::MessageType::LogStatement;

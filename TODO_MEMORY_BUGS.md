@@ -251,8 +251,13 @@ Branch `update-firmware-and-asan` in that repo (not yet committed beyond the WIP
 - [ ] `graphicsLibLeakTest` / `CommandProcessor` / `graphicsLib`: behind
   `E39_UNITTEST_GRAPHICS` (OFF); need host shims for `pico/types.h`, `pico/mutex.h`
   and the scanvideo headers.
-- [ ] UBSan reports "load of value 99, which is not a valid value for type
+- [x] UBSan reports "load of value 99, which is not a valid value for type
   `_ca_stefanm_e39_proto_PiToPico_MessageType`" for an unknown message type: nanopb
   stores the raw int in a C enum and the converter's `switch` loads it. Harmless on the
   Pico (falls back to `EmptyMessage`) but technically UB; fix by reading the value via
   its underlying integer type before switching.
+  **Done:** `proto_cpp/ProtoEnum.h` adds `protoEnumRawValue()` (memcpy into the
+  enum's underlying type); all 7 enum `decode()` converters switch on that. The
+  unit-test build now uses `-fno-sanitize-recover=undefined`, so any UBSan report
+  fails the run; a new test sends unknown values for every `ConfigMessage` enum.
+  64/64 pass.

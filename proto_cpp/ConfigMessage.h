@@ -5,6 +5,8 @@
 #ifndef PICOTEMPLATE_CONFIGMESSAGE_H
 #define PICOTEMPLATE_CONFIGMESSAGE_H
 
+#include "ProtoEnum.h"
+
 #include "libs/nanopb_cpp/nanopb_cpp.h"
 #include <proto_generated/ConfigProto.pb.h>
 #include <logging/BaseLogger.h>
@@ -64,7 +66,7 @@ namespace pico::messages {
                     return ca_stefanm_e39_proto_ConfigProto_VideoSource_RVC;
                 }
                 static LocalType decode(const ProtoType& proto) {
-                    switch (proto) {
+                    switch (protoEnumRawValue(proto)) { //not switch (proto): see ProtoEnum.h
                         case ca_stefanm_e39_proto_ConfigProto_VideoSource_PI: return pico::hardware::videoSwitch::VideoSource::PI;
                         case ca_stefanm_e39_proto_ConfigProto_VideoSource_PICO: return pico::hardware::videoSwitch::VideoSource::PICO;
                         case ca_stefanm_e39_proto_ConfigProto_VideoSource_RVC: return pico::hardware::videoSwitch::VideoSource::RVC;
@@ -89,7 +91,7 @@ namespace pico::messages {
                     return ca_stefanm_e39_proto_ConfigProto_VideoEncoding_NTSC;
                 }
                 static LocalType decode(const ProtoType& proto) {
-                    switch (proto) {
+                    switch (protoEnumRawValue(proto)) { //not switch (proto): see ProtoEnum.h
                         case ca_stefanm_e39_proto_ConfigProto_VideoEncoding_NTSC: return ConfigMessage::VideoEncoding::NTSC;
                         case ca_stefanm_e39_proto_ConfigProto_VideoEncoding_PAL: return ConfigMessage::VideoEncoding::PAL;
                     }
@@ -111,7 +113,7 @@ namespace pico::messages {
                     return ca_stefanm_e39_proto_ConfigProto_AspectRatio_SixteenNine;
                 }
                 static LocalType decode(const ProtoType& proto) {
-                    switch (proto) {
+                    switch (protoEnumRawValue(proto)) { //not switch (proto): see ProtoEnum.h
                         case ca_stefanm_e39_proto_ConfigProto_AspectRatio_FourThree: return ConfigMessage::AspectRatio::FourThree;
                         case ca_stefanm_e39_proto_ConfigProto_AspectRatio_SixteenNine: return ConfigMessage::AspectRatio::SixteenNine;
                         case ca_stefanm_e39_proto_ConfigProto_AspectRatio_Zoom: return ConfigMessage::AspectRatio::Zoom;
@@ -137,7 +139,7 @@ namespace pico::messages {
                     return ca_stefanm_e39_proto_ConfigProto_ScanProgram_MENU;
                 }
                 static LocalType decode(const ProtoType& proto) {
-                    switch (proto) {
+                    switch (protoEnumRawValue(proto)) { //not switch (proto): see ProtoEnum.h
                         case ca_stefanm_e39_proto_ConfigProto_ScanProgram_NONE: return ConfigMessage::ScanProgram::NONE;
                         case ca_stefanm_e39_proto_ConfigProto_ScanProgram_CLOCK: return ConfigMessage::ScanProgram::CLOCK;
                         case ca_stefanm_e39_proto_ConfigProto_ScanProgram_LINSTEROS_BOOTSPLASH: return ConfigMessage::ScanProgram::LINSTEROS_BOOTSPLASH;
@@ -165,7 +167,7 @@ namespace pico::messages {
                     return ca_stefanm_e39_proto_ConfigProto_LoggingLevels_DEBUG;
                 }
                 static LocalType decode(const ProtoType& proto) {
-                    switch (proto) {
+                    switch (protoEnumRawValue(proto)) { //not switch (proto): see ProtoEnum.h
                         case ca_stefanm_e39_proto_ConfigProto_LoggingLevels_DEBUG: return logger::BaseLogger::Level::DEBUG;
                         case ca_stefanm_e39_proto_ConfigProto_LoggingLevels_ERROR: return logger::BaseLogger::Level::ERROR;
                         case ca_stefanm_e39_proto_ConfigProto_LoggingLevels_INFO: return logger::BaseLogger::Level::INFO;
