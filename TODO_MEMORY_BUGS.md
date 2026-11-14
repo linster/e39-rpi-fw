@@ -146,7 +146,7 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   `position` only holds zeros, and re-adding them forms bogus `00 00` packets.
   The unit-test repo's full `Packetizer_Test` (incl. `RecycleNoInterleave`)
   plus the new bounds tests: 15/15 pass under ASan.
-- [ ] **3.4 `IbusPacket(std::array…)` constructors** (`IbusPacket.cpp:115-117,
+- [x] **3.4 `IbusPacket(std::array…)` constructors** (`IbusPacket.cpp:115-117,
   135-137`):
   - Length 253–255 reads past the 255-byte array. **[ASan-confirmed]**
     (heap-buffer-overflow).
@@ -154,6 +154,17 @@ the heap on every boot), then the cross-core map race (most likely video crash).
     from `readIncomingQ_toLogic` reports invalid. **[confirmed]**
     (`valid=0 given=0 actual=0x72`). Nothing calls `isPacketValid()` yet.
   - `len > 255` is always false for `uint8_t`.
+  **Done:** both array constructors share `initFromFixedBuffer()`, which accepts
+  length bytes 2..253 (`MIN_LENGTH_FIELD`/`MAX_LENGTH_FIELD`) and reads the CRC
+  from `raw[len + 1]`. Lower bound added too: a length byte of 1 gave a 3-byte
+  packet, so `getDataLength()` (`size - 4` as `uint8_t`) returned 255 and the
+  observers' `getDataLength() >= 2` guard let them read `getRawPacket()[3..4]`
+  past the end. Null `unique_ptr` handled. 8 new host tests pass under ASan; on
+  the old code 6 fail (overflow at len 253/254/255, valid packets reported
+  invalid, null deref). `isPacketValid()` is now correct for packets from the
+  queues (still unused). Both builds compile.
+  Note: the unit-test repo's `IbusDataTest.cpp` calls `IbusPacket::getData()`,
+  which no longer exists, so it doesn't build against current firmware (see 5).
 - [ ] **3.5 `writePacketToQ`** (`SingleCoreDmaManager.cpp:607-610`): copies the
   packet into a 255-byte stack array with a `uint8_t` index; packets >= 256
   bytes write `[255]` past the end, then wrap. Pico→Pi protobuf messages can be
