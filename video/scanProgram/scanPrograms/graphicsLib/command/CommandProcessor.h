@@ -11,6 +11,7 @@
 #include <logging/BaseLogger.h>
 #include "BaseCommand.h"
 #include "RleRunContainerCommand.h"
+#include "ScanlineEncoder.h"
 #include "pico/scanvideo/composable_scanline.h"
 #include "pico/scanvideo/scanvideo_base.h"
 #include "pico/mutex.h"
@@ -51,6 +52,10 @@ namespace video::scanVideo::graphics::command {
         std::map<uint16_t, std::vector<RleRun>> rleRunsForLine;
 
         bool isFrameComputed = false;
+
+        /** Scanlines whose runs didn't fit the scanline buffer (rest of line filled with baseColour).
+         *  Written by core 1 in render; for debugging. */
+        volatile uint32_t truncatedScanlines = 0;
 
         //We only need a 400*234 display max, so we'll just use a line buffer.
         //Someday I'll clean this function up, but is should consumer only ~2kb of ram,

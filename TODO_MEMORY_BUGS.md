@@ -79,11 +79,24 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   freed after release. `render_computed` uses `find()` (no insert) and no
   longer copies the vector (no allocation inside `renderCs`). Video and
   no-video builds compile; not yet tested on hardware.
-- [ ] **2.2 Scanline buffer overflow** (`CommandProcessor::drawScanline`).
+- [x] **2.2 Scanline buffer overflow** (`CommandProcessor::drawScanline`).
   Buffer is `PICO_SCANVIDEO_MAX_SCANLINE_BUFFER_WORDS` = 180 words (360
   halfwords); each run writes 2–3 halfwords and a 400 px line can produce
   hundreds of runs (e.g. a line of text). The `assert` runs after the writes
   and is compiled out in release. Check remaining space before each run.
+  **Done:** new `ScanlineEncoder.h` (host-testable) budgets every run against
+  `data_max * 2` halfwords; if runs don't fit, the rest of the line is one run of
+  `baseColour` and the line is ended properly (`truncatedScanlines` counts it).
+  Old worst case (400 x 1 px runs) wrote 804 halfwords into a 360-halfword buffer.
+  Also fixed end-of-line alignment: the code is adapted from pico-playground
+  `test_pattern.c`, which is always word-aligned before `EOL_SKIP_ALIGN`; ours
+  wasn't (variable 2/3-halfword runs; solid lines are 5 halfwords). Per
+  scanvideo.pio, `EOL_SKIP_ALIGN` must start on a word boundary, so odd counts
+  now use `EOL_ALIGN` (the shape scanvideo.c's missing-scanline data and
+  `DemoScanProgram` already use). Applied to `drawScanline`,
+  `drawSolidColorScanline` and `graphicsLib::writeSolidColourScanline`.
+  Host test under ASan passes (bounds, alignment, 401 px/line); both builds
+  compile; not yet tested on hardware.
 - [ ] **2.3 Font table OOB read** (`TextCommand.cpp:51-57`). Missing `else`:
   for characters >= 128, `font8x8_basic[ord]` reads past the 128-entry table.
   `char` is unsigned on ARM, so any non-ASCII byte triggers it.

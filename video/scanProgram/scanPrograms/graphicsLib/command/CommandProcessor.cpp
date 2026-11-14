@@ -108,43 +108,39 @@ namespace video::scanVideo::graphics::command {
         scanline_buffer->status = SCANLINE_SKIPPED;
     }
 
-    //Called from CPU1
+    //Called from CPU1 with renderMutex held (reads baseColour).
     void CommandProcessor::drawScanline(
             scanvideo_scanline_buffer_t *scanline_buffer,
             const std::vector<RleRun> &merged) {
 
         //We assume the `merged` vector is sorted and has no duplicates by
         //the time we get here.
+        static const ScanlineTokens tokens = {
+                .colorRun = COMPOSABLE_COLOR_RUN,
+                .raw1p = COMPOSABLE_RAW_1P,
+                .raw2p = COMPOSABLE_RAW_2P,
+                .eolAlign = COMPOSABLE_EOL_ALIGN,
+                .eolSkipAlign = COMPOSABLE_EOL_SKIP_ALIGN,
+        };
 
-        uint16_t *p = (uint16_t *) scanline_buffer->data;
+        ScanlineEncodeResult result = encodeScanline(
+                merged,
+                (uint16_t *) scanline_buffer->data,
+                (size_t) scanline_buffer->data_max * 2,
+                tokens,
+                maxDisplayWidth,
+                (uint16_t) baseColour);
 
-        for (auto run : merged) { //RleRun is a few ints; copy is on the stack, no allocation
-            if (run.getLen() == 1) {
-                *p++ = COMPOSABLE_RAW_1P;
-                *p++ = run.getColour();
-            }
-            if (run.getLen() == 2) {
-                *p++ = COMPOSABLE_RAW_2P;
-                *p++ = run.getColour();
-                *p++ = run.getColour();
-            }
-            if (run.getLen() >= 3) {
-                *p++ = COMPOSABLE_COLOR_RUN;
-                *p++ = run.getColour();
-                *p++ = run.getLen() - 3;
-            }
+        if (!result.ok) {
+            skipScanline(scanline_buffer);
+            return;
+        }
+        if (result.truncated) {
+            //Can't log here (core 1, IRQs off); inspect from a debugger or log elsewhere.
+            truncatedScanlines = truncatedScanlines + 1;
         }
 
-        // black pixel to end line
-        *p++ = COMPOSABLE_RAW_1P;
-        *p++ = 0;
-        // end of line with alignment padding
-        *p++ = COMPOSABLE_EOL_SKIP_ALIGN;
-        *p++ = 0;
-
-        scanline_buffer->data_used = ((uint32_t *) p) - scanline_buffer->data;
-        assert(scanline_buffer->data_used < scanline_buffer->data_max);
-
+        scanline_buffer->data_used = result.wordsUsed;
         scanline_buffer->status = SCANLINE_OK;
     }
 
@@ -268,25 +264,22 @@ namespace video::scanVideo::graphics::command {
 
     void CommandProcessor::drawSolidColorScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour) {
 
+        //Same shape as scanvideo.c's missing-scanline data: 6 halfwords, word-aligned.
+        //COLOR_RUN + RAW_1P is 5 halfwords, so the end-of-line token sits on an odd
+        //halfword and must be EOL_ALIGN (EOL_SKIP_ALIGN needs a word boundary).
         uint16_t *p = (uint16_t *) scanline_buffer->data;
 
         *p++ = COMPOSABLE_COLOR_RUN;
-        uint32_t color = colour;
-        *p++ = color;
-        *p++ = 400 - 3;
-
-        // 32 * 3, so we should be word aligned
-//        assert(!(3u & (uintptr_t) p));
+        *p++ = colour;
+        *p++ = maxDisplayWidth - 3; //count-3 encoding: maxDisplayWidth colour pixels (as before)
 
         // black pixel to end line
         *p++ = COMPOSABLE_RAW_1P;
         *p++ = 0;
-        // end of line with alignment padding
-        *p++ = COMPOSABLE_EOL_SKIP_ALIGN;
-        *p++ = 0;
+        *p++ = COMPOSABLE_EOL_ALIGN;
 
         scanline_buffer->data_used = ((uint32_t *) p) - scanline_buffer->data;
-        assert(scanline_buffer->data_used < scanline_buffer->data_max);
+        assert(scanline_buffer->data_used <= scanline_buffer->data_max);
 
         scanline_buffer->status = SCANLINE_OK;
 
