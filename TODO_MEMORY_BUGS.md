@@ -165,11 +165,18 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   queues (still unused). Both builds compile.
   Note: the unit-test repo's `IbusDataTest.cpp` calls `IbusPacket::getData()`,
   which no longer exists, so it doesn't build against current firmware (see 5).
-- [ ] **3.5 `writePacketToQ`** (`SingleCoreDmaManager.cpp:607-610`): copies the
+- [x] **3.5 `writePacketToQ`** (`SingleCoreDmaManager.cpp:607-610`): copies the
   packet into a 255-byte stack array with a `uint8_t` index; packets >= 256
   bytes write `[255]` past the end, then wrap. Pico→Pi protobuf messages can be
   up to 255 + 4 bytes (logs are truncated to 64 chars; config messages are the
   risk).
+  **Done:** packets larger than the 255-byte queue item are dropped (counted in
+  `oversizedPacketsDropped`, shown by `writeStatus()`; no logging there because
+  it can run inside `packetizerCs` and a log line can become a packet); the copy
+  is a bounded `std::copy`. At the source, `BaseOutputWriter` now caps the
+  protobuf payload at 251 bytes, so oversized Pico->Pi messages fail to encode
+  instead (host check: largest that encodes is a 255-byte packet). Both builds
+  compile. Can't host-test `writePacketToQ` itself (Pico queue API).
 - [ ] **3.6 `writeOutgoingQ_toUart`** (line 436): sends `buf[1] + 2` bytes from
   a 255-byte stack array → reads up to 2 bytes past the end for length 254/255.
 

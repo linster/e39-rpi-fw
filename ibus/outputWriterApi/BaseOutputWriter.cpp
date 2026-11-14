@@ -7,7 +7,10 @@ namespace pico::ibus::output::writer {
 
                 void BaseOutputWriter::schedulePicoToPiMessageForWrite(messages::PicoToPiMessage message) {
 
-                    NanoPb::StringOutputStream outputStream = NanoPb::StringOutputStream(255);
+                    //IBus packet = src, len, dest, payload, crc and must fit a 255-byte DMA queue
+                    //item, so the payload can be at most 251 bytes. (Was 255, which made packets of
+                    //up to 259 bytes.) Larger messages now fail to encode instead.
+                    NanoPb::StringOutputStream outputStream = NanoPb::StringOutputStream(255 - 4);
                     if (!NanoPb::encode<messages::PicoToPiMessageConverter>(outputStream, message)) {
                         //TODO WTF
                         //TODO can't log here, sooooo?

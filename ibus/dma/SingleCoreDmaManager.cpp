@@ -3,6 +3,7 @@
 //
 
 #include "SingleCoreDmaManager.h"
+#include <algorithm>
 
 
 namespace pico::ibus::dma {
@@ -402,14 +403,16 @@ namespace pico::ibus::dma {
                         "fromCarQ: {:d}, "
                         "uart0rxByteQ: {:d}, "
                         "uart1rxByteQ: {:d}, "
-                        "rxBytesDropped: {:d} ",
+                        "rxBytesDropped: {:d}, "
+                        "oversizedPacketsDropped: {:d} ",
                         toPiQ_level,
                         toCarQ_level,
                         fromPiQ_level,
                         fromCarQ_level,
                         uart0rxByteQ_level,
                         uart1rxByteQ_level,
-                        (uint32_t)rxBytesDropped
+                        (uint32_t)rxBytesDropped,
+                        (uint32_t)oversizedPacketsDropped
                 ));
     }
 
@@ -453,10 +456,16 @@ namespace pico::ibus::dma {
         std::array<uint8_t, 255> outgoingPacketBuffer = std::array<uint8_t , 255>();
         outgoingPacketBuffer.fill(0);
 
-        uint8_t index = 0;
-        for (uint8_t byte : rawPacket) {
-            outgoingPacketBuffer[index++] = byte;
+        if (rawPacket.size() > outgoingPacketBuffer.size()) {
+            //Can't fit a queue item. Copying it used to write outgoingPacketBuffer[255] (past the
+            //stack array) and then wrap the uint8_t index, corrupting the packet. Drop it.
+            //Don't log here: we may be inside packetizerCs, and a log line can itself become
+            //a packet that comes back through this function. Counted in writeStatus().
+            oversizedPacketsDropped = oversizedPacketsDropped + 1;
+            return;
         }
+
+        std::copy(rawPacket.begin(), rawPacket.end(), outgoingPacketBuffer.begin());
 
         bool wasAdded = queue_try_add(toQ, outgoingPacketBuffer.data());
 
