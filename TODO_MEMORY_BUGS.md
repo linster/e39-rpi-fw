@@ -214,9 +214,14 @@ the heap on every boot), then the cross-core map race (most likely video crash).
     fallback.
   Also stopped calling `getRawPacket()` (a full copy) once per byte. Both
   builds compile; all observer switches on `messageType` have `default`.
-- [ ] **4.3** `proto_cpp/PicoToPi.h`: `MessageType` encode/decode also lack a
+- [x] **4.3** `proto_cpp/PicoToPi.h`: `MessageType` encode/decode also lack a
   fallback and `messageType` is uninitialized by default. Low risk: the Pico
   only encodes these, always with an explicit type.
+  **Done:** same fix as 4.1: `EmptyMessage` enumerator (proto 0) as the default
+  `messageType`, mapped both ways, and fallbacks in encode/decode. Hardening
+  only: every construction site uses aggregate init with an explicit type.
+  Host check: encoded wire bytes for all 7 message types are identical to the
+  old code. No `.proto` change. Both builds compile.
 - [x] **4.2** `IgnitionStatusRequestWriter.cpp:21`: `std::vector<uint8_t>(1)`
   then `push_back(0x10)` sends `{0x00, 0x10}`; probably want `{0x10}`.
   **Done:** payload is now `std::vector<uint8_t>{0x10}`.
