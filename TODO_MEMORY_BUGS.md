@@ -228,8 +228,31 @@ the heap on every boot), then the cross-core map race (most likely video crash).
 
 ## 5. Unit-test repo (`~/e39-rpi-fw-unittest`)
 
-- [ ] Update the submodule (pinned at old `f638c6c`) to current firmware.
-- [ ] Build with `-fsanitize=address,undefined -D_GLIBCXX_ASSERTIONS`.
-- [ ] Tests: length bytes 0/253/254/255 on `Packetizer` and `IbusPacket`;
-  config round-trip through a fake flash buffer; `drawScanline` with a line of
-  alternating pixels.
+Branch `update-firmware-and-asan` in that repo (not yet committed beyond the WIP commit).
+
+- [x] Update the submodule (was pinned at `f638c6c`) to current firmware: now `7fb9ee5`
+  on `fix-memory-bugs`. **Re-pin after this PR merges** if it's squash-merged, since
+  `7fb9ee5` won't be on `master`.
+- [x] Build with `-fsanitize=address,undefined -D_GLIBCXX_ASSERTIONS`: CMake option
+  `E39_UNITTEST_SANITIZERS`, ON by default.
+- [x] Tests: length bytes 0/253/254/255 on `Packetizer` and `IbusPacket`; config
+  round-trip through a fake flash buffer; scanline encoder incl. alternating pixels;
+  font lookup for all 256 byte values; `RleRunContainerCommand`; Pi->Pico decode.
+  Host stand-ins for `hardware/flash.h`, `hardware/sync.h`, `pico/multicore.h` in
+  `unittests/hoststubs` enforce the SDK flash contract (alignment, whole sectors,
+  interrupts off).
+- [x] Fixed stale tests: `IbusPacket::getData()` (removed in `5086e46`) replaced by a
+  `packetData()` helper; captured Pi/Pico vectors shifted to the post-`d129c72` enum
+  numbering (these 7 observer tests also failed on pre-branch firmware);
+  `PicoConfigReadRequestObserverTest` rewritten with real objects (the old mock could
+  never work: non-virtual `scheduleEmit`, sliced copy, `EXPECT_CALL` after the call,
+  null `ConfigurationManager`).
+  Result: 63/63 pass.
+- [ ] `graphicsLibLeakTest` / `CommandProcessor` / `graphicsLib`: behind
+  `E39_UNITTEST_GRAPHICS` (OFF); need host shims for `pico/types.h`, `pico/mutex.h`
+  and the scanvideo headers.
+- [ ] UBSan reports "load of value 99, which is not a valid value for type
+  `_ca_stefanm_e39_proto_PiToPico_MessageType`" for an unknown message type: nanopb
+  stores the raw int in a C enum and the converter's `switch` loads it. Harmless on the
+  Pico (falls back to `EmptyMessage`) but technically UB; fix by reading the value via
+  its underlying integer type before switching.
