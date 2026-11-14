@@ -127,15 +127,12 @@ namespace pico::ibus::dma {
 
             void Packetizer::recycle() {
 
-                //Lets just grab a copy of the (position..end] bytes,
-                //then clear our state, and then add all the bytes again.
-                std::vector<uint8_t> subsequentBytes = std::vector<uint8_t>();
-                for (int i = position + 1; position < packetBytes.size(); i++) {
-                    subsequentBytes.push_back(packetBytes[i]);
-                }
-
+                //This used to copy packetBytes[position+1..] and re-add them, but the loop tested
+                //`position` instead of `i`, so it read past the end forever. Fixing the loop isn't
+                //enough: addByte() stops storing once a packet completes, so nothing real ever
+                //sits after `position` (only zeros from reset()), and re-adding those zeros builds
+                //bogus "00 00" packets. Equivalent to reset(). Not used by the firmware.
                 reset();
-                addBytes(subsequentBytes);
             }
 
             void Packetizer::reset() {

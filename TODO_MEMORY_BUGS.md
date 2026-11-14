@@ -139,8 +139,13 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   write. New host tests (len 253/254/255, bad checksum + recovery, 200k random
   bytes) pass under ASan + `_GLIBCXX_ASSERTIONS`; old code overflows in 3 of
   them and loses the following valid packet in 3. No-video build compiles.
-- [ ] **3.3 `Packetizer::recycle()`** (line 180): loop tests
+- [x] **3.3 `Packetizer::recycle()`** (line 180): loop tests
   `position < size()` instead of `i` → reads past the end forever. Unused today.
+  **Done:** now just calls `reset()`. Fixing the loop alone wouldn't work:
+  `addByte()` never stores bytes past a completed packet, so the buffer after
+  `position` only holds zeros, and re-adding them forms bogus `00 00` packets.
+  The unit-test repo's full `Packetizer_Test` (incl. `RecycleNoInterleave`)
+  plus the new bounds tests: 15/15 pass under ASan.
 - [ ] **3.4 `IbusPacket(std::array…)` constructors** (`IbusPacket.cpp:115-117,
   135-137`):
   - Length 253–255 reads past the 255-byte array. **[ASan-confirmed]**
