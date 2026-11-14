@@ -43,9 +43,16 @@ namespace pico::ibus::data {
         void populateEmptyPacket();
 
         void calculateActualCrc();
+
+        void initFromFixedBuffer(const std::array<uint8_t, 255> &raw);
     public:
 
         static const uint8_t DATA_START = 3;
+
+        //Valid range for the IBus length byte when parsing a 255-byte buffer: at least
+        //dest + crc, and the whole packet (len + 2 bytes) must fit in 255 bytes.
+        static constexpr uint8_t MIN_LENGTH_FIELD = 2;
+        static constexpr uint8_t MAX_LENGTH_FIELD = 253;
 
         explicit IbusPacket(std::array<uint8_t, 255> raw);
         explicit IbusPacket(std::unique_ptr<std::array<uint8_t, 255>> raw);

@@ -8,43 +8,37 @@
 namespace pico::ibus::data {
 
     IbusPacket::IbusPacket(std::array<uint8_t, 255> raw) {
-
-        uint8_t len = raw[1]; //Always a safe access because we get passed in a fixed size array.
-        if (len == 0 || len > 255) { //TODO Can len > 255 happen irl?
-            populateEmptyPacket();
-            return;
-        } else {
-
-            sourceDevice = static_cast<IbusDeviceEnum>(raw[0]);
-            packetLength = len;
-            destinationDevice = static_cast<IbusDeviceEnum>(raw[2]);
-
-            completeRawPacket = std::vector<uint8_t>(raw.begin(), raw.begin() + packetLength + 2);
-
-            givenCrc = raw[packetLength + 2];
-            calculateActualCrc();
-            return;
-        }
+        initFromFixedBuffer(raw);
     }
 
     IbusPacket::IbusPacket(std::unique_ptr<std::array<uint8_t, 255>> raw) {
-
-        uint8_t len = (*raw)[1]; //Always a safe access because we get passed in a fixed size array.
-        if (len == 0 || len > 255) { //TODO Can len > 255 happen irl?
+        if (raw == nullptr) {
             populateEmptyPacket();
             return;
-        } else {
+        }
+        initFromFixedBuffer(*raw);
+    }
 
-            sourceDevice = static_cast<IbusDeviceEnum>((*raw)[0]);
-            packetLength = (*raw)[1]; //TODO this should never be bigger than raw.length()
-            destinationDevice = static_cast<IbusDeviceEnum>((*raw)[2]);
-
-            completeRawPacket = std::vector<uint8_t>(raw->begin(), raw->begin() + packetLength + 2);
-
-            givenCrc = (*raw)[packetLength + 2];
-            calculateActualCrc();
+    void IbusPacket::initFromFixedBuffer(const std::array<uint8_t, 255> &raw) {
+        //Packet is src, len, dest, data..., crc: len + 2 bytes in total, CRC at raw[len + 1].
+        //len must cover at least dest + crc (so the packet is >= 4 bytes, like the vector
+        //constructor requires; observers rely on getDataLength() not underflowing), and the
+        //whole packet must fit in the 255-byte buffer.
+        uint8_t len = raw[1];
+        if (len < MIN_LENGTH_FIELD || len > MAX_LENGTH_FIELD) {
+            populateEmptyPacket();
             return;
         }
+
+        sourceDevice = static_cast<IbusDeviceEnum>(raw[0]);
+        packetLength = len;
+        destinationDevice = static_cast<IbusDeviceEnum>(raw[2]);
+
+        completeRawPacket = std::vector<uint8_t>(raw.begin(), raw.begin() + len + 2);
+
+        //Was raw[len + 2]: the byte after the packet (and past the array for len 253).
+        givenCrc = raw[len + 1];
+        calculateActualCrc();
     }
 
     IbusPacket::IbusPacket(std::vector<uint8_t> raw) {

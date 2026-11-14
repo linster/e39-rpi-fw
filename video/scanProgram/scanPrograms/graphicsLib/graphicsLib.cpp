@@ -37,18 +37,16 @@ namespace video::scanProgram {
         *p++ = color;
         *p++ = displayMetrics.getDisplayWidthPx() - 3;
 
-        // 32 * 3, so we should be word aligned
-//        assert(!(3u & (uintptr_t) p));
-
         // black pixel to end line
         *p++ = COMPOSABLE_RAW_1P;
         *p++ = 0;
-        // end of line with alignment padding
-        *p++ = COMPOSABLE_EOL_SKIP_ALIGN;
-        *p++ = 0;
+        // COLOR_RUN + RAW_1P is 5 halfwords, so end-of-line sits on an odd halfword:
+        // EOL_ALIGN, not EOL_SKIP_ALIGN (which needs a word boundary; see scanvideo.pio
+        // and scanvideo.c's missing-scanline data, which has this exact shape).
+        *p++ = COMPOSABLE_EOL_ALIGN;
 
         scanline_buffer->data_used = ((uint32_t *) p) - scanline_buffer->data;
-        assert(scanline_buffer->data_used < scanline_buffer->data_max);
+        assert(scanline_buffer->data_used <= scanline_buffer->data_max);
 
         scanline_buffer->status = SCANLINE_OK;
 

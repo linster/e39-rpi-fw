@@ -54,16 +54,16 @@ namespace pico::config {
 
         std::unique_ptr<std::basic_string<char>> p = outputStream.release();
 
-
-        //Make bytes 256 bytes in size so that when we write it with flash_range_program,
-        //it is page-aligned.
-        auto bytes = std::vector<uint8_t>(256);
-        uint8_t bytesIndex = 0;
-        for (char c: *p) {
-            bytes[bytesIndex++] = c;
+        //Prefix with magic + length (so decode knows where the message ends) and
+        //pad to a multiple of 256 bytes so flash_range_program gets whole pages.
+        std::optional<std::vector<uint8_t>> framed = flash::frameConfiguration(*p);
+        if (!framed.has_value()) {
+            logger->w("FlashConfigurationStore",
+                      fmt::format("encodeConfiguration message too large: {} bytes", p->size()));
+            return {false, std::vector<uint8_t>()};
         }
 
-        return {true, bytes};
+        return {true, framed.value()};
     }
 
     uint8_t* FlashConfigurationStore::getPointerToConfigurationStorageInFlash() {
@@ -79,56 +79,72 @@ namespace pico::config {
         //If the flash is initialized with junk, we won't be able to decode it,
         //so no need to worry about memsetting it to 0s
 
-        uint8_t* flashPtr = (uint8_t*)(XIP_BASE + PICO_FLASH_SIZE_BYTES - (4 * 1024));
+        uint8_t* flashPtr = (uint8_t*)(XIP_BASE + PICO_FLASH_SIZE_BYTES - FLASH_SECTOR_SIZE);
 
         bool decodeSuccess = false;
 
-        //A buffer to that backs the stream that NanoPB uses.
-        std::vector<uint8_t> flashBytes = std::vector<uint8_t>();
-        for (int i = 0; i < 4096; i++) {
-            flashBytes[i] = flashPtr[i];
+        //Only copy out the framed payload; erased flash or an old-format block has no valid frame.
+        std::optional<std::string> payload = flash::unframeConfiguration(flashPtr, flash::FRAME_REGION_SIZE);
+        if (!payload.has_value()) {
+            return {false, Configuration()};
         }
 
-        //Another copy, sadly. RIP 4kb of memory.
-        std::string flashString = std::string(flashBytes.begin(), flashBytes.end());
-        auto inputStream = NanoPb::StringInputStream(std::make_unique<std::string>(flashString));
+        auto inputStream = NanoPb::StringInputStream(std::make_unique<std::string>(std::move(payload.value())));
 
         messages::ConfigMessage decoded;
         decodeSuccess = NanoPb::decode<messages::ConfigMessageConverter>(inputStream, decoded);
         if (!decodeSuccess) {
             return {false, Configuration()};
         }
-        return {!decoded.rpiFwGitCommitHash.empty(), Configuration(decoded)};
+        //The E39C frame + a successful decode is what marks a stored config as valid.
+        //Don't require rpiFwGitCommitHash: configs pushed by the Pi may leave it empty,
+        //and an all-defaults config is still a legitimate saved config.
+        return {true, Configuration(decoded)};
     }
 
     void FlashConfigurationStore::saveConfigurationBytes(std::vector<uint8_t> config) {
 
         //https://www.raspberrypi.com/documentation/pico-sdk/hardware.html#hardware_flash
         //https://www.raspberrypi.com/documentation/pico-sdk/high_level.html#multicore_lockout
-        //I think I need to do the startup manager work first, so that I can set up Core1 as the victim core.
-#if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
-        multicore_lockout_start_blocking();
-#endif
+        //While the flash is being erased/programmed, XIP is off, so nothing on either
+        //core may execute from (or read) flash. That means:
+        // - interrupts off on this core (the UART RX ISRs live in flash), and
+        // - core 1 parked in RAM via multicore lockout, if core 1 is running our code.
 
-//        uint32_t flash_offset = (uint32_t)(&getAddressPersistent()[0]) - XIP_BASE;
-//        uint32_t flash_offset = (uint32_t)(&getAddressPersistent()[0]);
+        uint32_t flash_offset = PICO_FLASH_SIZE_BYTES - FLASH_SECTOR_SIZE;
 
+        if (config.empty()
+            || config.size() > FLASH_SECTOR_SIZE
+            || (config.size() % FLASH_PAGE_SIZE) != 0) {
+            logger->w("FlashConfigurationStore",
+                      fmt::format("saveConfigurationBytes refusing bad size {}", config.size()));
+            return;
+        }
 
-//        __PERSISTENT_STORAGE_LEN = 4k ;
-//        FLASH(rx) : ORIGIN = 0x10000000, LENGTH = 2048k - __PERSISTENT_STORAGE_LEN
-//        FLASH_PERSISTENT(rw) : ORIGIN = 0x10000000 + (2048k - __PERSISTENT_STORAGE_LEN) , LENGTH = __PERSISTENT_STORAGE_LEN
-//        PICO_FLASH_SIZE_BYTES;
+        //Core 1 calls multicore_lockout_victim_init() as soon as it starts (main.cpp core1_entry).
+        //If it hasn't, core 1 is either never launched (no-video build) or still parked in the
+        //bootrom (we're in onMain() before multicore_launch_core1), so it can't touch flash.
+        bool lockOutCore1 = multicore_lockout_victim_is_initialized(1);
 
-//        uint32_t flash_offset = XIP_BASE + PICO_FLASH_SIZE_BYTES - (4 * 1024) ;
-        uint32_t flash_offset = PICO_FLASH_SIZE_BYTES - (4 * 1024) ;
+        if (lockOutCore1) {
+            if (!multicore_lockout_start_timeout_us(500 * 1000)) {
+                logger->e("FlashConfigurationStore",
+                          "saveConfigurationBytes could not lock out core 1; not writing flash");
+                return;
+            }
+        }
 
+        uint32_t interrupts = save_and_disable_interrupts();
+        flash_range_erase(flash_offset, FLASH_SECTOR_SIZE);
+        flash_range_program(flash_offset, config.data(), config.size());
+        restore_interrupts(interrupts);
 
-        flash_range_erase(flash_offset, 1 /* 4096 bytes, the size of our persistent block */);
-        flash_range_program(flash_offset, config.data(), config.size()); //TODO this has to be a 256 byte aligned size?
+        if (lockOutCore1) {
+            multicore_lockout_end_blocking();
+        }
 
-#if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO
-        multicore_lockout_end_blocking();
-#endif
+        logger->d("FlashConfigurationStore",
+                  fmt::format("saveConfigurationBytes wrote {} bytes", config.size()));
     }
 
 } // config

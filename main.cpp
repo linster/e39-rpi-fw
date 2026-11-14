@@ -33,6 +33,11 @@ void core1_entry() {
     auto* applicationContainer = (pico::ApplicationContainerNoVideo*) multicore_fifo_pop_blocking();
     #endif
 
+    //Let core 0 park this core in RAM while it erases/programs flash (FlashConfigurationStore).
+    //Must come after the FIFO pop above: the lockout handler takes over the inter-core FIFO IRQ
+    //and would swallow the application container pointer.
+    multicore_lockout_victim_init();
+
     //One-time setup on the second core.
     applicationContainer->onCpu1Main();
 

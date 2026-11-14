@@ -84,6 +84,12 @@ namespace pico::ibus::dma {
             /** Bytes the RX ISR had to drop because the byte queue was full. */
             inline static volatile uint32_t rxBytesDropped = 0;
 
+            /** Packets too big for a 255-byte queue item, dropped by writePacketToQ. */
+            inline static volatile uint32_t oversizedPacketsDropped = 0;
+
+            /** Outgoing queue items whose length byte was outside 2..253, not sent to the UART. */
+            inline static volatile uint32_t malformedOutgoingPacketsDropped = 0;
+
             void flushUart0ByteBufferToPacketizer();
             void flushUart1ByteBufferToPacketizer();
             void flushUartByteBufferToPacketizer(

@@ -8,8 +8,9 @@ namespace pico::ibus::dma {
 
             Packetizer::Packetizer() {
                 //TODO we can change this to an array since we never resize it.
-                packetBytes = std::vector<uint8_t>(255);
-                packetBytes.clear();
+                //Must have size 255 (not just capacity): addByte() writes packetBytes[position].
+                //This used to clear() right after, leaving size 0 until the first reset().
+                packetBytes = std::vector<uint8_t>(255, 0);
                 position = 0;
                 sourceId = 0;
                 expectedLength = 0;
@@ -46,6 +47,12 @@ namespace pico::ibus::dma {
                 }
 
                 if (position == 1) {
+                    if (byte > MAX_LENGTH_FIELD) {
+                        //A 256/257-byte packet can't fit our buffer (or anything downstream).
+                        //Treat it as line noise and start over.
+                        reset();
+                        return;
+                    }
                     expectedLength = byte;
                 }
 
@@ -53,6 +60,12 @@ namespace pico::ibus::dma {
                     destinationId = byte;
                 }
 
+                if (position >= packetBytes.size()) {
+                    //Shouldn't be reachable now that len is capped and bad checksums reset,
+                    //but never write past the buffer.
+                    reset();
+                    return;
+                }
                 packetBytes[position] = byte;
 
                 if (position == expectedLength + 1) {
@@ -69,6 +82,12 @@ namespace pico::ibus::dma {
                         packetOk = true;
                         return;
                     }
+
+                    //Checksum mismatch: this packet can never become valid, so start over now.
+                    //(Previously we kept accepting bytes until position > len + 2, which ate
+                    //the start of the next packet and, for len = 253, wrote packetBytes[255].)
+                    reset();
+                    return;
                 } else {
                     //Update the checksum.
                     currentChecksum = currentChecksum ^ byte;
@@ -108,15 +127,12 @@ namespace pico::ibus::dma {
 
             void Packetizer::recycle() {
 
-                //Lets just grab a copy of the (position..end] bytes,
-                //then clear our state, and then add all the bytes again.
-                std::vector<uint8_t> subsequentBytes = std::vector<uint8_t>();
-                for (int i = position + 1; position < packetBytes.size(); i++) {
-                    subsequentBytes.push_back(packetBytes[i]);
-                }
-
+                //This used to copy packetBytes[position+1..] and re-add them, but the loop tested
+                //`position` instead of `i`, so it read past the end forever. Fixing the loop isn't
+                //enough: addByte() stops storing once a packet completes, so nothing real ever
+                //sits after `position` (only zeros from reset()), and re-adding those zeros builds
+                //bogus "00 00" packets. Equivalent to reset(). Not used by the firmware.
                 reset();
-                addBytes(subsequentBytes);
             }
 
             void Packetizer::reset() {

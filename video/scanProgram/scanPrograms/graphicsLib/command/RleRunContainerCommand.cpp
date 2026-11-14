@@ -12,8 +12,14 @@ namespace video::scanVideo::graphics::command {
 
         this->runs = runs;
 
-        this->topLine = runs.begin()->first;
-        this->topLine = runs.end()->first;
+        //end() can't be dereferenced (and begin() can't either when empty).
+        if (this->runs.empty()) {
+            this->topLine = 0;
+            this->bottomLine = 0;
+        } else {
+            this->topLine = this->runs.begin()->first;
+            this->bottomLine = this->runs.rbegin()->first;
+        }
     }
 
 

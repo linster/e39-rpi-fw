@@ -11,6 +11,7 @@
 #include <logging/BaseLogger.h>
 #include "BaseCommand.h"
 #include "RleRunContainerCommand.h"
+#include "ScanlineEncoder.h"
 #include "pico/scanvideo/composable_scanline.h"
 #include "pico/scanvideo/scanvideo_base.h"
 #include "pico/mutex.h"
@@ -22,7 +23,22 @@ namespace video::scanVideo::graphics::command {
     private:
         std::shared_ptr<pico::logger::BaseLogger> logger;
 
-        std::vector<std::unique_ptr<BaseCommand>> commandsToProcess;
+        /*
+         * Locking (mutators run on BOTH cores: scan program start/stop on core 1,
+         * IBus-driven menu redraws on core 0; render_computed runs on core 1):
+         *
+         *  pendingMutex - "mutator lock". Held for the whole of any public method that
+         *                 changes drawing state. Guards rleRunsToProcess,
+         *                 lineBuffer, isImmediateMode. Never taken by render_computed.
+         *  renderMutex  - short lock shared with render_computed. Guards rleRunsForLine,
+         *                 isFrameComputed, baseColour. Writers only swap prepared data in
+         *                 under it, one scanline at a time, and free old data after release.
+         *
+         * Lock order: pendingMutex, then renderMutex. render_computed takes only renderMutex
+         * and must not allocate while holding it.
+         */
+        mutex_t pendingMutex;
+        mutex_t renderMutex;
 
         std::map<uint16_t, std::vector<RleRun>> rleRunsToProcess;
 
@@ -33,12 +49,11 @@ namespace video::scanVideo::graphics::command {
          */
         std::map<uint16_t, std::vector<RleRun>> rleRunsForLine;
 
-
-        //Guards: isFrameComputedMutex, rleRunsForLine
-        mutex_t isFrameComputedMutex;
-        //End Guard: isFrameComputedMutex, rleRunsForLine
-
         bool isFrameComputed = false;
+
+        /** Scanlines whose runs didn't fit the scanline buffer (rest of line filled with baseColour).
+         *  Written by core 1 in render; for debugging. */
+        volatile uint32_t truncatedScanlines = 0;
 
         //We only need a 400*234 display max, so we'll just use a line buffer.
         //Someday I'll clean this function up, but is should consumer only ~2kb of ram,
@@ -58,7 +73,7 @@ namespace video::scanVideo::graphics::command {
         std::vector<RleRun> mergeRuns(std::unique_ptr<std::vector<RleRun>> runs);
 
 
-        void drawScanline(scanvideo_scanline_buffer_t *scanline_buffer, std::vector<RleRun> merged);
+        void drawScanline(scanvideo_scanline_buffer_t *scanline_buffer, const std::vector<RleRun> &merged);
         void skipScanline(scanvideo_scanline_buffer_t *scanline_buffer);
 
         //Finish this (without depending on display metrics) to fill the screen with baseColour.
@@ -72,6 +87,10 @@ namespace video::scanVideo::graphics::command {
         bool clearCommandsOnFrameComputed = true;
 
         void clearCommandsToProcess();
+
+        //Bodies of the public mutators; caller must hold pendingMutex.
+        void clearFrameLocked();
+        void computeFrameLocked();
     public:
 
         explicit CommandProcessor(

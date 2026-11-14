@@ -169,6 +169,9 @@ target_sources(
         ibus/observerRegistry/observers/PiToPico/ConfigPush/PicoConfigPushObserver.cpp
         ibus/observerRegistry/observers/PiToPico/ConfigPush/PicoConfigPushObserver.h
 
+        ibus/outputWriterApi/IgnitionStatusRequest/IgnitionStatusRequestWriter.h
+        ibus/outputWriterApi/IgnitionStatusRequest/IgnitionStatusRequestWriter.cpp
+
 
         main.cpp
 
