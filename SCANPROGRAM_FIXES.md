@@ -71,3 +71,43 @@ same. Applied to `drawScanline`, `drawSolidColorScanline` and
   check they look the same.
 - Long lines of text: if a line is too long, its right-hand end now shows the
   background colour instead of corrupting memory.
+
+## Font table out-of-bounds read (TODO 2.3)
+
+Branch `fix-memory-bugs`.
+
+### The bug
+
+`TextCommand::getRleRunsForCharacter` (`graphicsLib/command/TextCommand.cpp`) meant to
+draw the copyright glyph (`font8x8_ext_latin[9]`, U+00A9) for any non-ASCII byte, but
+the `else` was missing:
+
+```cpp
+if (ord > 127 || ord < 0) {
+    bitmap = font8x8_ext_latin[9];
+}
+bitmap = font8x8_basic[ord];   // always runs
+```
+
+`font8x8_basic` has 128 entries, so every byte >= 128 read past the end of the table
+(up to 1 KB past it). `char` is unsigned on ARM, so on the Pico `ord` is 128..255;
+on the host it's signed, so `ord` is -128..-1 and the read goes before the table.
+
+### Fix
+
+- Added the `else`, so only 0..127 index `font8x8_basic`.
+- Convert with `(unsigned char)c`, so the Pico and host unit tests behave the same.
+
+### Testing
+
+- Host test under AddressSanitizer renders each byte value 0..255 and checks the pixel
+  count matches the expected glyph: the basic table for 0..127, the copyright glyph for
+  128..255. The new code passes; the old code fails at byte 128 (wrong glyph, read from
+  `font8x8_basic[-128]` on the host).
+- Video firmware build compiles.
+- **Not yet tested on hardware.**
+
+### Known limitation (unchanged)
+
+Strings are probably UTF-8, so a multi-byte character draws one glyph per byte: a
+UTF-8 "©" (`C2 A9`) draws two copyright glyphs.

@@ -97,9 +97,13 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   `drawSolidColorScanline` and `graphicsLib::writeSolidColourScanline`.
   Host test under ASan passes (bounds, alignment, 401 px/line); both builds
   compile; not yet tested on hardware.
-- [ ] **2.3 Font table OOB read** (`TextCommand.cpp:51-57`). Missing `else`:
+- [x] **2.3 Font table OOB read** (`TextCommand.cpp:51-57`). Missing `else`:
   for characters >= 128, `font8x8_basic[ord]` reads past the 128-entry table.
   `char` is unsigned on ARM, so any non-ASCII byte triggers it.
+  **Done:** added the `else`, and read the byte as `unsigned char` so ARM and
+  host behave the same. Non-ASCII bytes draw the copyright glyph as intended.
+  Host test of all 256 byte values passes under ASan; video build compiles.
+  See `SCANPROGRAM_FIXES.md`.
 - [ ] **2.4 `commandsToProcess` grows forever** (`CommandProcessor::addRleRuns`).
   `graphicsLib::drawTextSpecialCharacter` → `addRleRuns` pushes a
   `RleRunContainerCommand` into `commandsToProcess`, but nothing ever processes
