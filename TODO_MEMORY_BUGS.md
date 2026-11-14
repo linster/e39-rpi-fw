@@ -54,12 +54,19 @@ the heap on every boot), then the cross-core map race (most likely video crash).
   `uint8_t bytesIndex` into a 256-byte vector; encodings > 256 bytes wrap and
   overwrite the start instead of failing.
   **Done with 1.1:** framing refuses payloads > 4090 bytes and logs a warning.
-- [ ] **1.6 Video flag checked two different ways.** `main.cpp` uses
-  `#ifdef CMAKE_HAS_VIDEO_SUPPORT`; the flash store uses
-  `#if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO`. The
-  checked-in `video/CMakeHasVideoFlags.h` defines the macro as 0 (no video),
-  which `#ifdef` treats as true — `main` would launch core 1 while the flash
-  store skips the lockout. Verify which header wins.
+- [x] **1.6 Video flag checked two different ways.** `main.cpp` uses
+  `#ifdef CMAKE_HAS_VIDEO_SUPPORT`; `SingleCoreDmaManager.h` (and formerly the
+  flash store) uses `#if CMAKE_HAS_VIDEO_SUPPORT == CMAKE_VIDEO_SUPPORT_HAS_VIDEO`.
+  **Already fixed before this review, in `48ff72f` ("Fix the video build"):** the
+  template now uses `#cmakedefine`, so the macro is defined (as `HAS_VIDEO`) only
+  in the video build and both styles agree. The review's finding was wrong about
+  the cause: there is no checked-in header; it saw a stale generated header in
+  `cmake-build-debug/` from before `48ff72f`, which still defined the macro as 0.
+  That build dir regenerated it on the first build this session.
+  Verified: no-video ELF links `NoVideoFactory` only (no core 1 launch, no
+  scanvideo); video ELF links `PimoroniFactory`, `multicore_launch_core1` and
+  scanvideo. No code change. (1.3 also removed the flash store's dependency on
+  the flag.)
 
 ## 2. Video (likely causes of the video crash)
 
