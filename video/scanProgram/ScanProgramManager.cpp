@@ -27,27 +27,28 @@ namespace video::scanProgram {
             return ret;
         }
 
-        std::shared_ptr<scanPrograms::BaseScanProgram> ScanProgramManager::getScanProgramPtr(ScanProgram scanProgram) {
-            //return std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->demoScanProgram);
-            std::shared_ptr<scanPrograms::BaseScanProgram> retPtr;
+        //Returns a raw pointer on purpose. This is called on both cores, on every loop iteration
+        //(core 0) and every scanline (core 1). Returning a std::shared_ptr copy bumped the shared
+        //reference count from both cores at once, and on this toolchain shared_ptr reference counts
+        //aren't atomic (_Lock_policy _S_single). Lost updates eventually dropped the count to zero,
+        //deleting the scan program while it was in use: core 1 then called render() through the
+        //destroyed object's BaseScanProgram vtable and jumped to address 0 (HardFault).
+        //The ScanProgramManager owns all scan programs for the life of the program, so no
+        //reference counting is needed here.
+        scanPrograms::BaseScanProgram* ScanProgramManager::getScanProgramPtr(ScanProgram scanProgram) {
             switch (scanProgram) {
                 case BOOT_SPLASH:
-                    retPtr = std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->bootsplashScanProgram);
-                    break;
+                    return this->bootsplashScanProgram.get();
                 case CLOCK:
-                    retPtr = std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->clockScanProgram);
-                    break;
+                    return this->clockScanProgram.get();
                 case DEMO:
-                    retPtr = std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->demoScanProgram);
-                    break;
+                    return this->demoScanProgram.get();
                 case MENU:
-                    retPtr = std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->menuScanProgram);
-                    break;
+                    return this->menuScanProgram.get();
                 case NOOP:
-                    retPtr = std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->noopScanProgram);
-                    break;
+                    return this->noopScanProgram.get();
             }
-            return retPtr;
+            return this->noopScanProgram.get();
         }
 
         void ScanProgramManager::cpu0setup() {

@@ -54,7 +54,8 @@ namespace video::scanProgram {
             ScanProgram currentScanProgram = NOOP;
             //End Guard: scanProgramStateMutex
 
-            std::shared_ptr<scanPrograms::BaseScanProgram> getScanProgramPtr(ScanProgram scanProgram);
+            //Raw pointer, not a shared_ptr copy: called from both cores (see the .cpp).
+            scanPrograms::BaseScanProgram* getScanProgramPtr(ScanProgram scanProgram);
             void measureFreqs();
 
             /** CPU_0 -> CPU_1 command queue */
