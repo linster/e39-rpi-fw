@@ -52,6 +52,11 @@ void core1_entry() {
 
 
 
+#ifdef CMAKE_HAS_VIDEO_SUPPORT
+//Core 1's stack (see multicore_launch_core1_with_stack in main). Peak measured use ~1.8 KB.
+static uint32_t core1Stack[8 * 1024 / sizeof(uint32_t)];
+#endif
+
 int main() {
 
     //stdio_init_all();
@@ -76,7 +81,13 @@ int main() {
 
 #ifdef CMAKE_HAS_VIDEO_SUPPORT
     multicore_reset_core1();
-    multicore_launch_core1(core1_entry); //Launch the coprocessor and have it block.
+    //Give core 1 its own stack in main RAM instead of the SDK default (the top of SCRATCH_X).
+    //Core 0's stack is SCRATCH_Y (4 KB) and grows down into SCRATCH_X, so with the default layout a
+    //deep core 0 call chain (e.g. IBus knob input -> menu refreshUi -> drawScreen -> computeFrame)
+    //ran past 4 KB and overwrote core 1's live stack frames; core 1 then "returned" into core 0's
+    //stack and HardFaulted. Measured on hardware: core 0 reached the bottom of SCRATCH_Y during
+    //menu navigation. With core 1's stack elsewhere, core 0 has SCRATCH_Y + SCRATCH_X (8 KB).
+    multicore_launch_core1_with_stack(core1_entry, core1Stack, sizeof(core1Stack)); //Launch the coprocessor and have it block.
 //    Push the pointer to the application container to the second core. This unblocks the co-processor.
     multicore_fifo_push_blocking((uint32_t)applicationContainer);
 
