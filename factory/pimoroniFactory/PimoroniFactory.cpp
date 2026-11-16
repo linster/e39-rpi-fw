@@ -233,6 +233,7 @@ namespace pico::di {
                     std::static_pointer_cast<ibus::observers::BaseObserver>(uartForwarderObserver));
 #ifdef E39_BENCH_TX_TEST
             baseObservers->push_back(std::make_shared<ibus::observers::BenchTxTestObserver>(logger, dmaManager));
+            baseObservers->push_back(std::make_shared<ibus::observers::BenchVideoTestObserver>(logger, scanProgramSwapper));
 #endif
         }
 

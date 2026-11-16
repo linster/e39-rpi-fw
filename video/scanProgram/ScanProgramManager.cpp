@@ -186,6 +186,11 @@ namespace video::scanProgram {
 
         void ScanProgramManager::onCpu1Loop() {
             if (classIsNoOp) { return; }
+            if (benchCore1StallMs != 0) {
+                uint8_t ms = benchCore1StallMs;
+                benchCore1StallMs = 0;
+                busy_wait_ms(ms);
+            }
             cpu1DequeueSwapTo();
             getScanProgramPtr(getCurrentScanProgram())->onCpu1Loop();
         }

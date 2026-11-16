@@ -336,6 +336,10 @@ if(CMAKE_HAS_VIDEO_SUPPORT)
     target_sources(
             PicoTemplate PUBLIC
 
+            ibus/observerRegistry/observers/benchTxTest/BenchVideoTestObserver.cpp
+            ibus/observerRegistry/observers/benchTxTest/BenchVideoTestObserver.h
+
+
             factory/ApplicationContainer.cpp
             factory/ApplicationContainer.h
             factory/pimoroniFactory/PimoroniFactory.cpp

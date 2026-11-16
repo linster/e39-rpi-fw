@@ -25,6 +25,7 @@
 #include <ibus/observerRegistry/observers/PiToPico/ConfigPush/PicoConfigPushObserver.h>
 #ifdef E39_BENCH_TX_TEST
 #include <ibus/observerRegistry/observers/benchTxTest/BenchTxTestObserver.h>
+#include <ibus/observerRegistry/observers/benchTxTest/BenchVideoTestObserver.h>
 #endif
 #include <ibus/observerRegistry/observers/PiToPico/PiPowerRequest/PiPowerRequestObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h>

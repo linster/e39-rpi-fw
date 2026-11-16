@@ -52,7 +52,11 @@ namespace video::scanProgram {
             void recoverWedgedScanlineStateMachine();
         public:
             /** How many times the watchdog restarted scanvideo's scanline state machine. For debugging. */
-            volatile uint32_t scanlineSmRecoveries = 0;
+            inline static volatile uint32_t scanlineSmRecoveries = 0; //static so tools can find it by symbol
+
+            /** Bench-only (E39_BENCH_TX_TEST): make core 1 busy-wait this many ms once, with interrupts on,
+             *  to simulate it delivering no scanlines for a while. Set from core 0, consumed on core 1. */
+            inline static volatile uint8_t benchCore1StallMs = 0;
         private:
 
             static std::string getTag();
