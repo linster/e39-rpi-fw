@@ -151,8 +151,22 @@ namespace video::scanVideo::graphics::command {
         mutex_exit(&renderMutex);
 
         for (const auto &g : rleRunsToProcess) {
+            //Draw the new runs on top of what the line already shows. This used to merge only the
+            //new runs, so in immediate mode (one computeFrame per addCommand) the last command to
+            //touch a line replaced everything drawn on it before: text erased the background behind
+            //it, the white "Linster OS" erased its drop shadow, and the bootsplash's (c) glyph erased
+            //the whole "Stefan Martynkiw 2019-2024" line.
+            //Reading rleRunsForLine here without renderMutex is safe: only mutators (serialized by
+            //pendingMutex, which we hold) modify it; render_computed only reads it.
+            auto runs = std::make_unique<std::vector<RleRun>>();
+            auto current = rleRunsForLine.find(g.first);
+            if (current != rleRunsForLine.end()) {
+                runs->insert(runs->end(), current->second.begin(), current->second.end());
+            }
+            runs->insert(runs->end(), g.second.begin(), g.second.end());
+
             //Merge outside the render lock; it's the slow part.
-            std::vector<RleRun> merged = mergeRuns(std::make_unique<std::vector<RleRun>>(g.second));
+            std::vector<RleRun> merged = mergeRuns(std::move(runs));
 
             mutex_enter_blocking(&renderMutex);
             auto existing = rleRunsForLine.find(g.first);
@@ -178,34 +192,24 @@ namespace video::scanVideo::graphics::command {
 
         lineBuffer.fill(baseColour);
 
-        //Expand each RleRun into the line buffer
+        //Expand each RleRun into the line buffer: pixels [startX, startX + len). Later runs paint over
+        //earlier ones. (Was <= startX + len, one pixel too many.)
         for (auto run : *runs) {
-            for (int i = run.getStartX(); i <= run.getStartX() + run.getLen(); i++) {
-                if (i < 0 || i >= maxDisplayWidth) {
-                    continue;
-                }
+            int start = run.getStartX();
+            int end = start + run.getLen();
+            for (int i = std::max(start, 0); i < std::min(end, (int) maxDisplayWidth); i++) {
                 lineBuffer[i] = run.getColour();
             }
         }
 
-        //Now we compress the line buffer.
-        RleRun runToInsert = RleRun(0, 1, baseColour);
-        for (int i = 0; i < maxDisplayWidth - 1; i++) {
-
-            runToInsert.setColour(lineBuffer[i]);
-
-            if (lineBuffer[i] == lineBuffer[i + 1]) {
-                runToInsert.setLen(runToInsert.getLen() + 1);
-                if (i + 1 >= maxDisplayWidth) {
-                    //We're at the end of the line, insert the run
-                    retVec.emplace_back(runToInsert);
-                }
-            } else {
-                //We're at the end of a run. Insert it into the vector and refresh.
-                retVec.emplace_back(runToInsert);
-                runToInsert = RleRun(i + 1, 1, lineBuffer[i+1]);
+        //Now compress the line buffer into runs covering the whole width. (The old loop never emitted
+        //the final run, so each line ended at its last colour change.)
+        int runStart = 0;
+        for (int i = 1; i <= maxDisplayWidth; i++) {
+            if (i == maxDisplayWidth || lineBuffer[i] != lineBuffer[runStart]) {
+                retVec.emplace_back(runStart, i - runStart, lineBuffer[runStart]);
+                runStart = i;
             }
-
         }
         return retVec;
     }
