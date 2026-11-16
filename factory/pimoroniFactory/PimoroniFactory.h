@@ -23,6 +23,9 @@
 #include <ibus/observerRegistry/observers/PiToPico/heartbeatRequest/HeatbeatRequestObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/picoConfigurationReadRequest/PicoConfigurationReadRequestObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/ConfigPush/PicoConfigPushObserver.h>
+#ifdef E39_BENCH_TX_TEST
+#include <ibus/observerRegistry/observers/benchTxTest/BenchTxTestObserver.h>
+#endif
 #include <ibus/observerRegistry/observers/PiToPico/PiPowerRequest/PiPowerRequestObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h>
 #include <ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h>

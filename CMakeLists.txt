@@ -177,6 +177,9 @@ target_sources(
 
         ibus/observerRegistry/observers/uartForwarderObserver/UartForwarderObserver.cpp
         ibus/observerRegistry/observers/uartForwarderObserver/UartForwarderObserver.h
+
+        ibus/observerRegistry/observers/benchTxTest/BenchTxTestObserver.cpp
+        ibus/observerRegistry/observers/benchTxTest/BenchTxTestObserver.h
         ibus/outputWriterApi/uartForwarderWriter/UartForwarderWriter.cpp
         ibus/outputWriterApi/uartForwarderWriter/UartForwarderWriter.h
         ibus/outputWriterApi/PicoToPi/ibusLoggerOutput/IbusLoggerOutput.cpp
@@ -487,6 +490,12 @@ if (E39_RPI_VGA_SMALL_COLOR_DEPTH)
 #scanvideo.h sets these.
 #not sure about wither I want to set any of the _dpi_ values?
 #Assuming DPI == display parallel interface
+#Bench-only: registers BenchTxTestObserver (tests the car bus transmitter from an IBus dongle).
+option(E39_BENCH_TX_TEST "Build the bench-only car transmit test hook" OFF)
+if(E39_BENCH_TX_TEST)
+    target_compile_definitions(PicoTemplate PUBLIC E39_BENCH_TX_TEST=1)
+endif()
+
 target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_PIXEL_RCOUNT=2)
 target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_PIXEL_GCOUNT=2)
 target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_PIXEL_BCOUNT=2)
