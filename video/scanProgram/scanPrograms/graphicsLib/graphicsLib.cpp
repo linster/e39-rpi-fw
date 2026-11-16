@@ -3,6 +3,7 @@
 //
 
 #include "graphicsLib.h"
+#include <video/scanProgram/scanPrograms/SolidScanline.h>
 
 using video::scanVideo::graphics::command::PxCoord;
 namespace video::scanProgram {
@@ -29,27 +30,7 @@ namespace video::scanProgram {
 
     void graphicsLib::writeSolidColourScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour) {
         requireDisplayMetrics();
-
-        uint16_t *p = (uint16_t *) scanline_buffer->data;
-
-        *p++ = COMPOSABLE_COLOR_RUN;
-        uint32_t color = colour;
-        *p++ = color;
-        *p++ = displayMetrics.getDisplayWidthPx() - 3;
-
-        // black pixel to end line
-        *p++ = COMPOSABLE_RAW_1P;
-        *p++ = 0;
-        // COLOR_RUN + RAW_1P is 5 halfwords, so end-of-line sits on an odd halfword:
-        // EOL_ALIGN, not EOL_SKIP_ALIGN (which needs a word boundary; see scanvideo.pio
-        // and scanvideo.c's missing-scanline data, which has this exact shape).
-        *p++ = COMPOSABLE_EOL_ALIGN;
-
-        scanline_buffer->data_used = ((uint32_t *) p) - scanline_buffer->data;
-        assert(scanline_buffer->data_used <= scanline_buffer->data_max);
-
-        scanline_buffer->status = SCANLINE_OK;
-
+        video::scanProgram::writeSolidScanline(scanline_buffer, displayMetrics.getDisplayWidthPx(), (uint16_t) colour);
     }
 
     void graphicsLib::clearFrame() {

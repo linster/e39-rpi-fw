@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include "CommandProcessor.h"
+#include <video/scanProgram/scanPrograms/SolidScanline.h>
 
 namespace video::scanVideo::graphics::command {
 
@@ -97,8 +98,8 @@ namespace video::scanVideo::graphics::command {
 
     //Called from CPU1
     void CommandProcessor::skipScanline(scanvideo_scanline_buffer_t *scanline_buffer) {
-        scanline_buffer->data_used = 0;
-        scanline_buffer->status = SCANLINE_SKIPPED;
+        //A real black line, never an empty "skipped" one (see SolidScanline.h).
+        video::scanProgram::writeSolidScanline(scanline_buffer, maxDisplayWidth, 0);
     }
 
     //Called from CPU1 with renderMutex held (reads baseColour).
@@ -260,26 +261,7 @@ namespace video::scanVideo::graphics::command {
     }
 
     void CommandProcessor::drawSolidColorScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour) {
-
-        //Same shape as scanvideo.c's missing-scanline data: 6 halfwords, word-aligned.
-        //COLOR_RUN + RAW_1P is 5 halfwords, so the end-of-line token sits on an odd
-        //halfword and must be EOL_ALIGN (EOL_SKIP_ALIGN needs a word boundary).
-        uint16_t *p = (uint16_t *) scanline_buffer->data;
-
-        *p++ = COMPOSABLE_COLOR_RUN;
-        *p++ = colour;
-        *p++ = maxDisplayWidth - 3; //count-3 encoding: maxDisplayWidth colour pixels (as before)
-
-        // black pixel to end line
-        *p++ = COMPOSABLE_RAW_1P;
-        *p++ = 0;
-        *p++ = COMPOSABLE_EOL_ALIGN;
-
-        scanline_buffer->data_used = ((uint32_t *) p) - scanline_buffer->data;
-        assert(scanline_buffer->data_used <= scanline_buffer->data_max);
-
-        scanline_buffer->status = SCANLINE_OK;
-
+        video::scanProgram::writeSolidScanline(scanline_buffer, maxDisplayWidth, (uint16_t) colour);
     }
 
 
