@@ -16,10 +16,13 @@ namespace video::scanProgram::scanPrograms::bootsplash {
 
 
     public:
-
         enum BootSplashType {
             LINSTER_OS, BMW, GOOSE
         };
+
+        /** Which splash to draw the next time this program starts. Set it before swapping to the
+         *  program (core 0); it's read on core 1 in onScanProgramStart(). */
+        void setBootSplashType(BootSplashType type) { bootSplashType = type; }
 
         BootsplashScanProgram(
             std::shared_ptr<pico::logger::BaseLogger> logger,

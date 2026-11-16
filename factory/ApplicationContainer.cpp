@@ -52,16 +52,21 @@ namespace pico {
         observerRegistry->printRegisteredObserverTags();
 
         pi4PowerSwitchManager->setPower(false);
-        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PICO);
-//        videoSwitch->switchTo(hardware::videoSwitch::VideoSource::PI);
+        //The video source and scan program to show at boot come from the configuration
+        //(videoSourceOnBoot, scanProgramOnBoot). These used to be hard-coded to PICO and the
+        //Linster OS bootsplash; the Pimoroni default configuration keeps that.
+        hardware::videoSwitch::VideoSource videoSourceOnBoot = configuration->getVideoSourceOnBootup();
+        messages::ConfigMessage::ScanProgram scanProgramOnBoot = configuration->getScanProgramOnBootup();
+        logger->i("onMain", fmt::format("Boot video source {}, scan program {} (from configuration)",
+                                        (int) videoSourceOnBoot, (int) scanProgramOnBoot));
+        videoSwitch->switchTo(videoSourceOnBoot);
 
         logger->d("onMain",
                   fmt::format("ScanProgramManager not setup. Current Scan Program is {:x} ",
                               (int)scanProgramManager->getCurrentScanProgram()));
 
         scanProgramManager->cpu0setup();
-        scanProgramManager->swapTo(ScanProgram::BOOT_SPLASH);
-//        scanProgramManager->swapTo(ScanProgram::NOOP);
+        scanProgramManager->swapToBootProgram(scanProgramOnBoot);
 
         logger->d("onMain",
                   fmt::format("ScanProgramManager is setup. Current Scan Program is {:x} ",

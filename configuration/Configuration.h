@@ -59,6 +59,9 @@ namespace pico {
             messages::ConfigMessage::ScanProgram getScanProgramOnBootup();
             void setScanProgramOnBootup(messages::ConfigMessage::ScanProgram program);
 
+            hardware::videoSwitch::VideoSource getVideoSourceOnBootup();
+            void setVideoSourceOnBootup(hardware::videoSwitch::VideoSource source);
+
             messages::ConfigMessage::VideoEncoding getVideoEncoding();
             void setVideoEncoding(messages::ConfigMessage::VideoEncoding encoding);
 

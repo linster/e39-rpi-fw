@@ -80,6 +80,14 @@ namespace pico::config {
             isSyncRequired = true;
         }
 
+        hardware::videoSwitch::VideoSource Configuration::getVideoSourceOnBootup() {
+            return backingMessage.videoSourceOnBoot;
+        }
+        void Configuration::setVideoSourceOnBootup(hardware::videoSwitch::VideoSource source) {
+            backingMessage.videoSourceOnBoot = source;
+            isSyncRequired = true;
+        }
+
         messages::ConfigMessage::VideoEncoding Configuration::getVideoEncoding() {
             return backingMessage.videoEncoding;
         }

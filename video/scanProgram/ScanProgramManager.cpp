@@ -19,6 +19,33 @@ namespace video::scanProgram {
 //            cpu0SwapTo(scanProgram);
         }
 
+        void ScanProgramManager::swapToBootProgram(pico::messages::ConfigMessage::ScanProgram configured) {
+            using Configured = pico::messages::ConfigMessage::ScanProgram;
+            using SplashType = scanPrograms::bootsplash::BootsplashScanProgram::BootSplashType;
+            switch (configured) {
+                case Configured::NONE:
+                    swapTo(ScanProgram::NOOP);
+                    return;
+                case Configured::CLOCK:
+                    swapTo(ScanProgram::CLOCK);
+                    return;
+                case Configured::MENU:
+                    swapTo(ScanProgram::MENU);
+                    return;
+                case Configured::GOOSE_BOOTSPLASH:
+                    bootsplashScanProgram->setBootSplashType(SplashType::GOOSE);
+                    break;
+                case Configured::BMW_BOOTSPLASH:
+                    bootsplashScanProgram->setBootSplashType(SplashType::BMW);
+                    break;
+                case Configured::LINSTEROS_BOOTSPLASH:
+                default: //A value this firmware doesn't know (newer config): show the default splash.
+                    bootsplashScanProgram->setBootSplashType(SplashType::LINSTER_OS);
+                    break;
+            }
+            swapTo(ScanProgram::BOOT_SPLASH);
+        }
+
         ScanProgram ScanProgramManager::getCurrentScanProgram() {
             ScanProgram ret;
 //            mutex_enter_blocking(&this->scanProgramStateMutex);

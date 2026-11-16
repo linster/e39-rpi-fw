@@ -10,6 +10,7 @@
 #include "pico/stdio.h"
 #include "pico/mutex.h"
 #include "ScanProgram.h"
+#include <proto_cpp/ConfigMessage.h>
 
 #include <video/scanProgram/scanPrograms/BaseScanProgram.h>
 #include <video/scanProgram/scanPrograms/noop/NoopScanProgram.h>
@@ -99,6 +100,9 @@ namespace video::scanProgram {
 
             //These are only called from the ScanProgramSwapper, which is called from CPU0.s
             void swapTo(ScanProgram scanProgram);
+            /** Core 0: start the scan program the configuration asks for at boot
+             *  (scanProgramOnBoot), including which bootsplash to draw. */
+            void swapToBootProgram(pico::messages::ConfigMessage::ScanProgram configured);
             ScanProgram getCurrentScanProgram();
 
 
