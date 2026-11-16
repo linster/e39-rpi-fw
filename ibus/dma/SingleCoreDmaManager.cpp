@@ -44,10 +44,23 @@ namespace pico::ibus::dma {
         //of these copies, it spun with interrupts off, scanvideo's line-start interrupt (~4.5 us
         //budget) ran late, and the line started late. That set off scanvideo's scanline "recovery",
         //which could wedge the scanline state machine (see recoverWedgedScanlineStateMachine).
+        //Everything for the Pi except log lines (forwarded car packets such as BMBT knob events,
+        //heartbeat/config replies). 32 slots (8.4 KB) absorbs bursts; log lines can't crowd these
+        //out any more because they have their own queue below (issue #18).
         queue_init_with_spinlock(
                 &toPiQ,
                 255,
-                10,
+                32,
+                spin_lock_claim_unused(true)
+                );
+
+        //Log lines for the Pi, sent only while toPiQ is empty and dropped first. In CAR_WITH_PI the
+        //Pi link is 9600 baud (~11 log lines a second), so boot logging always overflows something:
+        //now it's only log lines.
+        queue_init_with_spinlock(
+                &toPiLogQ,
+                255,
+                16,
                 spin_lock_claim_unused(true)
                 );
 
@@ -445,11 +458,14 @@ namespace pico::ibus::dma {
         }
     }
 
+    //One packet per loop, as before. Real traffic (toPiQ) always goes first; a log line only when
+    //nothing else is waiting.
     void SingleCoreDmaManager::flushToPiQToUart() {
+        bool hasRealTraffic = !queue_is_empty(&toPiQ);
         writeOutgoingQ_toUart(
-                &toPiQ,
+                hasRealTraffic ? &toPiQ : &toPiLogQ,
                 uart1,
-                "ToPiQ",
+                hasRealTraffic ? "ToPiQ" : "ToPiLogQ",
                 "uart1"
         );
     }
@@ -510,7 +526,7 @@ namespace pico::ibus::dma {
                         "oversizedPacketsDropped: {:d}, "
                         "malformedOutgoingPacketsDropped: {:d}, "
                         "carTx sent/busy/collisions/dropped: {:d}/{:d}/{:d}/{:d}, "
-                        "outgoingQueueFullDrops: {:d} ",
+                        "outgoingQueueFullDrops: {:d}, piLogLinesDropped: {:d} ",
                         toPiQ_level,
                         toCarQ_level,
                         fromPiQ_level,
@@ -522,7 +538,7 @@ namespace pico::ibus::dma {
                         (uint32_t)malformedOutgoingPacketsDropped,
                         (uint32_t)carTxSent, (uint32_t)carTxBusyDeferrals,
                         (uint32_t)carTxCollisions, (uint32_t)carTxDroppedAfterRetries,
-                        (uint32_t)outgoingQueueFullDrops
+                        (uint32_t)outgoingQueueFullDrops, (uint32_t)piLogLinesDropped
                 ));
     }
 
@@ -531,6 +547,14 @@ namespace pico::ibus::dma {
                 packet,
                 &toPiQ,
                 "toPiQ"
+        );
+    }
+
+    void SingleCoreDmaManager::cpu0scheduleOutgoingLogMessage(data::IbusPacket packet) {
+        writePacketToQ(
+                packet,
+                &toPiLogQ,
+                "toPiLogQ"
         );
     }
 
@@ -583,7 +607,11 @@ namespace pico::ibus::dma {
             //Queue full: drop this packet and count it. This used to empty the whole queue, which threw
             //away every packet waiting for the car (e.g. a burst from the Pi). Don't log here: a log
             //line is itself a packet for toPiQ, so logging while toPiQ is full would recurse.
-            outgoingQueueFullDrops = outgoingQueueFullDrops + 1;
+            if (toQ == &toPiLogQ) {
+                piLogLinesDropped = piLogLinesDropped + 1;
+            } else {
+                outgoingQueueFullDrops = outgoingQueueFullDrops + 1;
+            }
         }
     }
 
