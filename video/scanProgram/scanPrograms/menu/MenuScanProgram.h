@@ -49,6 +49,8 @@ namespace video::scanProgram::scanPrograms::menu {
         std::string getTag() override;
         void onScanProgramStart() override;
         void onScanProgramStop() override;
+        void onScanProgramStartCpu0() override;
+        void onScanProgramStopCpu0() override;
         void render(scanvideo_scanline_buffer_t *scanline_buffer) override;
     };
 

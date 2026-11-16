@@ -134,6 +134,14 @@ namespace video::scanProgram {
             //No scan program should be doing anything on cpu0Loop.
             if (classIsNoOp) { return; }
             recoverWedgedScanlineStateMachine();
+            //Let scan programs do their core 0 half of starting/stopping (see BaseScanProgram).
+            for (auto program : {(scanPrograms::BaseScanProgram*) noopScanProgram.get(),
+                                 (scanPrograms::BaseScanProgram*) menuScanProgram.get(),
+                                 (scanPrograms::BaseScanProgram*) demoScanProgram.get(),
+                                 (scanPrograms::BaseScanProgram*) clockScanProgram.get(),
+                                 (scanPrograms::BaseScanProgram*) bootsplashScanProgram.get()}) {
+                program->serviceCpu0();
+            }
             getScanProgramPtr(getCurrentScanProgram())->onCpu0Loop();
         }
 

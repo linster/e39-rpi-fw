@@ -22,13 +22,28 @@ namespace video::scanProgram::scanPrograms {
     void BaseScanProgram::startScanProgram() {
         logger->d(getTag(), "Starting ScanProgram");
         onScanProgramStart();
+        desiredCpu0State.store(STARTED);
         logger->d(getTag(), "Completed onScanProgramStart()");
     }
 
     void BaseScanProgram::stopScanProgram() {
         logger->d(getTag(), "Stopping ScanProgram");
         onScanProgramStop();
+        desiredCpu0State.store(STOPPED);
         logger->d(getTag(), "Stopped ScanProgram");
+    }
+
+    void BaseScanProgram::serviceCpu0() {
+        uint8_t desired = desiredCpu0State.load();
+        if (desired == appliedCpu0State) {
+            return;
+        }
+        appliedCpu0State = desired;
+        if (desired == STARTED) {
+            onScanProgramStartCpu0();
+        } else {
+            onScanProgramStopCpu0();
+        }
     }
 
     void BaseScanProgram::cpu0setup() {
