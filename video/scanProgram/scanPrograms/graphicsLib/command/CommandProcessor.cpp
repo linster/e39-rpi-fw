@@ -65,7 +65,7 @@ namespace video::scanVideo::graphics::command {
         rleRunsToProcess.clear();
     }
 
-    //Called from CPU1, inside BaseScanProgram's renderCs (IRQs off): keep it short, no allocation.
+    //Called from CPU1 for every scanline: keep it short, no allocation.
     void CommandProcessor::render_computed(scanvideo_scanline_buffer_t *scanline_buffer) {
         uint16_t line_num = scanvideo_scanline_number(scanline_buffer->scanline_id);
 
