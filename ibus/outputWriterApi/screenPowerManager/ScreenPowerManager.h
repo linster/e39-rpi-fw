@@ -49,11 +49,19 @@ namespace pico {
 
                     void sendScreenInitializationMessage();
 
-                    //TODO a method to blank the screen so that when video switch != upstream,
-                    //TODO there is nothing the user can click on
-                    //https://github.com/piersholt/wilhelm-docs/blob/master/radio/46.md
-                    //I think there's a packet we can send with all the radio clickable stuff
-                    //disabled.
+                    /**
+                     * Put the GT (on cars with a TV module: the Video Module's own GT, 0x3B) on an index
+                     * screen with nothing on it, so BMBT knob turns and presses have nothing to select
+                     * while the screen shows something else (the Pi). The knob messages go to 0x3B on
+                     * the shared bus, so without this they move through the GT's menus unseen.
+                     *
+                     * The screen is the Telephone index layout (0xF0) with only a title, as the
+                     * "BLUETOOTH PAIRING" screen does:
+                     *   C8 <len> 3B A5 F0 00 00 <title> <xor>
+                     * https://github.com/piersholt/wilhelm-docs/blob/master/tel/list.md ("Title Only").
+                     * Not Television mode: switching the TV source can flip the BMBT to PAL.
+                     */
+                    void sendBlankIndexScreen();
 
                 protected:
                     std::shared_ptr<dma::IDmaManager> getDmaManager() override;

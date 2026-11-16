@@ -48,7 +48,9 @@ namespace pico::hardware::videoSwitch::max4314 {
                         default:
                             logger->w("Max4314VideoSwitch", "Invalid video source requested.");
                     }
+                    VideoSource from = previousVideoSource;
                     previousVideoSource = source;
+                    notifySourceChanged(from, source);
                 }
 
                 VideoSource Max4314VideoSwitch::getPreviousVideoSource() {

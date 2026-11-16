@@ -112,6 +112,18 @@ namespace pico::ibus::output::writer {
         this->schedulePacketForWrite(iBusPacket);
     }
 
+    void ScreenPowerManager::sendBlankIndexScreen() {
+        logger->i(getTag(), "Sending a blank index screen to the GT (knob has nothing to select)");
+        //0xA5 Body Text, layout 0xF0 (Telephone index), offset 0x00, options 0x00 (render), title.
+        std::vector<uint8_t> data = {0xA5, 0xF0, 0x00, 0x00, ' '};
+        auto iBusPacket = data::IbusPacket(
+                data::IbusDeviceEnum::TELEPHONE,
+                data::IbusDeviceEnum::NAV_VIDEOMODULE,
+                data
+        );
+        this->schedulePacketForWrite(iBusPacket);
+    }
+
     void ScreenPowerManager::logCurrentState(std::string subTag) {
         if (this->isPowerOn) {
             logger->d(getTag(), fmt::format("{}. Current state is: true", subTag));
