@@ -5,6 +5,8 @@
 #ifndef PICOTEMPLATE_PITOPICO_H
 #define PICOTEMPLATE_PITOPICO_H
 
+#include "ProtoEnum.h"
+
 
 #include "ConfigMessage.h"
 #include <proto_generated/PiToPico.pb.h>
@@ -32,9 +34,13 @@ namespace pico::messages {
                 SimulatedIgnitionPosition0,
                 SimulatedIgnitionPosition1,
                 SimulatedIgnitionPosition2,
-                SimulatedIgnitionPosition3
+                SimulatedIgnitionPosition3,
+
+                //Proto value 0 (not sent on the wire in proto3), unknown values, and failed decodes.
+                //Observers only act on specific types, so this is ignored.
+                EmptyMessage
             };
-            MessageType messageType;
+            MessageType messageType = MessageType::EmptyMessage; //was uninitialized
             ConfigMessage newConfig;
         };
 
@@ -65,10 +71,12 @@ namespace pico::messages {
                         case PiToPicoMessage::SimulatedIgnitionPosition1: return ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition1;
                         case PiToPicoMessage::SimulatedIgnitionPosition2: return ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition2;
                         case PiToPicoMessage::SimulatedIgnitionPosition3: return ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3;
+                        case PiToPicoMessage::EmptyMessage: return ca_stefanm_e39_proto_PiToPico_MessageType_EmptyMessage;
                     }
+                    return ca_stefanm_e39_proto_PiToPico_MessageType_EmptyMessage;
                 };
                 static LocalType decode(const ProtoType& proto) {
-                    switch (proto) {
+                    switch (protoEnumRawValue(proto)) { //not switch (proto): see ProtoEnum.h
                         case ca_stefanm_e39_proto_PiToPico_MessageType_HeartbeatRequest: return PiToPicoMessage::MessageType::HeartbeatRequest;
                         case ca_stefanm_e39_proto_PiToPico_MessageType_HeartbeatResponse: return PiToPicoMessage::MessageType::HeartbeatResponse;
                         case ca_stefanm_e39_proto_PiToPico_MessageType_ConfigStatusRequest: return PiToPicoMessage::MessageType::ConfigStatusRequest;
@@ -83,7 +91,10 @@ namespace pico::messages {
                         case ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition1: return PiToPicoMessage::SimulatedIgnitionPosition1;
                         case ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition2: return PiToPicoMessage::SimulatedIgnitionPosition2;
                         case ca_stefanm_e39_proto_PiToPico_MessageType_SimulatedIgnitionPosition3: return PiToPicoMessage::SimulatedIgnitionPosition3;
+                        case ca_stefanm_e39_proto_PiToPico_MessageType_EmptyMessage: return PiToPicoMessage::EmptyMessage;
                     }
+                    //Unknown value (e.g. a newer Pi build). Used to fall off the end of the function.
+                    return PiToPicoMessage::EmptyMessage;
                 }
             };
         public:

@@ -5,6 +5,8 @@
 #ifndef PICOTEMPLATE_PICOTOPI_H
 #define PICOTEMPLATE_PICOTOPI_H
 
+#include "ProtoEnum.h"
+
 #include "ConfigMessage.h"
 #include <proto_generated/PicoToPi.pb.h>
 
@@ -19,10 +21,14 @@ namespace pico::messages {
                 ConfigStatusResponse,
                 PiSoftPowerRestartX,
                 PiSoftPowerRestartPi,
-                PiSoftPowerShutdown
+                PiSoftPowerShutdown,
+
+                //Proto value 0 and unknown values. Default so an unset messageType is never
+                //read uninitialized (same fix as PiToPicoMessage).
+                EmptyMessage
             };
 
-            MessageType messageType;
+            MessageType messageType = MessageType::EmptyMessage;
 
             ConfigMessage existingConfig;
             std::string loggerMessage;
@@ -50,10 +56,13 @@ namespace pico::messages {
                         case PicoToPiMessage::MessageType::PiSoftPowerRestartX: return ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartX;
                         case PicoToPiMessage::MessageType::PiSoftPowerRestartPi: return ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi;
                         case PicoToPiMessage::MessageType::PiSoftPowerShutdown: return ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerShutdown;
+                        case PicoToPiMessage::MessageType::EmptyMessage: return ca_stefanm_e39_proto_PicoToPi_MessageType_EmptyMessage;
                     }
+                    //Used to fall off the end of the function for any value not listed.
+                    return ca_stefanm_e39_proto_PicoToPi_MessageType_EmptyMessage;
                 }
                 static LocalType decode(const ProtoType& proto) {
-                    switch (proto) {
+                    switch (protoEnumRawValue(proto)) { //not switch (proto): see ProtoEnum.h
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_HeartbeatRequest: return PicoToPiMessage::MessageType::HeartbeatRequest;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_HeartbeatResponse: return PicoToPiMessage::MessageType::HeartbeatResponse;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_LogStatement: return PicoToPiMessage::MessageType::LogStatement;
@@ -61,7 +70,10 @@ namespace pico::messages {
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartX: return PicoToPiMessage::MessageType::PiSoftPowerRestartX;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerRestartPi: return PicoToPiMessage::MessageType::PiSoftPowerRestartPi;
                         case ca_stefanm_e39_proto_PicoToPi_MessageType_PiSoftPowerShutdown: return PicoToPiMessage::MessageType::PiSoftPowerShutdown;
+                        case ca_stefanm_e39_proto_PicoToPi_MessageType_EmptyMessage: return PicoToPiMessage::MessageType::EmptyMessage;
                     }
+                    //Unknown value. Used to fall off the end of the function.
+                    return PicoToPiMessage::MessageType::EmptyMessage;
                 }
             };
         public:

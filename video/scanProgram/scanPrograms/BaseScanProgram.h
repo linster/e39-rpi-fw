@@ -8,6 +8,7 @@
 #define PICOTEMPLATE_BASESCANPROGRAM_H
 
 #include <memory>
+#include <atomic>
 #include <cstdint>
 #include "pico/mutex.h"
 #include "pico/scanvideo.h"
@@ -59,6 +60,11 @@ namespace video::scanProgram::scanPrograms {
                 void onCpu1Loop();
 
                 void callRender();
+
+                /** Core 0 only. Called by ScanProgramManager on every core 0 loop for every scan
+                 *  program: runs onScanProgramStartCpu0() / onScanProgramStopCpu0() once core 1 has
+                 *  started or stopped this program. */
+                void serviceCpu0();
 
                 #ifdef TEST_VGA_MONITOR
                     //This is a copy of vga_timing_640x480_60_default but as constexpr.
@@ -163,7 +169,11 @@ namespace video::scanProgram::scanPrograms {
 
 
             constexpr static const scanvideo_timing_t vga_timing_bmbt = {
-                            .clock_freq = 7867500, //Original.
+                            //125MHz / 16 exactly. The Pi's 7867500 can't be divided evenly
+                            //from clk_sys, and scanvideo silently rounded it to 8333333.
+                            //See video/Readme.md.
+                            .clock_freq = 7812500,
+//                            .clock_freq = 7867500, //Original, from the Pi's hdmi_timings.
 //                            .clock_freq = 15625000, //CPU needs to go up to 126MHz.
 
                             //TODO Almost works. We can make the same active width as
@@ -205,8 +215,12 @@ namespace video::scanProgram::scanPrograms {
                 #endif
 
             private:
+                //Lifecycle state requested by core 1 (desired) and applied on core 0 (applied).
+                //Plain atomic byte loads/stores only (lock-free on the M0+; no libatomic needed).
+                enum : uint8_t { STOPPED = 0, STARTED = 1 };
+                std::atomic<uint8_t> desiredCpu0State {STOPPED};
+                uint8_t appliedCpu0State = STOPPED;
 
-                critical_section_t renderCs;
                 std::shared_ptr<pico::logger::BaseLogger> logger;
 
                 scanvideo_timing_t getScanProgramTiming();
@@ -219,9 +233,20 @@ namespace video::scanProgram::scanPrograms {
                  * and teardown code */
                 virtual void render(scanvideo_scanline_buffer_t *scanline_buffer) = 0;
 
-                /** Called when the ScanProgramSwapper stops and starts our scan programs */
+                /** Called on CORE 1 when the ScanProgramSwapper stops and starts our scan programs.
+                 *  Keep these to things that must run on core 1 (e.g. scanvideo_timing_enable(), which
+                 *  enables scanvideo's interrupts on the calling core) and drawing that touches
+                 *  nothing core 0 also uses. */
                 virtual void onScanProgramStart() = 0;
                 virtual void onScanProgramStop() = 0;
+
+                /** Called on CORE 0 shortly after onScanProgramStart() / onScanProgramStop(). Put
+                 *  anything here that touches objects core 0 also uses (ScreenManager, Screens,
+                 *  ScreenItems, listeners): shared_ptr reference counts aren't atomic on this
+                 *  toolchain, and those objects have no locks. If a program is started and stopped
+                 *  again before core 0 gets to it, neither runs. */
+                virtual void onScanProgramStartCpu0() {}
+                virtual void onScanProgramStopCpu0() {}
 
                 uint16_t getDisplayHeightPx();
                 uint16_t getDisplayWidthPx();

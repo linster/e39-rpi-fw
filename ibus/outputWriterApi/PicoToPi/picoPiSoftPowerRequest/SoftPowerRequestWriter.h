@@ -7,32 +7,30 @@
 
 #include <ibus/outputWriterApi/BaseOutputWriter.h>
 
-namespace pico {
-    namespace ibus {
-        namespace output {
-            namespace writer {
+namespace pico::ibus::output::writer {
 
-                class SoftPowerRequestWriter : BaseOutputWriter {
-                private:
-                    std::shared_ptr<logger::BaseLogger> logger;
-                    std::shared_ptr<dma::IDmaManager> dmaManager;
-                public:
-                    SoftPowerRequestWriter(
-                            std::shared_ptr<logger::BaseLogger> logger,
-                            std::shared_ptr<dma::IDmaManager> dmaManager
-                    );
+    class SoftPowerRequestWriter : BaseOutputWriter {
+    private:
+        std::shared_ptr<logger::BaseLogger> logger;
+        std::shared_ptr<dma::IDmaManager> dmaManager;
+    public:
+        SoftPowerRequestWriter(
+                std::shared_ptr<logger::BaseLogger> logger,
+                std::shared_ptr<dma::IDmaManager> dmaManager
+        );
 
-                    void requestRpiRestart();
-                    void requestRpiRestartX();
-                    void requestRpiShutdown();
-                protected:
-                    std::string getTag() override { return "SoftPowerRequestWriter"; };
-                    std::shared_ptr<dma::IDmaManager> getDmaManager() override;
-                };
+        void requestRpiRestart();
 
-            } // pico
-        } // ibus
-    } // output
+        void requestRpiRestartX();
+
+        void requestRpiShutdown();
+
+    protected:
+        std::string getTag() override { return "SoftPowerRequestWriter"; };
+
+        std::shared_ptr<dma::IDmaManager> getDmaManager() override;
+    };
+
 } // writer
 
 #endif //PICOTEMPLATE_SOFTPOWERREQUESTWRITER_H

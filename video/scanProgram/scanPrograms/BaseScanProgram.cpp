@@ -16,19 +16,35 @@ namespace video::scanProgram::scanPrograms {
             ) {
 
         this->logger = logger;
-        critical_section_init(&renderCs);
+        //(No critical section here any more. Each one claimed one of the RP2040's 8 non-shared spin
+        //locks, and renderCs was no longer used: see callRender.)
     }
 
     void BaseScanProgram::startScanProgram() {
         logger->d(getTag(), "Starting ScanProgram");
         onScanProgramStart();
+        desiredCpu0State.store(STARTED);
         logger->d(getTag(), "Completed onScanProgramStart()");
     }
 
     void BaseScanProgram::stopScanProgram() {
         logger->d(getTag(), "Stopping ScanProgram");
         onScanProgramStop();
+        desiredCpu0State.store(STOPPED);
         logger->d(getTag(), "Stopped ScanProgram");
+    }
+
+    void BaseScanProgram::serviceCpu0() {
+        uint8_t desired = desiredCpu0State.load();
+        if (desired == appliedCpu0State) {
+            return;
+        }
+        appliedCpu0State = desired;
+        if (desired == STARTED) {
+            onScanProgramStartCpu0();
+        } else {
+            onScanProgramStopCpu0();
+        }
     }
 
     void BaseScanProgram::cpu0setup() {
@@ -64,11 +80,13 @@ namespace video::scanProgram::scanPrograms {
 
     void BaseScanProgram::callRender() {
         scanvideo_scanline_buffer_t *scanlineBuffer = scanvideo_begin_scanline_generation(true);
-        critical_section_enter_blocking(&renderCs);
+        //No critical section here. render() used to run inside a critical section, which disabled interrupts on
+        //core 1 for the whole line. scanvideo's per-line interrupts (PIO0_IRQ_0 / DMA_IRQ_0) run on
+        //core 1 too and must launch each line's DMA within a few microseconds; with interrupts held off
+        //during slow lines they ran late every line and the display went blank a few frames after
+        //boot. Nothing else ever took it; CommandProcessor locks the state it shares with core 0.
         render(scanlineBuffer);
-        critical_section_exit(&renderCs);
         scanvideo_end_scanline_generation(scanlineBuffer);
-//        critical_section_exit(&renderCs);
     }
 
 

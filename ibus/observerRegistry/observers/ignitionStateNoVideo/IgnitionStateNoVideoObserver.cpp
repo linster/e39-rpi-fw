@@ -23,7 +23,10 @@ namespace pico::ibus::observers {
         logger->d(getTag(), fmt::format("onIgnitionKeyPosition() position {:x}", position));
         logger->d(getTag(), fmt::format("current position {:x}", currentKeyPosition));
         onIgnitionKeyPositionUpdates(currentKeyPosition, position);
-        currentKeyPosition = position;
+        if (currentKeyPosition != position) {
+            //Only record changes, because many things could cause broadcasts of the ignition key status repeatedly.
+            currentKeyPosition = position;
+        }
     }
 
     void IgnitionStateNoVideoObserver::onIgnitionKeyPositionUpdates(int oldPosition, int newPosition) {

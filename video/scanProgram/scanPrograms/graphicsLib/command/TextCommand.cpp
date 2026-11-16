@@ -48,13 +48,19 @@ namespace video::scanVideo::graphics::command {
         uint8_t * bitmap;
 
 
-        int ord = (int)c;
-        if (ord > 127 || ord < 0) {
+        //Read the byte as unsigned: `char` is unsigned on ARM but signed on the host,
+        //so (int)c would be 128..255 on the Pico and -128..-1 in host unit tests.
+        int ord = (int)(unsigned char)c;
+        if (ord > 127) {
             //The only special character we support is the copyright symbol lol
             //TODO someday actually figure out how atoi() handles non-ASCII characters
+            //(a UTF-8 multi-byte character currently draws one glyph per byte)
             bitmap = (uint8_t *) fonts::FontProvider::font8x8_ext_latin[9];
+        } else {
+            //Only index the 128-entry basic table with 0..127; previously this ran
+            //unconditionally and read past the table for bytes >= 128.
+            bitmap = (uint8_t *) fonts::FontProvider::font8x8_basic[ord];
         }
-        bitmap = (uint8_t *) fonts::FontProvider::font8x8_basic[ord];
 
         return getRleRunsForBitmap(index, bitmap);
     }

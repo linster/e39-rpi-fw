@@ -4,6 +4,8 @@
 
 #include "MenuScanProgram.h"
 
+#include <functional>
+
 namespace video::scanProgram::scanPrograms::menu {
 
 
@@ -33,10 +35,23 @@ namespace video::scanProgram::scanPrograms::menu {
         return "MenuScanProgram";
     }
 
+    //Core 1: only what has to run there. scanvideo_timing_enable() enables scanvideo's interrupts on
+    //the calling core, so it must be core 1.
     void MenuScanProgram::onScanProgramStart() {
         logger->d(getTag(), "onScanProgramStart()");
-
         scanvideo_timing_enable(true);
+    }
+
+    void MenuScanProgram::onScanProgramStop() {
+        logger->d(getTag(), "onScanProgramStop()");
+    }
+
+    //Core 0: everything that touches the ScreenManager, Screens, ScreenItems and the focus
+    //listener. Core 0 also uses those (knob input calls the focus listener, which redraws), and
+    //they're shared_ptrs with non-atomic reference counts and no locks, so they used to be raced
+    //from both cores when the menu was started or stopped on core 1.
+    void MenuScanProgram::onScanProgramStartCpu0() {
+        logger->d(getTag(), "onScanProgramStartCpu0()");
 
         registerOnFocusChangeCallback();
 
@@ -44,17 +59,17 @@ namespace video::scanProgram::scanPrograms::menu {
 
         drawScreenBackground();
 
-        logger->d(getTag(), "onScanProgramStart() drew screen background");
+        logger->d(getTag(), "onScanProgramStartCpu0() drew screen background");
 
         drawScreen(screenManager->getCurrentScreen());
     }
 
-    void MenuScanProgram::onScanProgramStop() {
-        logger->d(getTag(), "onScanProgramStop()");
-
-        menuGraphicsLib->clearFrame(); //Free up some memory
+    void MenuScanProgram::onScanProgramStopCpu0() {
+        logger->d(getTag(), "onScanProgramStopCpu0()");
 
         unRegisterOnFocusChangeCallback();
+
+        menuGraphicsLib->clearFrame(); //Free up some memory
     }
 
     void MenuScanProgram::render(scanvideo_scanline_buffer_t *scanline_buffer) {
@@ -85,10 +100,15 @@ namespace video::scanProgram::scanPrograms::menu {
                 );
     }
 
+    //Builds the whole menu frame off-screen and swaps it in at once (beginFrame ... computeFrame), so a
+    //redraw never shows a cleared or half-drawn menu. It used to clear the frame, draw and compute the
+    //blank background, then draw and compute the title and items: three visibly different frames on
+    //every knob turn (the flicker).
     void MenuScanProgram::drawScreen(std::shared_ptr<ScreenManager::Screen> screen) {
-        blankMenuItemArea();
-
         menuGraphicsLib->setImmediateMode(false);
+        menuGraphicsLib->beginFrame();
+
+        drawMenuItemAreaBackground();
 
         menuGraphicsLib->drawFilledRectangle(
             scanVideo::graphics::command::PxCoord(30, 58),
@@ -140,20 +160,18 @@ namespace video::scanProgram::scanPrograms::menu {
         return 8 + 8;
     }
 
-    void MenuScanProgram::blankMenuItemArea() {
-        menuGraphicsLib->clearFrame();
+    void MenuScanProgram::drawMenuItemAreaBackground() {
         menuGraphicsLib->drawFilledRectangle(
                 scanVideo::graphics::command::PxCoord(30,58),
                 scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, getDisplayHeightPx() - 40 - 2),
                 graphicsLib::LINOS_BACKGROUND
                 );
-        menuGraphicsLib->computeFrame();
     }
 
     void MenuScanProgram::refreshUi() {
         logger->d(getTag(), "RefreshUI");
-        scanvideo_wait_for_vblank();
-        menuGraphicsLib->clearFrame();
+        //No clearFrame() or vblank wait: drawScreen swaps the new frame in whole. (Waiting for vblank
+        //here also took scanvideo's single vblank token away from core 1's scan program switch.)
         drawScreenBackground();
         drawScreen(screenManager->getCurrentScreen());
     }

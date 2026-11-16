@@ -31,7 +31,7 @@ namespace video::scanProgram::scanPrograms::menu {
         void drawScreenMenuItems(std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>>);
         uint16_t drawScreenMenuItem(uint16_t tl, std::shared_ptr<video::ScreenManager::ScreenItem> item);
 
-        void blankMenuItemArea();
+        void drawMenuItemAreaBackground();
 
         void registerOnFocusChangeCallback();
         void unRegisterOnFocusChangeCallback();
@@ -49,6 +49,8 @@ namespace video::scanProgram::scanPrograms::menu {
         std::string getTag() override;
         void onScanProgramStart() override;
         void onScanProgramStop() override;
+        void onScanProgramStartCpu0() override;
+        void onScanProgramStopCpu0() override;
         void render(scanvideo_scanline_buffer_t *scanline_buffer) override;
     };
 

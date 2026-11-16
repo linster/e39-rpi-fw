@@ -18,16 +18,18 @@ namespace pico::ibus::output::writer {
         //If false, drop the remainder after truncation.
         bool splitLogMessagesAtTruncationPoint = false;
 
-        std::function<std::shared_ptr<dma::IDmaManager>()> dmaManagerAccessor;
+        std::function<dma::IDmaManager*()> dmaManagerAccessor;
     public:
         explicit IbusLoggerOutput(
-                std::function<std::shared_ptr<dma::IDmaManager>()> dmaManagerAccessor
+                std::function<dma::IDmaManager*()> dmaManagerAccessor
         );
         void print(std::string message);
     protected:
         std::string getTag() override { return "IbusLoggerOutput"; };
         //This accessor is only called when the packet is scheduled to be written.
+        //Unused: writes go through getDmaManagerForWrite() so core 1 never copies the shared_ptr.
         std::shared_ptr<dma::IDmaManager> getDmaManager() override;
+        dma::IDmaManager* getDmaManagerForWrite() override;
     };
 
 } // writer

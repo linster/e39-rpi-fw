@@ -3,6 +3,8 @@
 //
 
 #include "ScanProgramManager.h"
+#include "hardware/timer.h"
+#include "hardware/pio.h"
 
 
 namespace video::scanProgram {
@@ -27,27 +29,28 @@ namespace video::scanProgram {
             return ret;
         }
 
-        std::shared_ptr<scanPrograms::BaseScanProgram> ScanProgramManager::getScanProgramPtr(ScanProgram scanProgram) {
-            //return std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->demoScanProgram);
-            std::shared_ptr<scanPrograms::BaseScanProgram> retPtr;
+        //Returns a raw pointer on purpose. This is called on both cores, on every loop iteration
+        //(core 0) and every scanline (core 1). Returning a std::shared_ptr copy bumped the shared
+        //reference count from both cores at once, and on this toolchain shared_ptr reference counts
+        //aren't atomic (_Lock_policy _S_single). Lost updates eventually dropped the count to zero,
+        //deleting the scan program while it was in use: core 1 then called render() through the
+        //destroyed object's BaseScanProgram vtable and jumped to address 0 (HardFault).
+        //The ScanProgramManager owns all scan programs for the life of the program, so no
+        //reference counting is needed here.
+        scanPrograms::BaseScanProgram* ScanProgramManager::getScanProgramPtr(ScanProgram scanProgram) {
             switch (scanProgram) {
                 case BOOT_SPLASH:
-                    retPtr = std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->bootsplashScanProgram);
-                    break;
+                    return this->bootsplashScanProgram.get();
                 case CLOCK:
-                    retPtr = std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->clockScanProgram);
-                    break;
+                    return this->clockScanProgram.get();
                 case DEMO:
-                    retPtr = std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->demoScanProgram);
-                    break;
+                    return this->demoScanProgram.get();
                 case MENU:
-                    retPtr = std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->menuScanProgram);
-                    break;
+                    return this->menuScanProgram.get();
                 case NOOP:
-                    retPtr = std::reinterpret_pointer_cast<scanPrograms::BaseScanProgram>(this->noopScanProgram);
-                    break;
+                    return this->noopScanProgram.get();
             }
-            return retPtr;
+            return this->noopScanProgram.get();
         }
 
         void ScanProgramManager::cpu0setup() {
@@ -130,11 +133,69 @@ namespace video::scanProgram {
         void ScanProgramManager::onCpu0Loop() {
             //No scan program should be doing anything on cpu0Loop.
             if (classIsNoOp) { return; }
+            recoverWedgedScanlineStateMachine();
+            //Let scan programs do their core 0 half of starting/stopping (see BaseScanProgram).
+            for (auto program : {(scanPrograms::BaseScanProgram*) noopScanProgram.get(),
+                                 (scanPrograms::BaseScanProgram*) menuScanProgram.get(),
+                                 (scanPrograms::BaseScanProgram*) demoScanProgram.get(),
+                                 (scanPrograms::BaseScanProgram*) clockScanProgram.get(),
+                                 (scanPrograms::BaseScanProgram*) bootsplashScanProgram.get()}) {
+                program->serviceCpu0();
+            }
             getScanProgramPtr(getCurrentScanProgram())->onCpu0Loop();
+        }
+
+        //Workaround: on some boots, scanvideo's scanline state machine (PIO0 SM0) wedges at its
+        //line-start `wait 1 irq 4`: it never proceeds even though the timing state machine keeps
+        //raising IRQ 4 and its TX FIFO holds the next line. Sync keeps running but the picture
+        //freezes (blank screen), and core 1 then blocks forever in
+        //scanvideo_begin_scanline_generation() because no buffer is ever consumed - which is why
+        //this check runs on core 0. A state machine restart (SM_RESTART) clears it, after which
+        //video stays up. Root cause not yet found: it's a boot-time race, not caused by rendering
+        //or by flash writes (seen with the persistent config sector erased and never written).
+        //
+        //Detection: the SM is at that wait while IRQ flag 4 is already set. A running SM takes a set
+        //flag within one PIO clock (8 system clocks here), so seeing both on checks 1 ms apart means
+        //it's stuck. This used to count how often core 0 happened to see the SM at the wait
+        //(>= 200 times over > 50 ms) instead. A healthy SM spends ~30% of every line there, so it
+        //couldn't tell a stuck SM from a slow or unlucky core 0 loop: it fired on about half of all
+        //scan program switches and restarted a working state machine mid-frame (a visible glitch).
+        void ScanProgramManager::recoverWedgedScanlineStateMachine() {
+            constexpr uint scanlineSm = 0;                  //PICO_SCANVIDEO_SCANLINE_SM (scanvideo uses pio0)
+            constexpr uint lineStartIrq = 4;
+            constexpr uint32_t confirmAfterUs = 1000;
+            static const uint32_t lineStartWait = pio_encode_wait_irq(true, false, lineStartIrq);
+
+            bool stuck = pio0->sm[scanlineSm].instr == lineStartWait && (pio0->irq & (1u << lineStartIrq));
+            uint32_t now = time_us_32();
+            if (!stuck) {
+                scanlineSmStuckSinceUs = 0;
+                return;
+            }
+            if (scanlineSmStuckSinceUs == 0) {
+                scanlineSmStuckSinceUs = now | 1; //0 means "not stuck"
+                return;
+            }
+            if ((now - scanlineSmStuckSinceUs) < confirmAfterUs) {
+                return;
+            }
+
+            uint addr = pio0->sm[scanlineSm].addr;
+            pio_sm_restart(pio0, scanlineSm);
+            pio_sm_exec(pio0, scanlineSm, pio_encode_jmp(addr));
+            scanlineSmStuckSinceUs = 0;
+            scanlineSmRecoveries = scanlineSmRecoveries + 1;
+            logger->w(getTag(), fmt::format("Restarted wedged scanline state machine ({} so far)",
+                                            (uint32_t) scanlineSmRecoveries));
         }
 
         void ScanProgramManager::onCpu1Loop() {
             if (classIsNoOp) { return; }
+            if (benchCore1StallMs != 0) {
+                uint8_t ms = benchCore1StallMs;
+                benchCore1StallMs = 0;
+                busy_wait_ms(ms);
+            }
             cpu1DequeueSwapTo();
             getScanProgramPtr(getCurrentScanProgram())->onCpu1Loop();
         }

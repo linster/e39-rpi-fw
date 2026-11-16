@@ -16,6 +16,12 @@ namespace pico {
 
             class Packetizer {
 
+            public:
+                //Whole packet is src, len, dest, data..., crc = len + 2 bytes. Packets travel through
+                //255-byte buffers/queue items everywhere downstream, so the largest len we accept is 253.
+                static constexpr uint8_t MAX_PACKET_BYTES = 255;
+                static constexpr uint8_t MAX_LENGTH_FIELD = MAX_PACKET_BYTES - 2;
+
             private:
                 std::vector<uint8_t> packetBytes;
 
@@ -42,10 +48,8 @@ namespace pico {
                 bool isPacketComplete();
                 std::vector<uint8_t> getPacketBytes();
 
-                //Don't actually clear everything out. From start to end of the buffer,
-                //grab a complete packet, and remove it. Take what's left and shuffle it to the
-                //beginning of the buffer. Then, that way we don't miss any in-flight packets,
-                //and can keep building up sequential partial packets.
+                //Originally meant to keep bytes after a completed packet, but addByte() never stores
+                //any past the packet's end, so this is the same as reset(). Kept for existing tests.
                 void recycle();
 
                 //Call whenever we want to clear all the state. Maybe we've had too many invalid packets in a row

@@ -46,6 +46,18 @@ namespace video::scanProgram {
             //True to make all the running hooks do nothing.
             bool classIsNoOp = false;
 
+            //Scanline state machine watchdog (see recoverWedgedScanlineStateMachine()). Core 0 only.
+            uint32_t scanlineSmStuckSinceUs = 0;
+            void recoverWedgedScanlineStateMachine();
+        public:
+            /** How many times the watchdog restarted scanvideo's scanline state machine. For debugging. */
+            inline static volatile uint32_t scanlineSmRecoveries = 0; //static so tools can find it by symbol
+
+            /** Bench-only (E39_BENCH_TX_TEST): make core 1 busy-wait this many ms once, with interrupts on,
+             *  to simulate it delivering no scanlines for a while. Set from core 0, consumed on core 1. */
+            inline static volatile uint8_t benchCore1StallMs = 0;
+        private:
+
             static std::string getTag();
 
             /** Guard the currently running scan program */
@@ -54,7 +66,8 @@ namespace video::scanProgram {
             ScanProgram currentScanProgram = NOOP;
             //End Guard: scanProgramStateMutex
 
-            std::shared_ptr<scanPrograms::BaseScanProgram> getScanProgramPtr(ScanProgram scanProgram);
+            //Raw pointer, not a shared_ptr copy: called from both cores (see the .cpp).
+            scanPrograms::BaseScanProgram* getScanProgramPtr(ScanProgram scanProgram);
             void measureFreqs();
 
             /** CPU_0 -> CPU_1 command queue */

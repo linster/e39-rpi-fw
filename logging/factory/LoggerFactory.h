@@ -9,6 +9,7 @@
 #include "ibus/dma/topology/BusTopologyManager.h"
 #include <logging/BaseLogger.h>
 #include <logging/CompositeLogger.h>
+#include <logging/Core1DeferringLogger.h>
 #include <logging/StdioPrintFLogger.h>
 #include <logging/ibusOutLogger/IBusOutLogger.h>
 
@@ -21,7 +22,7 @@ namespace pico::logger::factory {
 
         std::shared_ptr<logger::StdioPrintFLogger> stdioPrintFLogger;
 
-        std::function<std::shared_ptr<pico::ibus::dma::IDmaManager>()> dmaManagerAccessor;
+        std::function<pico::ibus::dma::IDmaManager*()> dmaManagerAccessor;
         std::shared_ptr<pico::ibus::output::writer::IbusLoggerOutput> loggerOutput;
         std::shared_ptr<pico::logger::ibus::IBusOutLogger> iBusOutLogger;
 
@@ -30,10 +31,11 @@ namespace pico::logger::factory {
         void logsToStdioAndUart();
         void logsToStdio();
         void logsToUart();
+        void deferCore1Logging();
     public:
 
         LoggerFactory(
-                std::function<std::shared_ptr<pico::ibus::dma::IDmaManager>()> dmaManagerAccessor,
+                std::function<pico::ibus::dma::IDmaManager*()> dmaManagerAccessor,
                 std::shared_ptr<pico::ibus::topology::BusTopologyManager> busTopologyManager
                 );
 

@@ -10,6 +10,8 @@
 #include <vector>
 #include <configuration/store/IConfigurationStore.h>
 #include "flash_utils.h"
+#include "FlashConfigurationFraming.h"
+#include "fmt/format.h"
 #include "hardware/flash.h"
 #include "hardware/sync.h"
 #include "pico/multicore.h"

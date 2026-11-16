@@ -39,8 +39,8 @@ namespace video::scanProgram::scanPrograms::clock {
         uint16_t skipUntil = 204;
 
         if (line_num < skipUntil) {
-            scanline_buffer->data_used = 0;
-            scanline_buffer->status = SCANLINE_SKIPPED;
+            //Black, not an empty "skipped" line (see SolidScanline.h).
+            graphicsLib->writeSolidColourScanline(scanline_buffer, 0);
             return;
         }
 

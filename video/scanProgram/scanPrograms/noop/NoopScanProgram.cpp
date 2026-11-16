@@ -3,6 +3,7 @@
 //
 
 #include "NoopScanProgram.h"
+#include <video/scanProgram/scanPrograms/SolidScanline.h>
 
 namespace video::scanProgram::scanPrograms::noop {
 
@@ -43,8 +44,8 @@ namespace video::scanProgram::scanPrograms::noop {
     }
 
     void NoopScanProgram::skipScanline(scanvideo_scanline_buffer_t *scanline_buffer) {
-        scanline_buffer->data_used = 0;
-        scanline_buffer->status = SCANLINE_SKIPPED;
+        //A real black line, never an empty "skipped" one (see SolidScanline.h).
+        video::scanProgram::writeSolidScanline(scanline_buffer, getDisplayWidthPx(), 0);
     }
 
 

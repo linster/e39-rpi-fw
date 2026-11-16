@@ -5,12 +5,19 @@
 #include "IbusLoggerOutput.h"
 namespace pico::ibus::output::writer {
     IbusLoggerOutput::IbusLoggerOutput(
-            std::function<std::shared_ptr<dma::IDmaManager>()> dmaManagerAccessor
+            std::function<dma::IDmaManager*()> dmaManagerAccessor
     ) {
         this->dmaManagerAccessor = dmaManagerAccessor;
     }
 
     std::shared_ptr<dma::IDmaManager> IbusLoggerOutput::getDmaManager() {
+        //This writer runs on both cores (core 1 logs too), so it must not copy the DMA manager's
+        //shared_ptr: the reference count isn't atomic. BaseOutputWriter uses
+        //getDmaManagerForWrite() below instead.
+        return nullptr;
+    }
+
+    dma::IDmaManager* IbusLoggerOutput::getDmaManagerForWrite() {
         return dmaManagerAccessor();
     }
 

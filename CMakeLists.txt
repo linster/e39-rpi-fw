@@ -148,6 +148,9 @@ target_sources(
 
         logging/CompositeLogger.cpp
         logging/CompositeLogger.h
+        logging/Core1DeferringLogger.cpp
+        logging/Core1DeferringLogger.h
+
         logging/ibusOutLogger/IBusOutLogger.cpp
         logging/ibusOutLogger/IBusOutLogger.h
         logging/factory/LoggerFactory.cpp
@@ -169,11 +172,17 @@ target_sources(
         ibus/observerRegistry/observers/PiToPico/ConfigPush/PicoConfigPushObserver.cpp
         ibus/observerRegistry/observers/PiToPico/ConfigPush/PicoConfigPushObserver.h
 
+        ibus/outputWriterApi/IgnitionStatusRequest/IgnitionStatusRequestWriter.h
+        ibus/outputWriterApi/IgnitionStatusRequest/IgnitionStatusRequestWriter.cpp
+
 
         main.cpp
 
         ibus/observerRegistry/observers/uartForwarderObserver/UartForwarderObserver.cpp
         ibus/observerRegistry/observers/uartForwarderObserver/UartForwarderObserver.h
+
+        ibus/observerRegistry/observers/benchTxTest/BenchTxTestObserver.cpp
+        ibus/observerRegistry/observers/benchTxTest/BenchTxTestObserver.h
         ibus/outputWriterApi/uartForwarderWriter/UartForwarderWriter.cpp
         ibus/outputWriterApi/uartForwarderWriter/UartForwarderWriter.h
         ibus/outputWriterApi/PicoToPi/ibusLoggerOutput/IbusLoggerOutput.cpp
@@ -326,9 +335,22 @@ if(CMAKE_HAS_VIDEO_SUPPORT)
 
     target_link_libraries(PicoTemplate pico_scanvideo_dpi)
 
+    # scanvideo marks its per-scanline interrupt code to run from RAM, but GCC's partial inlining
+    # moved part of update_dma_transfer_state_irqs_enabled() into a ".part.0" clone in flash. The
+    # line-start interrupt calls it on every active line before launching the line's DMA (budget
+    # ~4.5 us), so an XIP cache miss there can start a line late. Keep the whole path in RAM. Check:
+    #   arm-none-eabi-objdump -d --disassemble=isr_irq7 PicoTemplate.elf | grep bl   (no 0x10... targets)
+    set_source_files_properties(${PICO_EXTRAS_PATH}/src/rp2_common/pico_scanvideo_dpi/scanvideo.c
+            TARGET_DIRECTORY PicoTemplate
+            PROPERTIES COMPILE_OPTIONS "-fno-partial-inlining")
+
 
     target_sources(
             PicoTemplate PUBLIC
+
+            ibus/observerRegistry/observers/benchTxTest/BenchVideoTestObserver.cpp
+            ibus/observerRegistry/observers/benchTxTest/BenchVideoTestObserver.h
+
 
             factory/ApplicationContainer.cpp
             factory/ApplicationContainer.h
@@ -484,6 +506,12 @@ if (E39_RPI_VGA_SMALL_COLOR_DEPTH)
 #scanvideo.h sets these.
 #not sure about wither I want to set any of the _dpi_ values?
 #Assuming DPI == display parallel interface
+#Bench-only: registers BenchTxTestObserver (tests the car bus transmitter from an IBus dongle).
+option(E39_BENCH_TX_TEST "Build the bench-only car transmit test hook" OFF)
+if(E39_BENCH_TX_TEST)
+    target_compile_definitions(PicoTemplate PUBLIC E39_BENCH_TX_TEST=1)
+endif()
+
 target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_PIXEL_RCOUNT=2)
 target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_PIXEL_GCOUNT=2)
 target_compile_definitions(PicoTemplate PUBLIC PICO_SCANVIDEO_PIXEL_BCOUNT=2)

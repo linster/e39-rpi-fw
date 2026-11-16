@@ -12,13 +12,13 @@ namespace pico::di {
 
             this->busTopologyManager = std::make_shared<pico::ibus::topology::BusTopologyManager>();
 
-            this->dmaManagerProvider = std::make_shared<provider::DmaManagerProvider>();
-
 
             //TODO we might want to make this a class variable so it isn't popped off the stack when
             //TODO this method completes.
-            std::function<std::shared_ptr<pico::ibus::dma::IDmaManager>()> dmaManagerAccessor = [this](){
-                return this->dmaManager;
+            //Raw pointer, not a shared_ptr copy: the IBus logger calls this from both cores, and shared_ptr
+            //reference counts aren't atomic on this toolchain (see ScanProgramManager::getScanProgramPtr).
+            std::function<pico::ibus::dma::IDmaManager*()> dmaManagerAccessor = [this](){
+                return this->dmaManager.get();
             };
 
             this->loggerFactory = std::make_shared<logger::factory::LoggerFactory>(dmaManagerAccessor, busTopologyManager);
@@ -170,6 +170,12 @@ namespace pico::di {
                      configurationStatusWriter,
                      configurationManager
                      );
+             //Was only created in NoVideoFactory, so with video on, config pushes from the Pi were ignored.
+             this->picoConfigPushObserver = std::make_shared<ibus::observers::PicoConfigPushObserver>(
+                     logger,
+                     configurationStatusWriter,
+                     configurationManager
+                     );
              this->piPowerRequestObserver = std::make_shared<ibus::observers::PiPowerRequestObserver>(
                      logger,
                      powerSwitchManager
@@ -216,6 +222,8 @@ namespace pico::di {
             baseObservers->push_back(
                     std::static_pointer_cast<ibus::observers::BaseObserver>(picoConfigurationReadRequestObserver));
             baseObservers->push_back(
+                    std::static_pointer_cast<ibus::observers::BaseObserver>(picoConfigPushObserver));
+            baseObservers->push_back(
                     std::static_pointer_cast<ibus::observers::BaseObserver>(piPowerRequestObserver));
             baseObservers->push_back(
                     std::static_pointer_cast<ibus::observers::BaseObserver>(picoVideoRequestObserver));
@@ -223,6 +231,10 @@ namespace pico::di {
                     std::static_pointer_cast<ibus::observers::BaseObserver>(telephoneLongPressObserver));
             baseObservers->push_back(
                     std::static_pointer_cast<ibus::observers::BaseObserver>(uartForwarderObserver));
+#ifdef E39_BENCH_TX_TEST
+            baseObservers->push_back(std::make_shared<ibus::observers::BenchTxTestObserver>(logger, dmaManager));
+            baseObservers->push_back(std::make_shared<ibus::observers::BenchVideoTestObserver>(logger, scanProgramSwapper));
+#endif
         }
 
         PimoroniFactory::PimoroniFactory() {

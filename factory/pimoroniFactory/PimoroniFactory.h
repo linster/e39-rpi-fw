@@ -7,7 +7,6 @@
 
 #include <vector>
 #include <factory/ApplicationContainer.h>
-#include <factory/provider/DmaManagerProvider.h>
 #include <logging/StdioPrintFLogger.h>
 #include <logging/factory/LoggerFactory.h>
 #include <hardware/pi4powerswitch/MockPi4PowerSwitchManager.h>
@@ -23,6 +22,11 @@
 #include <ibus/observerRegistry/observers/knobListener/KnobListenerObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/heartbeatRequest/HeatbeatRequestObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/picoConfigurationReadRequest/PicoConfigurationReadRequestObserver.h>
+#include <ibus/observerRegistry/observers/PiToPico/ConfigPush/PicoConfigPushObserver.h>
+#ifdef E39_BENCH_TX_TEST
+#include <ibus/observerRegistry/observers/benchTxTest/BenchTxTestObserver.h>
+#include <ibus/observerRegistry/observers/benchTxTest/BenchVideoTestObserver.h>
+#endif
 #include <ibus/observerRegistry/observers/PiToPico/PiPowerRequest/PiPowerRequestObserver.h>
 #include <ibus/observerRegistry/observers/PiToPico/VideoRequest/PicoVideoRequestObserver.h>
 #include <ibus/observerRegistry/observers/telephoneLongPress/TelephoneLongPressObserver.h>
@@ -44,7 +48,6 @@ namespace pico::di {
         private:
 
             std::shared_ptr<pico::ibus::topology::BusTopologyManager> busTopologyManager;
-            std::shared_ptr<provider::DmaManagerProvider> dmaManagerProvider;
             std::shared_ptr<logger::factory::LoggerFactory> loggerFactory;
 
             std::shared_ptr<logger::BaseLogger> logger;
@@ -95,6 +98,7 @@ namespace pico::di {
             std::shared_ptr<ibus::observers::KnobListenerObserver> knobListenerObserver;
             std::shared_ptr<ibus::observers::HeatbeatRequestObserver> heatbeatRequestObserver;
             std::shared_ptr<ibus::observers::PicoConfigurationReadRequestObserver> picoConfigurationReadRequestObserver;
+            std::shared_ptr<ibus::observers::PicoConfigPushObserver> picoConfigPushObserver;
             std::shared_ptr<ibus::observers::PiPowerRequestObserver> piPowerRequestObserver;
             std::shared_ptr<ibus::observers::PicoVideoRequestObserver> picoVideoRequestObserver;
             std::shared_ptr<ibus::observers::TelephoneLongPressObserver> telephoneLongPressObserver;

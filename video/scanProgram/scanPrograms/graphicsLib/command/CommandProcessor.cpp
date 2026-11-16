@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include "CommandProcessor.h"
+#include <video/scanProgram/scanPrograms/SolidScanline.h>
 
 namespace video::scanVideo::graphics::command {
 
@@ -11,266 +12,280 @@ namespace video::scanVideo::graphics::command {
         this->logger = logger;
         baseColour = 0;
         lineBuffer.fill(baseColour);
-        mutex_init(&isFrameComputedMutex);
+        mutex_init(&pendingMutex);
+        mutex_init(&renderMutex);
     }
 
-
-    //Called from CPU0
+    //Called from either core.
     void CommandProcessor::addCommand(std::unique_ptr<BaseCommand> baseCommand) {
-        for (const auto g : baseCommand->getRleRunsForShape()) {
-            if (rleRunsToProcess.count(g.first) == 0) {
-                rleRunsToProcess[g.first] = std::vector<RleRun>();
-            }
-            for (const auto gp : g.second) {
-                rleRunsToProcess[g.first].push_back(gp);
-            }
+        //Rasterize outside any lock; this only touches the command itself.
+        std::map<uint16_t, std::vector<RleRun>> shapeRuns = baseCommand->getRleRunsForShape();
+
+        mutex_enter_blocking(&pendingMutex);
+        for (auto &g : shapeRuns) {
+            std::vector<RleRun> &pending = rleRunsToProcess[g.first];
+            pending.insert(pending.end(), g.second.begin(), g.second.end());
         }
 
         if (isImmediateMode) {
-            computeFrame();
+            computeFrameLocked();
         }
+        mutex_exit(&pendingMutex);
     }
 
-    //Called from CPU0
+    //Called from either core.
     void CommandProcessor::addRleRuns(
             std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs) {
+        //Same path as any other command: rasterized into rleRunsToProcess in call order,
+        //so drawing order is preserved. (Previously these went into commandsToProcess,
+        //which computeFrame stopped reading in 123f0b3: they leaked and never rendered.)
+        addCommand(std::make_unique<RleRunContainerCommand>(std::move(runs)));
+    }
 
-        RleRunContainerCommand containerCommand = RleRunContainerCommand(runs);
-
-        std::unique_ptr<BaseCommand> ptr = std::make_unique<RleRunContainerCommand>(containerCommand);
-
-        commandsToProcess.push_back(std::move(ptr));
-
-        if (isImmediateMode) {
-            computeFrame();
-        }
+    void CommandProcessor::beginFrame() {
+        mutex_enter_blocking(&pendingMutex);
+        clearCommandsToProcess();
+        replaceFrameOnCompute = true;
+        mutex_exit(&pendingMutex);
     }
 
     void CommandProcessor::clearFrame() {
-        //TODO need to clear the pointers in the commandsToProcess list, since we OOM.
-        //TODO loop through the list and delete each pointer.
-
-//        mutex_enter_blocking(&isFrameComputedMutex);
-        isFrameComputed = false; //Stop rendering while we're deleting the data structures.
-//        mutex_exit(&isFrameComputedMutex);
-
-        clearCommandsToProcess();
-
-//        mutex_enter_blocking(&isFrameComputedMutex);
-        rleRunsForLine.clear();
-        lineBuffer.fill(baseColour);
-//        computeFrame();
-        isFrameComputed = true;
-        //isFrameComputed = false; //Optimization to quick-skip frames until an object is added.
-//        mutex_exit(&isFrameComputedMutex);
+        mutex_enter_blocking(&pendingMutex);
+        clearFrameLocked();
+        mutex_exit(&pendingMutex);
     }
 
-    void CommandProcessor::clearCommandsToProcess() {
-//        for (auto &command: commandsToProcess) {
-//
-//            command->
-//        }
+    void CommandProcessor::clearFrameLocked() {
+        clearCommandsToProcess();
+        replaceFrameOnCompute = false;
+        lineBuffer.fill(baseColour);
 
-//        commandsToProcess.clear();
+        //Detach the computed frame under the render lock (O(1) swap), free it after releasing.
+        std::map<uint16_t, std::vector<RleRun>> oldFrame;
+        mutex_enter_blocking(&renderMutex);
+        rleRunsForLine.swap(oldFrame);
+        isFrameComputed = true; //An empty frame is a valid, computed frame.
+        mutex_exit(&renderMutex);
+        //oldFrame destroyed here, outside renderMutex.
+    }
+
+    //Caller holds pendingMutex.
+    void CommandProcessor::clearCommandsToProcess() {
         rleRunsToProcess.clear();
     }
 
-    //Called from CPU1
+    //Called from CPU1 for every scanline: keep it short, no allocation.
     void CommandProcessor::render_computed(scanvideo_scanline_buffer_t *scanline_buffer) {
-//
-//        mutex_enter_blocking(&isFrameComputedMutex);
-//        bool safe_isFrameComputed = this->isFrameComputed;
-//        mutex_exit(&isFrameComputedMutex);
-
-        //I don't think this needs to be a safe-read, if we're not computed, let's just bail rfn.
-        if (!this->isFrameComputed) {
-            skipScanline(scanline_buffer);
-            return;
-        }
         uint16_t line_num = scanvideo_scanline_number(scanline_buffer->scanline_id);
 
-        if (rleRunsForLine.count(line_num) == 0 && baseColour != 0) {
-            drawSolidColorScanline(scanline_buffer, baseColour);
+        mutex_enter_blocking(&renderMutex);
+
+        if (!this->isFrameComputed) {
+            mutex_exit(&renderMutex);
+            skipScanline(scanline_buffer);
             return;
         }
 
-        //mutex_enter_blocking(&isFrameComputedMutex);
-        if (rleRunsForLine.count(line_num) == 0) {
-            //No command has artifacts for the line, so skip it
-            //TODO do we want to draw the fillColour here?
-            skipScanline(scanline_buffer);
-        } else {
-            //We have a scanline to draw
-            drawScanline(scanline_buffer, rleRunsForLine[line_num]);
+        auto line = rleRunsForLine.find(line_num);
+        if (line == rleRunsForLine.end()) {
+            uint32_t colour = baseColour;
+            mutex_exit(&renderMutex);
+            if (colour != 0) {
+                drawSolidColorScanline(scanline_buffer, colour);
+            } else {
+                //No command has artifacts for the line, so skip it
+                skipScanline(scanline_buffer);
+            }
+            return;
         }
-        //mutex_exit(&isFrameComputedMutex);
+
+        //Drawn under the lock so the vector can't be freed or swapped mid-read.
+        drawScanline(scanline_buffer, line->second);
+        mutex_exit(&renderMutex);
     }
 
     //Called from CPU1
     void CommandProcessor::skipScanline(scanvideo_scanline_buffer_t *scanline_buffer) {
-        scanline_buffer->data_used = 0;
-        scanline_buffer->status = SCANLINE_SKIPPED;
+        //A real black line, never an empty "skipped" one (see SolidScanline.h).
+        video::scanProgram::writeSolidScanline(scanline_buffer, maxDisplayWidth, 0);
     }
 
-    //Called from CPU1
+    //Called from CPU1 with renderMutex held (reads baseColour).
     void CommandProcessor::drawScanline(
             scanvideo_scanline_buffer_t *scanline_buffer,
-            std::vector<RleRun> merged) {
+            const std::vector<RleRun> &merged) {
 
         //We assume the `merged` vector is sorted and has no duplicates by
         //the time we get here.
+        static const ScanlineTokens tokens = {
+                .colorRun = COMPOSABLE_COLOR_RUN,
+                .raw1p = COMPOSABLE_RAW_1P,
+                .raw2p = COMPOSABLE_RAW_2P,
+                .eolAlign = COMPOSABLE_EOL_ALIGN,
+                .eolSkipAlign = COMPOSABLE_EOL_SKIP_ALIGN,
+        };
 
-        uint16_t *p = (uint16_t *) scanline_buffer->data;
+        ScanlineEncodeResult result = encodeScanline(
+                merged,
+                (uint16_t *) scanline_buffer->data,
+                (size_t) scanline_buffer->data_max * 2,
+                tokens,
+                maxDisplayWidth,
+                (uint16_t) baseColour);
 
-        for (auto run : merged) {
-            if (run.getLen() == 1) {
-                *p++ = COMPOSABLE_RAW_1P;
-                *p++ = run.getColour();
-            }
-            if (run.getLen() == 2) {
-                *p++ = COMPOSABLE_RAW_2P;
-                *p++ = run.getColour();
-                *p++ = run.getColour();
-            }
-            if (run.getLen() >= 3) {
-                *p++ = COMPOSABLE_COLOR_RUN;
-                *p++ = run.getColour();
-                *p++ = run.getLen() - 3;
-            }
+        if (!result.ok) {
+            skipScanline(scanline_buffer);
+            return;
+        }
+        if (result.truncated) {
+            //Can't log here (core 1, IRQs off); inspect from a debugger or log elsewhere.
+            truncatedScanlines = truncatedScanlines + 1;
         }
 
-        // black pixel to end line
-        *p++ = COMPOSABLE_RAW_1P;
-        *p++ = 0;
-        // end of line with alignment padding
-        *p++ = COMPOSABLE_EOL_SKIP_ALIGN;
-        *p++ = 0;
-
-        scanline_buffer->data_used = ((uint32_t *) p) - scanline_buffer->data;
-        assert(scanline_buffer->data_used < scanline_buffer->data_max);
-
+        scanline_buffer->data_used = result.wordsUsed;
         scanline_buffer->status = SCANLINE_OK;
     }
 
-    //Called from CPU0
     void CommandProcessor::computeFrame() {
+        mutex_enter_blocking(&pendingMutex);
+        computeFrameLocked();
+        mutex_exit(&pendingMutex);
+    }
 
+    void CommandProcessor::computeFrameLocked() {
+        //The frame on screen is never blanked while computing: this used to set isFrameComputed =
+        //false for the duration, so render drew black lines while every command was merged in
+        //(in immediate mode, for every command). Each line below is swapped in whole under
+        //renderMutex, so render always sees either the old or the new runs for a line.
 
-        //Mark the frame as not computed while we are computing it. (CPU1 will daw
-//        mutex_enter_blocking(&isFrameComputedMutex);
-        isFrameComputed = false;
-//        mutex_exit(&isFrameComputedMutex);
-
-//        mutex_enter_blocking(&isFrameComputedMutex);
-        for (const auto &g : rleRunsToProcess) {
-            std::unique_ptr<std::vector<RleRun>> runs = std::make_unique<std::vector<RleRun>>(g.second);
-            rleRunsForLine[g.first] = mergeRuns(std::move(runs));
+        if (replaceFrameOnCompute) {
+            //After beginFrame(): build the new frame on its own, then swap it in with one O(1) swap,
+            //so the old frame stays on screen until the new one is complete (no flicker on redraw).
+            std::map<uint16_t, std::vector<RleRun>> newFrame;
+            for (const auto &g : rleRunsToProcess) {
+                auto runs = std::make_unique<std::vector<RleRun>>(g.second.begin(), g.second.end());
+                newFrame.emplace(g.first, mergeRuns(std::move(runs)));
+            }
+            mutex_enter_blocking(&renderMutex);
+            rleRunsForLine.swap(newFrame);
+            isFrameComputed = true;
+            mutex_exit(&renderMutex);
+            replaceFrameOnCompute = false;
+            rleRunsToProcess.clear();
+            return; //newFrame (now the old frame) is freed here, outside renderMutex.
         }
-//        mutex_exit(&isFrameComputedMutex);
 
-//        mutex_enter_blocking(&isFrameComputedMutex);
+        for (const auto &g : rleRunsToProcess) {
+            //Draw the new runs on top of what the line already shows. This used to merge only the
+            //new runs, so in immediate mode (one computeFrame per addCommand) the last command to
+            //touch a line replaced everything drawn on it before: text erased the background behind
+            //it, the white "Linster OS" erased its drop shadow, and the bootsplash's (c) glyph erased
+            //the whole "Stefan Martynkiw 2019-2024" line.
+            //Reading rleRunsForLine here without renderMutex is safe: only mutators (serialized by
+            //pendingMutex, which we hold) modify it; render_computed only reads it.
+            auto runs = std::make_unique<std::vector<RleRun>>();
+            auto current = rleRunsForLine.find(g.first);
+            if (current != rleRunsForLine.end()) {
+                runs->insert(runs->end(), current->second.begin(), current->second.end());
+            }
+            runs->insert(runs->end(), g.second.begin(), g.second.end());
+
+            //Merge outside the render lock; it's the slow part.
+            std::vector<RleRun> merged = mergeRuns(std::move(runs));
+
+            mutex_enter_blocking(&renderMutex);
+            auto existing = rleRunsForLine.find(g.first);
+            if (existing != rleRunsForLine.end()) {
+                existing->second.swap(merged); //merged now holds the old runs
+            } else {
+                rleRunsForLine.emplace(g.first, std::move(merged));
+            }
+            mutex_exit(&renderMutex);
+            //Old runs (if any) freed here, outside renderMutex.
+        }
+
+        mutex_enter_blocking(&renderMutex);
         isFrameComputed = true;
-//        mutex_exit(&isFrameComputedMutex);
+        mutex_exit(&renderMutex);
 
         rleRunsToProcess.clear();
     }
 
-    //Called from CPU0
+    //Caller holds pendingMutex (uses lineBuffer).
     std::vector<RleRun> CommandProcessor::mergeRuns(std::unique_ptr<std::vector<RleRun>> runs) {
         std::vector<RleRun> retVec = std::vector<RleRun>();
 
         lineBuffer.fill(baseColour);
 
-        //Expand each RleRun into the line buffer
+        //Expand each RleRun into the line buffer: pixels [startX, startX + len). Later runs paint over
+        //earlier ones. (Was <= startX + len, one pixel too many.)
         for (auto run : *runs) {
-            for (int i = run.getStartX(); i <= run.getStartX() + run.getLen(); i++) {
-                if (i < 0 || i >= maxDisplayWidth) {
-                    continue;
-                }
+            int start = run.getStartX();
+            int end = start + run.getLen();
+            for (int i = std::max(start, 0); i < std::min(end, (int) maxDisplayWidth); i++) {
                 lineBuffer[i] = run.getColour();
             }
         }
 
-        //Now we compress the line buffer.
-        RleRun runToInsert = RleRun(0, 1, baseColour);
-        for (int i = 0; i < maxDisplayWidth - 1; i++) {
-
-            runToInsert.setColour(lineBuffer[i]);
-
-            if (lineBuffer[i] == lineBuffer[i + 1]) {
-                runToInsert.setLen(runToInsert.getLen() + 1);
-                if (i + 1 >= maxDisplayWidth) {
-                    //We're at the end of the line, insert the run
-                    retVec.emplace_back(runToInsert);
-                }
-            } else {
-                //We're at the end of a run. Insert it into the vector and refresh.
-                retVec.emplace_back(runToInsert);
-                runToInsert = RleRun(i + 1, 1, lineBuffer[i+1]);
+        //Now compress the line buffer into runs covering the whole width. (The old loop never emitted
+        //the final run, so each line ended at its last colour change.)
+        int runStart = 0;
+        for (int i = 1; i <= maxDisplayWidth; i++) {
+            if (i == maxDisplayWidth || lineBuffer[i] != lineBuffer[runStart]) {
+                retVec.emplace_back(runStart, i - runStart, lineBuffer[runStart]);
+                runStart = i;
             }
-
         }
         return retVec;
     }
 
-    //Called from CPU0
     void CommandProcessor::setBaseColour(uint32_t color) {
+        mutex_enter_blocking(&pendingMutex);
+        mutex_enter_blocking(&renderMutex);
         this->baseColour = color;
-        clearFrame();
+        mutex_exit(&renderMutex);
+        clearFrameLocked();
+        mutex_exit(&pendingMutex);
     }
 
-    //Called from CPU0
     void CommandProcessor::clearScanlines(uint16_t min, uint16_t max) {
-
-//        mutex_enter_blocking(&isFrameComputedMutex);
+        mutex_enter_blocking(&pendingMutex);
         for (int i = min; i <= max; i++) {
-            if (rleRunsForLine.count(i) > 0) {
-                if(rleRunsForLine[i].size() > 0) {
-                    rleRunsForLine[i].clear();
-                }
+            std::vector<RleRun> old;
+            mutex_enter_blocking(&renderMutex);
+            auto line = rleRunsForLine.find(i);
+            if (line != rleRunsForLine.end()) {
+                line->second.swap(old);
             }
+            mutex_exit(&renderMutex);
+            //old freed here, outside renderMutex.
         }
-//        mutex_exit(&isFrameComputedMutex);
-
+        mutex_exit(&pendingMutex);
     }
 
     bool CommandProcessor::hasGraphicsToRender() {
         //TODO maybe check if each key is just an empty vector too?
-        return !rleRunsForLine.empty();
+        mutex_enter_blocking(&renderMutex);
+        bool hasGraphics = !rleRunsForLine.empty();
+        mutex_exit(&renderMutex);
+        return hasGraphics;
     }
 
     bool CommandProcessor::getIsImmediateMode() {
-        return isImmediateMode;
+        mutex_enter_blocking(&pendingMutex);
+        bool immediate = isImmediateMode;
+        mutex_exit(&pendingMutex);
+        return immediate;
     }
 
     void CommandProcessor::setImmediateMode(bool immediateModeOn) {
+        mutex_enter_blocking(&pendingMutex);
         this->isImmediateMode = immediateModeOn;
+        mutex_exit(&pendingMutex);
     }
 
     void CommandProcessor::drawSolidColorScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour) {
-
-        uint16_t *p = (uint16_t *) scanline_buffer->data;
-
-        *p++ = COMPOSABLE_COLOR_RUN;
-        uint32_t color = colour;
-        *p++ = color;
-        *p++ = 400 - 3;
-
-        // 32 * 3, so we should be word aligned
-//        assert(!(3u & (uintptr_t) p));
-
-        // black pixel to end line
-        *p++ = COMPOSABLE_RAW_1P;
-        *p++ = 0;
-        // end of line with alignment padding
-        *p++ = COMPOSABLE_EOL_SKIP_ALIGN;
-        *p++ = 0;
-
-        scanline_buffer->data_used = ((uint32_t *) p) - scanline_buffer->data;
-        assert(scanline_buffer->data_used < scanline_buffer->data_max);
-
-        scanline_buffer->status = SCANLINE_OK;
-
+        video::scanProgram::writeSolidScanline(scanline_buffer, maxDisplayWidth, (uint16_t) colour);
     }
 
 

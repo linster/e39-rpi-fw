@@ -26,6 +26,15 @@ namespace pico {
 
         dmaManager->cpu0setup();
 
+        //Load the stored configuration now, or write the defaults on first boot. Until now nothing
+        //read the configuration at startup, so it was never saved to flash on its own and a stored
+        //one was only loaded when something (a Pi config request, the menu) asked for it.
+        //Doing it here, on core 0 before core 1 starts video, means a first-boot flash write only
+        //needs interrupts off and doesn't have to park core 1 mid-frame.
+        config::Configuration* configuration = configurationManager->getMutableConfiguration();
+        logger->i("onMain", fmt::format("Configuration loaded (rpiFwGitCommitHash '{}')",
+                                        configuration->toMessage().rpiFwGitCommitHash));
+
         logger->i("onMain", "Starting Linster OS Automotive");
 
         switch (busTopologyManager->getBusToplogy()) {
