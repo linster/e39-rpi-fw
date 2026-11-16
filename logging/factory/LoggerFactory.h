@@ -9,6 +9,7 @@
 #include "ibus/dma/topology/BusTopologyManager.h"
 #include <logging/BaseLogger.h>
 #include <logging/CompositeLogger.h>
+#include <logging/Core1DeferringLogger.h>
 #include <logging/StdioPrintFLogger.h>
 #include <logging/ibusOutLogger/IBusOutLogger.h>
 
@@ -30,6 +31,7 @@ namespace pico::logger::factory {
         void logsToStdioAndUart();
         void logsToStdio();
         void logsToUart();
+        void deferCore1Logging();
     public:
 
         LoggerFactory(

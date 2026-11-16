@@ -221,7 +221,6 @@ namespace video::scanProgram::scanPrograms {
                 std::atomic<uint8_t> desiredCpu0State {STOPPED};
                 uint8_t appliedCpu0State = STOPPED;
 
-                critical_section_t renderCs;
                 std::shared_ptr<pico::logger::BaseLogger> logger;
 
                 scanvideo_timing_t getScanProgramTiming();

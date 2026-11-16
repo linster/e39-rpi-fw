@@ -10,6 +10,7 @@
 
 #include "logging/BaseLogger.h"
 #include "logging/StdioPrintFLogger.h"
+#include "logging/Core1DeferringLogger.h"
 
 
 #ifdef CMAKE_HAS_VIDEO_SUPPORT
@@ -97,5 +98,6 @@ int main() {
 
     while (true) {
         applicationContainer->onLoop();
+        pico::logger::Core1DeferringLogger::drainOnCore0();
     }
 }

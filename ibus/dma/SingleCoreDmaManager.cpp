@@ -37,27 +37,38 @@ namespace pico::ibus::dma {
                 2048
                 );
 
-        queue_init(
+        //The packet queues each get their own spin lock instead of one of the 8 shared ("striped")
+        //ones. queue_try_add/remove copy a 255-byte element with that lock held and interrupts off,
+        //which measured 15-29 us. Shared locks are also used by mutexes core 1 takes on every
+        //scanline (CommandProcessor::renderMutex). When core 1 hit a lock core 0 was holding for one
+        //of these copies, it spun with interrupts off, scanvideo's line-start interrupt (~4.5 us
+        //budget) ran late, and the line started late. That set off scanvideo's scanline "recovery",
+        //which could wedge the scanline state machine (see recoverWedgedScanlineStateMachine).
+        queue_init_with_spinlock(
                 &toPiQ,
                 255,
-                10
+                10,
+                spin_lock_claim_unused(true)
                 );
 
-        queue_init(
+        queue_init_with_spinlock(
                 &toCarQ,
                 255,
-                32 //Room for a burst from the Pi; the car bus is slow (~11 ms per 10-byte packet + gaps)
+                32, //Room for a burst from the Pi; the car bus is slow (~11 ms per 10-byte packet + gaps)
+                spin_lock_claim_unused(true)
                 );
 
-        queue_init(
+        queue_init_with_spinlock(
                 &fromCarQ,
                 255,
-                10
+                10,
+                spin_lock_claim_unused(true)
                 );
-        queue_init(
+        queue_init_with_spinlock(
                 &fromPiQ,
                 255,
-                10
+                10,
+                spin_lock_claim_unused(true)
                 );
 
         staticLogger = logger;

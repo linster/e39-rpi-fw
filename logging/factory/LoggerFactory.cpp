@@ -34,8 +34,14 @@ namespace pico::logger::factory {
                     logsToStdio();
                     break;
             }
+            deferCore1Logging();
         }
         return this->returnedBaseLogger;
+    }
+
+    //Core 1 must not run the real loggers (see Core1DeferringLogger).
+    void LoggerFactory::deferCore1Logging() {
+        this->returnedBaseLogger = std::make_shared<Core1DeferringLogger>(this->returnedBaseLogger);
     }
 
     void LoggerFactory::logsToStdio() {
