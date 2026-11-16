@@ -38,7 +38,12 @@ namespace pico::ibus::output::writer {
                             bytes
                     );
 
-                    getDmaManagerForWrite()->cpu0scheduleOutgoingProbeOnlyMessage(outgoingPacket);
+                    if (message.messageType == messages::PicoToPiMessage::MessageType::LogStatement) {
+                        //Low priority: never delays or displaces real traffic for the Pi (issue #18).
+                        getDmaManagerForWrite()->cpu0scheduleOutgoingLogMessage(outgoingPacket);
+                    } else {
+                        getDmaManagerForWrite()->cpu0scheduleOutgoingProbeOnlyMessage(outgoingPacket);
+                    }
 
                 }
 

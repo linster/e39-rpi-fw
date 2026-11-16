@@ -24,6 +24,9 @@ namespace pico {
                 virtual void cpu0scheduleOutgoingMessage(data::IbusPacket packet) = 0; //Called from the base output writer.
 
                 virtual void cpu0scheduleOutgoingProbeOnlyMessage(data::IbusPacket packet) = 0;
+                /** A log line for the Pi: sent only when nothing else is waiting for the Pi, and the
+                 *  first thing dropped when the link can't keep up (issue #18). */
+                virtual void cpu0scheduleOutgoingLogMessage(data::IbusPacket packet) = 0;
 
                 virtual ~IDmaManager() = default;
             };

@@ -53,6 +53,8 @@ namespace pico::ibus::dma {
             inline static Packetizer fromCarQPacketizer = Packetizer();
 
             inline static queue_t toPiQ;      //Packets
+            /** Log lines for the Pi, sent only while toPiQ is empty (issue #18). */
+            inline static queue_t toPiLogQ;
             inline static queue_t toCarQ;     //Packets
 
             inline static queue_t fromPiQ;    //Packets
@@ -123,6 +125,8 @@ namespace pico::ibus::dma {
             inline static volatile uint32_t carTxDroppedAfterRetries = 0;
             /** Packets dropped because an outgoing queue (toCarQ or toPiQ) was full. */
             inline static volatile uint32_t outgoingQueueFullDrops = 0;
+            /** Log lines for the Pi dropped because toPiLogQ was full (not counted above). */
+            inline static volatile uint32_t piLogLinesDropped = 0;
         private:
             void writeOutgoingQ_toCarBus();
 
@@ -183,6 +187,8 @@ namespace pico::ibus::dma {
             void cpu0scheduleOutgoingMessage(data::IbusPacket packet) override; //Called from the base output writer.
 
             void cpu0scheduleOutgoingProbeOnlyMessage(data::IbusPacket packet) override;
+
+            void cpu0scheduleOutgoingLogMessage(data::IbusPacket packet) override;
 
             ~SingleCoreDmaManager() override = default;
 
