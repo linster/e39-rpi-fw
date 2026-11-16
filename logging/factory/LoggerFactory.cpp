@@ -8,7 +8,7 @@
 namespace pico::logger::factory {
 
     LoggerFactory::LoggerFactory(
-            std::function<std::shared_ptr<pico::ibus::dma::IDmaManager>()> dmaManagerAccessor,
+            std::function<pico::ibus::dma::IDmaManager*()> dmaManagerAccessor,
             std::shared_ptr<pico::ibus::topology::BusTopologyManager> busTopologyManager
     ) {
         this->dmaManagerAccessor = dmaManagerAccessor;

@@ -38,11 +38,11 @@ namespace pico::ibus::output::writer {
                             bytes
                     );
 
-                    getDmaManager()->cpu0scheduleOutgoingProbeOnlyMessage(outgoingPacket);
+                    getDmaManagerForWrite()->cpu0scheduleOutgoingProbeOnlyMessage(outgoingPacket);
 
                 }
 
                 void BaseOutputWriter::schedulePacketForWrite(pico::ibus::data::IbusPacket ibusPacket) {
-                    getDmaManager()->cpu0scheduleOutgoingMessage(ibusPacket);
+                    getDmaManagerForWrite()->cpu0scheduleOutgoingMessage(ibusPacket);
                 }
             } // writer

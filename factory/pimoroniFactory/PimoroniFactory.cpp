@@ -15,8 +15,10 @@ namespace pico::di {
 
             //TODO we might want to make this a class variable so it isn't popped off the stack when
             //TODO this method completes.
-            std::function<std::shared_ptr<pico::ibus::dma::IDmaManager>()> dmaManagerAccessor = [this](){
-                return this->dmaManager;
+            //Raw pointer, not a shared_ptr copy: the IBus logger calls this from both cores, and shared_ptr
+            //reference counts aren't atomic on this toolchain (see ScanProgramManager::getScanProgramPtr).
+            std::function<pico::ibus::dma::IDmaManager*()> dmaManagerAccessor = [this](){
+                return this->dmaManager.get();
             };
 
             this->loggerFactory = std::make_shared<logger::factory::LoggerFactory>(dmaManagerAccessor, busTopologyManager);
