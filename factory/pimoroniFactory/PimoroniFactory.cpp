@@ -75,6 +75,16 @@ namespace pico::di {
                     logger,
                     dmaManager
             );
+            //While the screen shows the Pi, park the TV module's GT on a screen where the BMBT knob
+            //has nothing to select (otherwise knob input moves through its menus unseen).
+            {
+                auto screenPower = this->screenPowerManager;
+                this->videoSwitch->setOnSourceChanged([screenPower](hardware::videoSwitch::VideoSource source) {
+                    if (source == hardware::videoSwitch::VideoSource::PI) {
+                        screenPower->sendBlankIndexScreen();
+                    }
+                });
+            }
 
             this->softPowerRequestWriter = std::make_shared<ibus::output::writer::SoftPowerRequestWriter>(
                     logger,
