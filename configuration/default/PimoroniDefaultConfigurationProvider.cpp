@@ -15,9 +15,10 @@ namespace pico::config::defaults {
                         .enabledMaxLogLevelForPrintfLog = logger::BaseLogger::Level::DEBUG,
                         .alwaysTurnOnRpiOnStatup = true,
                         .alwaysTurnOnScreenOnIbusActivity = true,
-//                        .scanProgramOnBoot = messages::ConfigMessage::ScanProgram::LINSTEROS_BOOTSPLASH,
-                        .scanProgramOnBoot = messages::ConfigMessage::ScanProgram::NONE,
-                        .videoSourceOnBoot = hardware::videoSwitch::VideoSource::RVC,
+                        //Applied at boot by ApplicationContainer::onMain(): the Linster OS bootsplash on
+                        //the Pico's own video, as the firmware always did before reading these settings.
+                        .scanProgramOnBoot = messages::ConfigMessage::ScanProgram::LINSTEROS_BOOTSPLASH,
+                        .videoSourceOnBoot = hardware::videoSwitch::VideoSource::PICO,
                         .sendBMBTEncodingPacketOnBootup = false,
                         .videoEncoding = messages::ConfigMessage::VideoEncoding::NTSC,
                         .aspectRatio = messages::ConfigMessage::AspectRatio::SixteenNine
