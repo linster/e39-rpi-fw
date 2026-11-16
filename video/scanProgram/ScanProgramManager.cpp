@@ -154,31 +154,36 @@ namespace video::scanProgram {
         //video stays up. Root cause not yet found: it's a boot-time race, not caused by rendering
         //or by flash writes (seen with the persistent config sector erased and never written).
         //
-        //A healthy state machine waits there for well under one line (~65 us), so require it to be
-        //seen at that wait on many consecutive checks spanning > 50 ms before restarting it.
+        //Detection: the SM is at that wait while IRQ flag 4 is already set. A running SM takes a set
+        //flag within one PIO clock (8 system clocks here), so seeing both on checks 1 ms apart means
+        //it's stuck. This used to count how often core 0 happened to see the SM at the wait
+        //(>= 200 times over > 50 ms) instead. A healthy SM spends ~30% of every line there, so it
+        //couldn't tell a stuck SM from a slow or unlucky core 0 loop: it fired on about half of all
+        //scan program switches and restarted a working state machine mid-frame (a visible glitch).
         void ScanProgramManager::recoverWedgedScanlineStateMachine() {
             constexpr uint scanlineSm = 0;                  //PICO_SCANVIDEO_SCANLINE_SM (scanvideo uses pio0)
-            constexpr uint32_t minObservations = 200;
-            constexpr uint32_t minWedgedUs = 50 * 1000;
-            static const uint32_t lineStartWait = pio_encode_wait_irq(true, false, 4);
+            constexpr uint lineStartIrq = 4;
+            constexpr uint32_t confirmAfterUs = 1000;
+            static const uint32_t lineStartWait = pio_encode_wait_irq(true, false, lineStartIrq);
 
-            if (pio0->sm[scanlineSm].instr != lineStartWait) {
-                scanlineSmWaitObservations = 0;
-                return;
-            }
+            bool stuck = pio0->sm[scanlineSm].instr == lineStartWait && (pio0->irq & (1u << lineStartIrq));
             uint32_t now = time_us_32();
-            if (scanlineSmWaitObservations++ == 0) {
-                scanlineSmWaitSinceUs = now;
+            if (!stuck) {
+                scanlineSmStuckSinceUs = 0;
                 return;
             }
-            if (scanlineSmWaitObservations < minObservations || (now - scanlineSmWaitSinceUs) < minWedgedUs) {
+            if (scanlineSmStuckSinceUs == 0) {
+                scanlineSmStuckSinceUs = now | 1; //0 means "not stuck"
+                return;
+            }
+            if ((now - scanlineSmStuckSinceUs) < confirmAfterUs) {
                 return;
             }
 
             uint addr = pio0->sm[scanlineSm].addr;
             pio_sm_restart(pio0, scanlineSm);
             pio_sm_exec(pio0, scanlineSm, pio_encode_jmp(addr));
-            scanlineSmWaitObservations = 0;
+            scanlineSmStuckSinceUs = 0;
             scanlineSmRecoveries = scanlineSmRecoveries + 1;
             logger->w(getTag(), fmt::format("Restarted wedged scanline state machine ({} so far)",
                                             (uint32_t) scanlineSmRecoveries));

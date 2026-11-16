@@ -30,6 +30,7 @@ halts the other too.
 | `flashcfg.py` | Prints the stored config frame (`E39C` + length + payload) from the persistent flash sector. | No |
 | `safe_loadtest.py --elf ELF` | Safe IBus load test (below). Reads the DMA manager's drop counters by symbol. | No |
 | `tx_abtest.py --elf ELF` | Car bus transmitter test: asks the Pico (built with `-DE39_BENCH_TX_TEST=ON`) to send 30 test packets `31 -> 12` while the dongle adds paced contention `14 -> 12`, and counts how many arrive intact. | No |
+| `wedge_test.py --elf ELF` | Scan program switch test: asks the Pico (built with `-DE39_BENCH_TX_TEST=ON`) to stall core 1 and to switch scan programs, and reads `ScanProgramManager::scanlineSmRecoveries` (scanline state machine wedges) after each request. | No |
 | `menu_test.py --sends-real-bmbt-and-ike-messages visual\|stress` | Opens and drives the menu with BMBT knob/telephone messages and IKE ignition messages. **Sends real module messages**; see its docstring. | No |
 | `swd_watch.py` | Library used by the others (openocd TCL client, symbol lookup). | — |
 
@@ -78,3 +79,20 @@ transmitting, and space their own messages by 7-10 ms
 (e.g. [BlueBus IBus notes](https://www.mintlify.com/tedsalmon/BlueBus/development/ibus-protocol),
 [ESP32 I/K-bus board architecture](https://git.supported.systems/warehack.ing/i-k-bus-board/raw/branch/main/docs/architecture.md)).
 No official BMW or TH3122 figure was found.
+
+## Scan program switches and the scanline state machine (fixed in `scanprog-switch`)
+
+Switching scan programs used to make the watchdog in `ScanProgramManager` restart scanvideo's
+scanline state machine (PIO0 SM0) on about half of all switches. Measured with a temporary counter in
+scanvideo's own scanline "recovery" path (the place that force-feeds SM0 its `wait 1 irq 4` when a
+line starts while SM0 is still busy, which is what can leave it wedged):
+
+| Cause | Forced recoveries before | After |
+|---|---|---|
+| Empty "skipped" scanlines (DMA'd with no end-of-line token) | ~12,000 lines/s on the clock, ~500/s on the menu | 0 (solid black lines) |
+| Core 1 logging during a switch (255-byte queue copy with interrupts off, 15-29 us) | 0 to 1,000+ per switch | 0 in 26 switches (log lines deferred to core 0) |
+| Core 1's per-line render lock sharing a spin lock with core 0's packet queues | (same mechanism, on IBus traffic) | 0 with 90 packets sent while on the menu |
+
+Core 1 stalls with interrupts on (up to 200 ms) never caused a wedge: scanvideo fills in missing
+lines by itself. Anything that holds core 1's interrupts off for more than a few microseconds does,
+since scanvideo's line-start interrupt has ~4.5 us to launch each line.

@@ -47,8 +47,7 @@ namespace video::scanProgram {
             bool classIsNoOp = false;
 
             //Scanline state machine watchdog (see recoverWedgedScanlineStateMachine()). Core 0 only.
-            uint32_t scanlineSmWaitObservations = 0;
-            uint32_t scanlineSmWaitSinceUs = 0;
+            uint32_t scanlineSmStuckSinceUs = 0;
             void recoverWedgedScanlineStateMachine();
         public:
             /** How many times the watchdog restarted scanvideo's scanline state machine. For debugging. */
