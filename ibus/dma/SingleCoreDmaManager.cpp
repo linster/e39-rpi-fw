@@ -4,6 +4,7 @@
 
 #include "SingleCoreDmaManager.h"
 #include <algorithm>
+#include <cstring>
 
 
 namespace pico::ibus::dma {
@@ -45,7 +46,7 @@ namespace pico::ibus::dma {
         queue_init(
                 &toCarQ,
                 255,
-                10
+                32 //Room for a burst from the Pi; the car bus is slow (~11 ms per 10-byte packet + gaps)
                 );
 
         queue_init(
@@ -246,6 +247,14 @@ namespace pico::ibus::dma {
         //https://github.com/raspberrypi/pico-examples/blob/master/uart/uart_advanced/uart_advanced.c
         while (uart_is_readable(uart)) {
             uint8_t ch = uart_getc(uart);
+            if (uart == uart0) {
+                //Car bus: remember when the bus was last busy, and copy our own echo while checking a transmit.
+                lastCarRxUs = time_us_32();
+                if (carEchoCapture && carEchoLen < sizeof(carEchoBuffer)) {
+                    carEchoBuffer[carEchoLen] = ch;
+                    carEchoLen = carEchoLen + 1;
+                }
+            }
             //uart_getc(uart) in the standard library casts to `char`, which might be signed.
 //            uart_read_blocking(uart, &ch, 1);
             if (!queue_try_add(toQ, &ch)) {
@@ -344,12 +353,69 @@ namespace pico::ibus::dma {
 
 
     void SingleCoreDmaManager::flushToCarQToUart() {
-        writeOutgoingQ_toUart(
-                &toCarQ,
-                uart0,
-                "ToCarQ",
-                "uart0"
-        );
+        writeOutgoingQ_toCarBus();
+    }
+
+    //Send the next queued car packet, with I/K-bus etiquette: only when the bus has been idle for
+    //CAR_BUS_IDLE_US, at least CAR_TX_MIN_GAP_US after our previous packet, and check the echo for a
+    //collision (resend after a random backoff, up to CAR_TX_MAX_ATTEMPTS). The packet stays in the
+    //queue (peeked, not removed) until it's sent or given up on, so the main loop never blocks waiting
+    //for the bus. This used to uart_write_blocking() every packet immediately, colliding with other
+    //modules on a busy bus.
+    void SingleCoreDmaManager::writeOutgoingQ_toCarBus() {
+        if ((int32_t)(time_us_32() - carTxNotBeforeUs) < 0) {
+            return; //spacing after our last packet, or collision backoff
+        }
+
+        std::array<uint8_t, 255> packet = std::array<uint8_t, 255>();
+        if (!queue_try_peek(&toCarQ, packet.data())) {
+            return;
+        }
+
+        uint8_t len = packet[1];
+        if (len < data::IbusPacket::MIN_LENGTH_FIELD || len > data::IbusPacket::MAX_LENGTH_FIELD) {
+            queue_try_remove(&toCarQ, packet.data());
+            malformedOutgoingPacketsDropped = malformedOutgoingPacketsDropped + 1;
+            return;
+        }
+        size_t size = (size_t) len + 2;
+
+        if (uart_is_readable(uart0) || (time_us_32() - lastCarRxUs) < CAR_BUS_IDLE_US) {
+            carTxBusyDeferrals = carTxBusyDeferrals + 1;
+            return; //someone is talking (or just stopped); try again next loop
+        }
+
+        carEchoLen = 0;
+        carEchoCapture = true;
+        uart_write_blocking(uart0, packet.data(), size);
+        uart_tx_wait_blocking(uart0);
+        //The RX interrupt may only fire on its FIFO timeout (32 bit times, ~3.3 ms), so allow up to 8 ms.
+        uint32_t waitStart = time_us_32();
+        while (carEchoLen < size && (time_us_32() - waitStart) < 8000) {
+            tight_loop_contents();
+        }
+        carEchoCapture = false;
+
+        bool sentIntact = carEchoLen == size && memcmp(carEchoBuffer, packet.data(), size) == 0;
+        if (sentIntact) {
+            queue_try_remove(&toCarQ, packet.data());
+            carTxSent = carTxSent + 1;
+            carTxAttempts = 0;
+            carTxNotBeforeUs = time_us_32() + CAR_TX_MIN_GAP_US;
+            return;
+        }
+
+        //Collision (or a missing echo): back off for the gap plus a pseudo-random 0-10 ms, then resend.
+        carTxCollisions = carTxCollisions + 1;
+        carTxAttempts++;
+        uint32_t now = time_us_32();
+        uint32_t jitterUs = ((now * 1103515245u + 12345u) >> 8) % 10000u;
+        carTxNotBeforeUs = now + CAR_TX_MIN_GAP_US + jitterUs;
+        if (carTxAttempts >= CAR_TX_MAX_ATTEMPTS) {
+            queue_try_remove(&toCarQ, packet.data());
+            carTxDroppedAfterRetries = carTxDroppedAfterRetries + 1;
+            carTxAttempts = 0;
+        }
     }
 
     void SingleCoreDmaManager::flushToPiQToUart() {
@@ -415,7 +481,9 @@ namespace pico::ibus::dma {
                         "uart1rxByteQ: {:d}, "
                         "rxBytesDropped: {:d}, "
                         "oversizedPacketsDropped: {:d}, "
-                        "malformedOutgoingPacketsDropped: {:d} ",
+                        "malformedOutgoingPacketsDropped: {:d}, "
+                        "carTx sent/busy/collisions/dropped: {:d}/{:d}/{:d}/{:d}, "
+                        "outgoingQueueFullDrops: {:d} ",
                         toPiQ_level,
                         toCarQ_level,
                         fromPiQ_level,
@@ -424,7 +492,10 @@ namespace pico::ibus::dma {
                         uart1rxByteQ_level,
                         (uint32_t)rxBytesDropped,
                         (uint32_t)oversizedPacketsDropped,
-                        (uint32_t)malformedOutgoingPacketsDropped
+                        (uint32_t)malformedOutgoingPacketsDropped,
+                        (uint32_t)carTxSent, (uint32_t)carTxBusyDeferrals,
+                        (uint32_t)carTxCollisions, (uint32_t)carTxDroppedAfterRetries,
+                        (uint32_t)outgoingQueueFullDrops
                 ));
     }
 
@@ -482,17 +553,10 @@ namespace pico::ibus::dma {
         bool wasAdded = queue_try_add(toQ, outgoingPacketBuffer.data());
 
         if (!wasAdded) {
-            //What happens on startup is that all the constructors call lots of log messages,
-            //and nothing clears out the toPiQ until all the constructors have run.
-            //So, what we'll do is just empty the queue.
-            //TODO we need a flag in this class that is set when onCpu0Loop runs for the first time.
-            //TODO don't add messages to the outgoing message queue until we have a message pump.
-            while(!queue_is_empty(toQ)){
-                std::array<uint8_t, 255> temp = std::array<uint8_t , 255>();
-                queue_try_remove(toQ, temp.data());
-            }
-            staticLogger->d("SingleCoreDmaManager", fmt::format("Tried emptying Q {}", toQName));
-            writeStatus(logger);
+            //Queue full: drop this packet and count it. This used to empty the whole queue, which threw
+            //away every packet waiting for the car (e.g. a burst from the Pi). Don't log here: a log
+            //line is itself a packet for toPiQ, so logging while toPiQ is full would recurse.
+            outgoingQueueFullDrops = outgoingQueueFullDrops + 1;
         }
     }
 

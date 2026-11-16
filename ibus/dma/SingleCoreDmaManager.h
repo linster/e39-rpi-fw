@@ -90,6 +90,33 @@ namespace pico::ibus::dma {
             /** Outgoing queue items whose length byte was outside 2..253, not sent to the UART. */
             inline static volatile uint32_t malformedOutgoingPacketsDropped = 0;
 
+            //Car bus (UART0) transmit timing. The car bus is a shared single wire: other modules only
+            //start transmitting after the bus has been idle for ~1.5 ms, so the Pico must do the same,
+            //space its own packets, and check the echo (the MCP2020 feeds the bus state back to RX)
+            //to detect collisions.
+            static constexpr uint32_t CAR_BUS_IDLE_US = 1500;      //silence required before we transmit
+            static constexpr uint32_t CAR_TX_MIN_GAP_US = 10000;   //between our own packets
+            static constexpr uint8_t CAR_TX_MAX_ATTEMPTS = 4;
+            /** time_us_32() of the last byte received on UART0 (written by the RX ISR). */
+            inline static volatile uint32_t lastCarRxUs = 0;
+            /** While a car transmit is being checked, the RX ISR also copies the echo here. */
+            inline static volatile bool carEchoCapture = false;
+            inline static volatile uint16_t carEchoLen = 0;
+            inline static uint8_t carEchoBuffer[256];
+            uint32_t carTxNotBeforeUs = 0;
+            uint8_t carTxAttempts = 0;
+
+        public:
+            //Car transmit counters (reported by writeStatus(); readable over SWD).
+            inline static volatile uint32_t carTxSent = 0;
+            inline static volatile uint32_t carTxBusyDeferrals = 0;
+            inline static volatile uint32_t carTxCollisions = 0;
+            inline static volatile uint32_t carTxDroppedAfterRetries = 0;
+            /** Packets dropped because an outgoing queue (toCarQ or toPiQ) was full. */
+            inline static volatile uint32_t outgoingQueueFullDrops = 0;
+        private:
+            void writeOutgoingQ_toCarBus();
+
             void flushUart0ByteBufferToPacketizer();
             void flushUart1ByteBufferToPacketizer();
             void flushUartByteBufferToPacketizer(
