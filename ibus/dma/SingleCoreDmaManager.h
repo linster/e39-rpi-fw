@@ -65,6 +65,15 @@ namespace pico::ibus::dma {
             //we must protect a packetizer's state (it is non-reentrant)
             critical_section_t packetizerCs;
 
+#if E39_BENCH_TX_TEST
+        public:
+            /** Bench-only: write a packet's bytes here over SWD, then its length to benchInjectFromPiLen;
+             *  core 0 feeds them into the Pi UART's RX byte queue as if the Pi had sent them. */
+            inline static volatile uint8_t benchInjectFromPi[255] = {};
+            inline static volatile uint8_t benchInjectFromPiLen = 0;
+        private:
+#endif
+
             /** Set to true once onCpu0Loop starts running */
             bool messagePumpRunning = false;
 

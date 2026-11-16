@@ -32,6 +32,12 @@ namespace pico::ibus::observers {
                 }
                 break;
             case data::FROM_PI:
+                //Messages from the Pi to the Pico (heartbeats, config push/read, video and power
+                //requests) are for the Pico only. Forwarding them put them on the car bus too, where
+                //no module wants them and a config push (up to ~255 bytes) holds the bus for ~0.25 s.
+                if (iBusPacket->getDestinationDevice() == PICO_VALUE) {
+                    break;
+                }
                 writer->forwardPacketToCar(*iBusPacket);
                 break;
         }
