@@ -29,6 +29,7 @@ halts the other too.
 | `stack_paint.py paint` / `read` | Stack high-water marks: `paint` fills unused stack below each SP with a pattern, `read` reports how far down it was overwritten. Set `ELF=...` so it finds `core1Stack`. | Briefly (paint) |
 | `flashcfg.py` | Prints the stored config frame (`E39C` + length + payload) from the persistent flash sector. | No |
 | `safe_loadtest.py --elf ELF` | Safe IBus load test (below). Reads the DMA manager's drop counters by symbol. | No |
+| `tx_abtest.py --elf ELF` | Car bus transmitter test: asks the Pico (built with `-DE39_BENCH_TX_TEST=ON`) to send 30 test packets `31 -> 12` while the dongle adds paced contention `14 -> 12`, and counts how many arrive intact. | No |
 | `menu_test.py --sends-real-bmbt-and-ike-messages visual\|stress` | Opens and drives the menu with BMBT knob/telephone messages and IKE ignition messages. **Sends real module messages**; see its docstring. | No |
 | `swd_watch.py` | Library used by the others (openocd TCL client, symbol lookup). | — |
 
@@ -59,12 +60,18 @@ Saturation run (`14 -> 12` back to back, before rule 2 was known): 73 s, 56 KB a
 So the Pico keeps up with a saturated bus. It was stopped early only because it starved the
 bench's real modules. `safe_loadtest.py` (the paced version) hasn't been run on the bench yet.
 
-## Known issue found while testing
+## Car bus transmitter (fixed in `tx-timing`)
 
-The Pico's own transmitter (`SingleCoreDmaManager::writeOutgoingQ_toUart()`) writes packets
-immediately with `uart_write_blocking()`: no wait for an idle bus, no spacing, no collision
-detection. On a busy bus it can collide with real modules. It should wait for ~1.5 ms of silence
-before sending and space its own packets.
+The Pico used to write every car packet immediately with `uart_write_blocking()`: no wait for an
+idle bus, no spacing, no collision detection, and a full `toCarQ` was emptied entirely.
+`writeOutgoingQ_toCarBus()` now waits for 1.5 ms of silence, keeps 10 ms between its packets,
+checks the echo and resends after a random backoff on a collision. `tx_abtest.py` results on the
+bench (30 test packets per trial, paced contention at ~35% bus, 3 trials each):
+
+| Firmware | Pico packets intact on the bus |
+|---|---|
+| Before (`load-test`) | 17/90 (19%) |
+| After (`tx-timing`) | 90/90 (100%); 2-4 collisions per trial detected and resent, 0 dropped |
 
 References for the timing: community I/K-bus implementations wait for ~1.5 ms of bus silence before
 transmitting, and space their own messages by 7-10 ms
