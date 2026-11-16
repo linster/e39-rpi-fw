@@ -148,6 +148,9 @@ target_sources(
 
         logging/CompositeLogger.cpp
         logging/CompositeLogger.h
+        logging/Core1DeferringLogger.cpp
+        logging/Core1DeferringLogger.h
+
         logging/ibusOutLogger/IBusOutLogger.cpp
         logging/ibusOutLogger/IBusOutLogger.h
         logging/factory/LoggerFactory.cpp
@@ -331,6 +334,15 @@ if(CMAKE_HAS_VIDEO_SUPPORT)
 
 
     target_link_libraries(PicoTemplate pico_scanvideo_dpi)
+
+    # scanvideo marks its per-scanline interrupt code to run from RAM, but GCC's partial inlining
+    # moved part of update_dma_transfer_state_irqs_enabled() into a ".part.0" clone in flash. The
+    # line-start interrupt calls it on every active line before launching the line's DMA (budget
+    # ~4.5 us), so an XIP cache miss there can start a line late. Keep the whole path in RAM. Check:
+    #   arm-none-eabi-objdump -d --disassemble=isr_irq7 PicoTemplate.elf | grep bl   (no 0x10... targets)
+    set_source_files_properties(${PICO_EXTRAS_PATH}/src/rp2_common/pico_scanvideo_dpi/scanvideo.c
+            TARGET_DIRECTORY PicoTemplate
+            PROPERTIES COMPILE_OPTIONS "-fno-partial-inlining")
 
 
     target_sources(
