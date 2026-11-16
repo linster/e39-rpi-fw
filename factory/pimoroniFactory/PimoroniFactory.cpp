@@ -170,6 +170,12 @@ namespace pico::di {
                      configurationStatusWriter,
                      configurationManager
                      );
+             //Was only created in NoVideoFactory, so with video on, config pushes from the Pi were ignored.
+             this->picoConfigPushObserver = std::make_shared<ibus::observers::PicoConfigPushObserver>(
+                     logger,
+                     configurationStatusWriter,
+                     configurationManager
+                     );
              this->piPowerRequestObserver = std::make_shared<ibus::observers::PiPowerRequestObserver>(
                      logger,
                      powerSwitchManager
@@ -215,6 +221,8 @@ namespace pico::di {
                     std::static_pointer_cast<ibus::observers::BaseObserver>(heatbeatRequestObserver));
             baseObservers->push_back(
                     std::static_pointer_cast<ibus::observers::BaseObserver>(picoConfigurationReadRequestObserver));
+            baseObservers->push_back(
+                    std::static_pointer_cast<ibus::observers::BaseObserver>(picoConfigPushObserver));
             baseObservers->push_back(
                     std::static_pointer_cast<ibus::observers::BaseObserver>(piPowerRequestObserver));
             baseObservers->push_back(
