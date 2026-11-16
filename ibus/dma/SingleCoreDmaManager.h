@@ -71,6 +71,9 @@ namespace pico::ibus::dma {
              *  core 0 feeds them into the Pi UART's RX byte queue as if the Pi had sent them. */
             inline static volatile uint8_t benchInjectFromPi[255] = {};
             inline static volatile uint8_t benchInjectFromPiLen = 0;
+            /** Bench-only: set to 1 to inject WITHOUT resetting the Pi-side packetizer first, i.e. as
+             *  the real UART would deliver the bytes (used to reproduce issue #16). */
+            inline static volatile uint8_t benchInjectFromPiRaw = 0;
         private:
 #endif
 
@@ -92,6 +95,8 @@ namespace pico::ibus::dma {
 
             /** Bytes the RX ISR had to drop because the byte queue was full. */
             inline static volatile uint32_t rxBytesDropped = 0;
+            /** Complete packets from the Pi handed to the observers. */
+            inline static volatile uint32_t fromPiPacketsDispatched = 0;
 
             /** Packets too big for a 255-byte queue item, dropped by writePacketToQ. */
             inline static volatile uint32_t oversizedPacketsDropped = 0;

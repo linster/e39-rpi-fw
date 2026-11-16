@@ -31,6 +31,7 @@ halts the other too.
 | `safe_loadtest.py --elf ELF` | Safe IBus load test (below). Reads the DMA manager's drop counters by symbol. | No |
 | `tx_abtest.py --elf ELF` | Car bus transmitter test: asks the Pico (built with `-DE39_BENCH_TX_TEST=ON`) to send 30 test packets `31 -> 12` while the dongle adds paced contention `14 -> 12`, and counts how many arrive intact. | No |
 | `wedge_test.py --elf ELF` | Scan program switch test: asks the Pico (built with `-DE39_BENCH_TX_TEST=ON`) to stall core 1 and to switch scan programs, and reads `ScanProgramManager::scanlineSmRecoveries` (scanline state machine wedges) after each request. | No |
+| `pi_link_desync_repro.py --elf ELF` | Reproduces issue #16 (a stray byte on the Pi link swallows the next Pi-to-Pico messages) by feeding bytes into the Pi UART's receive path over SWD (`-DE39_BENCH_TX_TEST=ON` build). Nothing is sent on the car bus. Exit 1 = reproduced, 0 = fixed. | No |
 | `menu_test.py --sends-real-bmbt-and-ike-messages visual\|stress` | Opens and drives the menu with BMBT knob/telephone messages and IKE ignition messages. **Sends real module messages**; see its docstring. | No |
 | `swd_watch.py` | Library used by the others (openocd TCL client, symbol lookup). | — |
 

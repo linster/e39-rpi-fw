@@ -87,10 +87,12 @@ namespace pico::ibus::dma {
         if (benchInjectFromPiLen != 0) {
             //Start the Pi-side packetizer clean, so a stray byte already on the Pi link (e.g. a glitch
             //while the Pi is powered off) can't swallow the injected packet into a bogus frame.
-            flushUart1ByteBufferToPacketizer();
-            critical_section_enter_blocking(&packetizerCs);
-            fromPiQPacketizer.reset();
-            critical_section_exit(&packetizerCs);
+            if (!benchInjectFromPiRaw) {
+                flushUart1ByteBufferToPacketizer();
+                critical_section_enter_blocking(&packetizerCs);
+                fromPiQPacketizer.reset();
+                critical_section_exit(&packetizerCs);
+            }
             for (uint i = 0; i < benchInjectFromPiLen; i++) {
                 uint8_t b = benchInjectFromPi[i];
                 queue_try_add(&uart1rxByteQ, &b);
@@ -366,6 +368,7 @@ namespace pico::ibus::dma {
 
             if (queue == &fromPiQ) {
                 packetFromArray.setPacketSource(data::PacketSource::FROM_PI);
+                fromPiPacketsDispatched = fromPiPacketsDispatched + 1;
             }
 
             observerRegistry->dispatchMessageToAllObservers(packetFromArray);
