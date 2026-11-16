@@ -100,10 +100,15 @@ namespace video::scanProgram::scanPrograms::menu {
                 );
     }
 
+    //Builds the whole menu frame off-screen and swaps it in at once (beginFrame ... computeFrame), so a
+    //redraw never shows a cleared or half-drawn menu. It used to clear the frame, draw and compute the
+    //blank background, then draw and compute the title and items: three visibly different frames on
+    //every knob turn (the flicker).
     void MenuScanProgram::drawScreen(std::shared_ptr<ScreenManager::Screen> screen) {
-        blankMenuItemArea();
-
         menuGraphicsLib->setImmediateMode(false);
+        menuGraphicsLib->beginFrame();
+
+        drawMenuItemAreaBackground();
 
         menuGraphicsLib->drawFilledRectangle(
             scanVideo::graphics::command::PxCoord(30, 58),
@@ -155,20 +160,18 @@ namespace video::scanProgram::scanPrograms::menu {
         return 8 + 8;
     }
 
-    void MenuScanProgram::blankMenuItemArea() {
-        menuGraphicsLib->clearFrame();
+    void MenuScanProgram::drawMenuItemAreaBackground() {
         menuGraphicsLib->drawFilledRectangle(
                 scanVideo::graphics::command::PxCoord(30,58),
                 scanVideo::graphics::command::PxCoord(getDisplayWidthPx() - 58, getDisplayHeightPx() - 40 - 2),
                 graphicsLib::LINOS_BACKGROUND
                 );
-        menuGraphicsLib->computeFrame();
     }
 
     void MenuScanProgram::refreshUi() {
         logger->d(getTag(), "RefreshUI");
-        scanvideo_wait_for_vblank();
-        menuGraphicsLib->clearFrame();
+        //No clearFrame() or vblank wait: drawScreen swaps the new frame in whole. (Waiting for vblank
+        //here also took scanvideo's single vblank token away from core 1's scan program switch.)
         drawScreenBackground();
         drawScreen(screenManager->getCurrentScreen());
     }

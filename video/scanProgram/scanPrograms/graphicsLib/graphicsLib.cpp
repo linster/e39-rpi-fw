@@ -37,6 +37,10 @@ namespace video::scanProgram {
         commandProcessor->clearFrame();
     }
 
+    void graphicsLib::beginFrame() {
+        commandProcessor->beginFrame();
+    }
+
     void graphicsLib::drawLine(scanVideo::graphics::command::PxCoord topLeftPx,
                                scanVideo::graphics::command::PxCoord bottomRightPx, uint32_t colour,
                                uint8_t lineWidth) {

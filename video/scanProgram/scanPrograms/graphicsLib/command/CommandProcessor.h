@@ -80,6 +80,8 @@ namespace video::scanVideo::graphics::command {
         void drawSolidColorScanline(scanvideo_scanline_buffer_t *scanline_buffer, uint32_t colour);
 
         bool isImmediateMode = true;
+        /** Set by beginFrame(): the next computeFrame() replaces the frame instead of drawing on top. */
+        bool replaceFrameOnCompute = false;
 
         /** Used to reduce memory footprint in real-life. Set to False for debugging. *
          *
@@ -107,7 +109,14 @@ namespace video::scanVideo::graphics::command {
         void addRleRuns(std::map<uint16_t, std::vector<scanVideo::graphics::command::RleRun>> runs);
 
         /**
-         * Remove all the commands from the frame.
+         * Start drawing a new frame without clearing the one on screen: the next computeFrame()
+         * replaces the frame with what was drawn since (built off-screen, swapped in at once). Use
+         * for redraws with immediate mode off, to avoid flicker. Drops commands not yet computed.
+         */
+        void beginFrame();
+        /**
+         * Remove all the commands from the frame (the screen shows nothing from this processor
+         * until the next computeFrame()).
          */
         void clearFrame();
 

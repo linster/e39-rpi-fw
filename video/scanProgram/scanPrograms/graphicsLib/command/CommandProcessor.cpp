@@ -42,6 +42,13 @@ namespace video::scanVideo::graphics::command {
         addCommand(std::make_unique<RleRunContainerCommand>(std::move(runs)));
     }
 
+    void CommandProcessor::beginFrame() {
+        mutex_enter_blocking(&pendingMutex);
+        clearCommandsToProcess();
+        replaceFrameOnCompute = true;
+        mutex_exit(&pendingMutex);
+    }
+
     void CommandProcessor::clearFrame() {
         mutex_enter_blocking(&pendingMutex);
         clearFrameLocked();
@@ -50,6 +57,7 @@ namespace video::scanVideo::graphics::command {
 
     void CommandProcessor::clearFrameLocked() {
         clearCommandsToProcess();
+        replaceFrameOnCompute = false;
         lineBuffer.fill(baseColour);
 
         //Detach the computed frame under the render lock (O(1) swap), free it after releasing.
@@ -145,11 +153,27 @@ namespace video::scanVideo::graphics::command {
     }
 
     void CommandProcessor::computeFrameLocked() {
+        //The frame on screen is never blanked while computing: this used to set isFrameComputed =
+        //false for the duration, so render drew black lines while every command was merged in
+        //(in immediate mode, for every command). Each line below is swapped in whole under
+        //renderMutex, so render always sees either the old or the new runs for a line.
 
-        //Mark the frame as not computed while we are computing it (render skips lines meanwhile).
-        mutex_enter_blocking(&renderMutex);
-        isFrameComputed = false;
-        mutex_exit(&renderMutex);
+        if (replaceFrameOnCompute) {
+            //After beginFrame(): build the new frame on its own, then swap it in with one O(1) swap,
+            //so the old frame stays on screen until the new one is complete (no flicker on redraw).
+            std::map<uint16_t, std::vector<RleRun>> newFrame;
+            for (const auto &g : rleRunsToProcess) {
+                auto runs = std::make_unique<std::vector<RleRun>>(g.second.begin(), g.second.end());
+                newFrame.emplace(g.first, mergeRuns(std::move(runs)));
+            }
+            mutex_enter_blocking(&renderMutex);
+            rleRunsForLine.swap(newFrame);
+            isFrameComputed = true;
+            mutex_exit(&renderMutex);
+            replaceFrameOnCompute = false;
+            rleRunsToProcess.clear();
+            return; //newFrame (now the old frame) is freed here, outside renderMutex.
+        }
 
         for (const auto &g : rleRunsToProcess) {
             //Draw the new runs on top of what the line already shows. This used to merge only the

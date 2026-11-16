@@ -31,7 +31,7 @@ namespace video::scanProgram::scanPrograms::menu {
         void drawScreenMenuItems(std::vector<std::shared_ptr<video::ScreenManager::ScreenItem>>);
         uint16_t drawScreenMenuItem(uint16_t tl, std::shared_ptr<video::ScreenManager::ScreenItem> item);
 
-        void blankMenuItemArea();
+        void drawMenuItemAreaBackground();
 
         void registerOnFocusChangeCallback();
         void unRegisterOnFocusChangeCallback();

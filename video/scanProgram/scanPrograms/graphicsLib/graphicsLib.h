@@ -124,6 +124,8 @@ namespace video::scanProgram {
             void clearScanlines(uint16_t min, uint16_t max);
 
             void clearFrame();
+            /** See CommandProcessor::beginFrame(): redraw without clearing the screen first. */
+            void beginFrame();
 
             bool hasGraphicsToRender();
 
