@@ -3,6 +3,8 @@
 //
 
 #include "ScanProgramManager.h"
+#include "hardware/timer.h"
+#include "hardware/pio.h"
 
 
 namespace video::scanProgram {
@@ -131,7 +133,47 @@ namespace video::scanProgram {
         void ScanProgramManager::onCpu0Loop() {
             //No scan program should be doing anything on cpu0Loop.
             if (classIsNoOp) { return; }
+            recoverWedgedScanlineStateMachine();
             getScanProgramPtr(getCurrentScanProgram())->onCpu0Loop();
+        }
+
+        //Workaround: on some boots, scanvideo's scanline state machine (PIO0 SM0) wedges at its
+        //line-start `wait 1 irq 4`: it never proceeds even though the timing state machine keeps
+        //raising IRQ 4 and its TX FIFO holds the next line. Sync keeps running but the picture
+        //freezes (blank screen), and core 1 then blocks forever in
+        //scanvideo_begin_scanline_generation() because no buffer is ever consumed - which is why
+        //this check runs on core 0. A state machine restart (SM_RESTART) clears it, after which
+        //video stays up. Root cause not yet found: it's a boot-time race, not caused by rendering
+        //or by flash writes (seen with the persistent config sector erased and never written).
+        //
+        //A healthy state machine waits there for well under one line (~65 us), so require it to be
+        //seen at that wait on many consecutive checks spanning > 50 ms before restarting it.
+        void ScanProgramManager::recoverWedgedScanlineStateMachine() {
+            constexpr uint scanlineSm = 0;                  //PICO_SCANVIDEO_SCANLINE_SM (scanvideo uses pio0)
+            constexpr uint32_t minObservations = 200;
+            constexpr uint32_t minWedgedUs = 50 * 1000;
+            static const uint32_t lineStartWait = pio_encode_wait_irq(true, false, 4);
+
+            if (pio0->sm[scanlineSm].instr != lineStartWait) {
+                scanlineSmWaitObservations = 0;
+                return;
+            }
+            uint32_t now = time_us_32();
+            if (scanlineSmWaitObservations++ == 0) {
+                scanlineSmWaitSinceUs = now;
+                return;
+            }
+            if (scanlineSmWaitObservations < minObservations || (now - scanlineSmWaitSinceUs) < minWedgedUs) {
+                return;
+            }
+
+            uint addr = pio0->sm[scanlineSm].addr;
+            pio_sm_restart(pio0, scanlineSm);
+            pio_sm_exec(pio0, scanlineSm, pio_encode_jmp(addr));
+            scanlineSmWaitObservations = 0;
+            scanlineSmRecoveries = scanlineSmRecoveries + 1;
+            logger->w(getTag(), fmt::format("Restarted wedged scanline state machine ({} so far)",
+                                            (uint32_t) scanlineSmRecoveries));
         }
 
         void ScanProgramManager::onCpu1Loop() {
